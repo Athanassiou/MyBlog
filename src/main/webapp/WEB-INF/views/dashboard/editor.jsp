@@ -7,8 +7,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <%
-  Article article = (Article) request.getAttribute("article");
-  boolean isNew   = (article == null);
+  Article article  = (Article) request.getAttribute("article");
+  de.myblog.model.Blog edBlog = (de.myblog.model.Blog) request.getAttribute("blog");
+  String blogSlug  = edBlog != null ? edBlog.slug : "main";
+  boolean isNew    = (article == null);
   String pageTitle = isNew ? "Neuer Artikel" : article.title;
 %>
 <title><%= pageTitle %> · Dashboard · MyBlog</title>
@@ -135,16 +137,18 @@
 
 <div class="topbar">
   <div class="topbar-left">
-    <a class="topbar-brand" href="<%= request.getContextPath() %>/dashboard/">MyBlog</a>
+    <a class="topbar-brand" href="<%= request.getContextPath() %>/dashboard/" style="text-decoration:none">MyBlog</a>
+    <span class="topbar-sep">/</span>
+    <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/" style="font-size:14px;font-weight:700;color:#1a1a1a;text-decoration:none"><%= blogSlug %></a>
     <span class="topbar-sep">/</span>
     <span class="topbar-title" id="topbar-title"><%= isNew ? "Neuer Artikel" : (article.title != null ? article.title : "Artikel") %></span>
   </div>
   <div class="topbar-actions">
     <% if (!isNew) { %>
-    <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/">← Zurück</a>
+    <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/">← Zurück</a>
     <button class="btn btn-primary" onclick="saveArticle()">Speichern</button>
     <% if ("published".equals(article.status)) { %>
-    <form method="post" action="<%= request.getContextPath() %>/dashboard/<%= article.id %>/unpublish" style="display:inline">
+    <form method="post" action="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= article.id %>/unpublish" style="display:inline">
       <button class="btn btn-unpublish" type="submit">Zurückziehen</button>
     </form>
     <% } else { %>
@@ -158,7 +162,7 @@
 
   <% if (!isNew) { %>
   <!-- ── Meta-Formular (bestehender Artikel) ── -->
-  <form id="meta-form" method="post" action="<%= request.getContextPath() %>/dashboard/<%= article.id %>">
+  <form id="meta-form" method="post" action="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= article.id %>">
     <input type="hidden" id="blocks-input" name="blocks" value="">
     <input type="hidden" id="publish-flag" name="_publish" value="">
 
@@ -210,7 +214,7 @@
   <div class="new-overlay">
     <div class="new-card">
       <h2>Neuer Artikel</h2>
-      <form method="post" action="<%= request.getContextPath() %>/dashboard/new">
+      <form method="post" action="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/new">
         <div class="field" style="margin-bottom:14px">
           <label for="new-title">Titel</label>
           <input type="text" id="new-title" name="title" required autofocus
@@ -224,7 +228,7 @@
         </div>
         <div style="display:flex;gap:10px">
           <input type="hidden" name="accentColor" value="#e5a00d">
-          <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/" style="flex:1;justify-content:center">Abbrechen</a>
+          <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/" style="flex:1;justify-content:center">Abbrechen</a>
           <button class="btn btn-primary" type="submit" style="flex:2;justify-content:center">Artikel anlegen</button>
         </div>
       </form>
@@ -293,7 +297,7 @@ async function saveAndPublish() {
   document.getElementById('blocks-input').value = JSON.stringify(data);
   // Publizieren via separatem Form-Post nach dem Speichern
   const form = document.getElementById('meta-form');
-  form.action = '<%= request.getContextPath() %>/dashboard/<%= article.id %>';
+  form.action = '<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= article.id %>';
   await saveArticle();
   // Publish-Redirect danach im Servlet
 }

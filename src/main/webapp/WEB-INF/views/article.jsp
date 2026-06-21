@@ -6,7 +6,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <%
-  Article article = (Article) request.getAttribute("article");
+  Article article  = (Article) request.getAttribute("article");
+  de.myblog.model.Blog artBlog = (de.myblog.model.Blog) request.getAttribute("blog");
+  String  blogSlug = artBlog != null ? artBlog.slug : "";
   String accent = (article != null && article.accentColor != null) ? article.accentColor : "#e5a00d";
 %>
 <title><%= article != null ? article.title : "Artikel" %> · MyBlog</title>
@@ -123,7 +125,7 @@
           }
         %>
       </div>
-      <a class="blog-home-link" href="<%= request.getContextPath() %>/">← Blog</a>
+      <a class="blog-home-link" href="<%= request.getContextPath() %>/<%= blogSlug %>/">← Blog</a>
     </div>
 
     <div class="title-row">

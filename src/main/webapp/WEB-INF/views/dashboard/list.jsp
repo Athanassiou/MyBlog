@@ -1,16 +1,19 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="de.myblog.model.Article, java.util.List, java.time.format.DateTimeFormatter" %>
+<%@ page import="de.myblog.model.Article, de.myblog.model.Blog, java.util.List, java.time.format.DateTimeFormatter" %>
 <%
+  Blog    blog       = (Blog)    request.getAttribute("blog");
   boolean canPublish = Boolean.TRUE.equals(request.getAttribute("canPublish"));
   boolean canManage  = Boolean.TRUE.equals(request.getAttribute("canManage"));
-  String  userRole   = (String) session.getAttribute("userRole");
+  String  userRole   = (String)  request.getAttribute("role");
+  String  blogSlug   = blog != null ? blog.slug : "main";
+  String  blogName   = blog != null ? blog.name : "Blog";
 %>
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dashboard · MyBlog</title>
+<title><%= blogName %> · Dashboard · MyBlog</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -129,12 +132,17 @@
 <body>
 
 <div class="topbar">
-  <span class="topbar-brand">MyBlog</span>
+  <div style="display:flex;align-items:center;gap:12px">
+    <a href="<%= request.getContextPath() %>/dashboard/" class="topbar-brand" style="text-decoration:none">MyBlog</a>
+    <span style="color:#e8e8e8">/</span>
+    <span style="font-size:14px;font-weight:700;color:#1a1a1a"><%= blogName %></span>
+  </div>
   <span class="topbar-user">
     <%= session.getAttribute("displayName") %>
     <% if ("owner".equals(userRole) || "admin".equals(userRole)) { %>
-    <a href="<%= request.getContextPath() %>/admin/">Admin</a>
+    <a href="<%= request.getContextPath() %>/admin/members/<%= blog != null ? blog.id : 1 %>">Mitglieder</a>
     <% } %>
+    <a href="<%= request.getContextPath() %>/dashboard/">← Meine Blogs</a>
     <a href="<%= request.getContextPath() %>/login">Abmelden</a>
   </span>
 </div>
@@ -142,7 +150,7 @@
 <div class="content">
   <div class="page-header">
     <h1>Artikel</h1>
-    <a class="btn btn-primary" href="<%= request.getContextPath() %>/dashboard/new">+ Neuer Artikel</a>
+    <a class="btn btn-primary" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/new">+ Neuer Artikel</a>
   </div>
 
   <%
@@ -155,7 +163,7 @@
   <div class="table-wrap">
     <div class="empty">
       <p>Noch keine Artikel vorhanden.</p>
-      <a class="btn btn-primary" href="<%= request.getContextPath() %>/dashboard/new">Ersten Artikel erstellen</a>
+      <a class="btn btn-primary" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/new">Ersten Artikel erstellen</a>
     </div>
   </div>
   <% } else { %>
@@ -190,22 +198,22 @@
           </td>
           <td>
             <div class="actions">
-              <a class="btn btn-ghost btn-sm" href="<%= request.getContextPath() %>/dashboard/<%= a.id %>">Bearbeiten</a>
+              <a class="btn btn-ghost btn-sm" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= a.id %>">Bearbeiten</a>
 
               <% if (canPublish) { %>
                 <% if ("published".equals(a.status)) { %>
-                <form method="post" action="<%= request.getContextPath() %>/dashboard/<%= a.id %>/unpublish" style="display:inline">
+                <form method="post" action="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= a.id %>/unpublish" style="display:inline">
                   <button class="btn btn-ghost btn-sm" type="submit">Zurückziehen</button>
                 </form>
                 <% } else { %>
-                <form method="post" action="<%= request.getContextPath() %>/dashboard/<%= a.id %>/publish" style="display:inline">
+                <form method="post" action="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= a.id %>/publish" style="display:inline">
                   <button class="btn btn-ghost btn-sm" type="submit">Veröffentlichen</button>
                 </form>
                 <% } %>
               <% } %>
 
               <% if (canManage) { %>
-              <form method="post" action="<%= request.getContextPath() %>/dashboard/<%= a.id %>/delete" style="display:inline"
+              <form method="post" action="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= a.id %>/delete" style="display:inline"
                     onsubmit="return confirm('Artikel «<%= a.title != null ? a.title.replace("'","\\'" ) : "" %>» wirklich löschen?')">
                 <button class="btn btn-danger btn-sm" type="submit">Löschen</button>
               </form>

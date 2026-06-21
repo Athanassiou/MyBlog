@@ -1,5 +1,6 @@
 package de.myblog.servlet;
 
+import de.myblog.model.Blog;
 import de.myblog.model.User;
 import de.myblog.service.BlogService;
 import de.myblog.service.UserService;
@@ -9,27 +10,41 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 
 /**
- * /admin/              → Benutzerübersicht
- * /admin/users/new     → Benutzer anlegen
- * /admin/members       → Blog-Mitglieder verwalten
- * /admin/members/add   → Mitglied hinzufügen (POST)
- * /admin/members/{id}/role   → Rolle ändern (POST)
- * /admin/members/{id}/remove → Mitglied entfernen (POST)
+ * /admin/                       → Benutzerübersicht
+ * /admin/users/new              → Benutzer anlegen
+ * /admin/blogs/                 → Alle Blogs
+ * /admin/blogs/new              → Blog anlegen
+ * /admin/blogs/{id}/edit        → Blog bearbeiten
+ * /admin/members/{blogId}       → Mitglieder eines Blogs
+ * /admin/members/{blogId}/add   → Mitglied hinzufügen (POST)
+ * /admin/members/{blogId}/{uid}/role   → Rolle ändern (POST)
+ * /admin/members/{blogId}/{uid}/remove → Entfernen (POST)
  */
 public class AdminServlet extends HttpServlet {
-
-    private static final int BLOG_ID = 1;
 
     private final UserService userService = new UserService();
     private final BlogService blogService = new BlogService();
 
-    // ─── Auth-Guard: nur owner und admin ──────────────────────────
+    // ─── Auth-Guard ───────────────────────────────────────────────
+    // Platform-Admin = eingeloggt (jeder kann eigene Blogs verwalten).
+    // Spezielle Blog-Operationen prüfen Rolle per DB.
 
-    private boolean isAdmin(HttpServletRequest req) {
+    private boolean isLoggedIn(HttpServletRequest req) {
         HttpSession s = req.getSession(false);
-        if (s == null || s.getAttribute("userId") == null) return false;
-        String role = (String) s.getAttribute("userRole");
-        return "owner".equals(role) || "admin".equals(role);
+        return s != null && s.getAttribute("userId") != null;
+    }
+
+    private int userId(HttpServletRequest req) {
+        return (int) req.getSession().getAttribute("userId");
+    }
+
+    private boolean hasRoleInBlog(int blogId, HttpServletRequest req, String... allowed) {
+        try {
+            String role = userService.getRoleInBlog(userId(req), blogId);
+            if (role == null) return false;
+            for (String a : allowed) if (a.equals(role)) return true;
+            return false;
+        } catch (Exception e) { return false; }
     }
 
     // ─── GET ──────────────────────────────────────────────────────
@@ -38,21 +53,39 @@ public class AdminServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        if (!isAdmin(req)) { resp.sendError(403); return; }
+        if (!isLoggedIn(req)) { resp.sendRedirect(req.getContextPath() + "/login"); return; }
 
         String sub = subPath(req);
 
         try {
             if (sub.isEmpty() || sub.equals("users")) {
                 req.setAttribute("users", userService.listAll());
-                req.setAttribute("members", blogService.listMembers(BLOG_ID));
+                req.setAttribute("blogs", blogService.listPublic());
                 req.getRequestDispatcher("/WEB-INF/views/admin/users.jsp").forward(req, resp);
 
             } else if (sub.equals("users/new")) {
+                req.setAttribute("blogs", blogService.listPublic());
                 req.getRequestDispatcher("/WEB-INF/views/admin/user-form.jsp").forward(req, resp);
 
-            } else if (sub.equals("members")) {
-                req.setAttribute("members", blogService.listMembers(BLOG_ID));
+            } else if (sub.equals("blogs") || sub.equals("blogs/")) {
+                req.setAttribute("blogs", blogService.listAll());
+                req.getRequestDispatcher("/WEB-INF/views/admin/blogs.jsp").forward(req, resp);
+
+            } else if (sub.equals("blogs/new")) {
+                req.getRequestDispatcher("/WEB-INF/views/admin/blog-form.jsp").forward(req, resp);
+
+            } else if (sub.matches("blogs/\\d+/edit")) {
+                int id = Integer.parseInt(sub.split("/")[1]);
+                Blog blog = blogService.findById(id);
+                if (blog == null) { resp.sendError(404); return; }
+                req.setAttribute("blog", blog);
+                req.getRequestDispatcher("/WEB-INF/views/admin/blog-form.jsp").forward(req, resp);
+
+            } else if (sub.matches("members/\\d+")) {
+                int blogId = Integer.parseInt(sub.split("/")[1]);
+                if (!hasRoleInBlog(blogId, req, "owner", "admin")) { resp.sendError(403); return; }
+                req.setAttribute("blog", blogService.findById(blogId));
+                req.setAttribute("members", blogService.listMembers(blogId));
                 req.setAttribute("allUsers", userService.listAll());
                 req.getRequestDispatcher("/WEB-INF/views/admin/members.jsp").forward(req, resp);
 
@@ -70,7 +103,7 @@ public class AdminServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        if (!isAdmin(req)) { resp.sendError(403); return; }
+        if (!isLoggedIn(req)) { resp.sendError(403); return; }
 
         String sub = subPath(req);
 
@@ -78,29 +111,42 @@ public class AdminServlet extends HttpServlet {
             if (sub.equals("users/new")) {
                 handleCreateUser(req, resp);
 
-            } else if (sub.equals("members/add")) {
-                int    userId = Integer.parseInt(req.getParameter("userId"));
-                String role   = req.getParameter("role");
-                blogService.addMember(BLOG_ID, userId, role);
-                resp.sendRedirect(req.getContextPath() + "/admin/members");
+            } else if (sub.equals("blogs/new")) {
+                handleCreateBlog(req, resp);
 
-            } else if (sub.matches("members/\\d+/role")) {
-                int    userId = Integer.parseInt(sub.split("/")[1]);
-                String role   = req.getParameter("role");
-                // owner-Rolle darf nicht geändert werden
-                String current = userService.getRoleInBlog(userId, BLOG_ID);
-                if (!"owner".equals(current)) {
-                    blogService.updateMemberRole(BLOG_ID, userId, role);
-                }
-                resp.sendRedirect(req.getContextPath() + "/admin/members");
+            } else if (sub.matches("blogs/\\d+/edit")) {
+                int id = Integer.parseInt(sub.split("/")[1]);
+                if (!hasRoleInBlog(id, req, "owner", "admin")) { resp.sendError(403); return; }
+                blogService.update(id,
+                        req.getParameter("name"),
+                        req.getParameter("description"),
+                        req.getParameter("accentColor"),
+                        req.getParameter("visibility"));
+                resp.sendRedirect(req.getContextPath() + "/admin/blogs/");
 
-            } else if (sub.matches("members/\\d+/remove")) {
-                int userId = Integer.parseInt(sub.split("/")[1]);
-                String current = userService.getRoleInBlog(userId, BLOG_ID);
-                if (!"owner".equals(current)) {
-                    blogService.removeMember(BLOG_ID, userId);
-                }
-                resp.sendRedirect(req.getContextPath() + "/admin/members");
+            } else if (sub.matches("members/\\d+/add")) {
+                int blogId = Integer.parseInt(sub.split("/")[1]);
+                if (!hasRoleInBlog(blogId, req, "owner", "admin")) { resp.sendError(403); return; }
+                blogService.addMember(blogId, Integer.parseInt(req.getParameter("userId")), req.getParameter("role"));
+                resp.sendRedirect(req.getContextPath() + "/admin/members/" + blogId);
+
+            } else if (sub.matches("members/\\d+/\\d+/role")) {
+                String[] p = sub.split("/");
+                int blogId = Integer.parseInt(p[1]), memberId = Integer.parseInt(p[2]);
+                if (!hasRoleInBlog(blogId, req, "owner", "admin")) { resp.sendError(403); return; }
+                String current = userService.getRoleInBlog(memberId, blogId);
+                if (!"owner".equals(current))
+                    blogService.updateMemberRole(blogId, memberId, req.getParameter("role"));
+                resp.sendRedirect(req.getContextPath() + "/admin/members/" + blogId);
+
+            } else if (sub.matches("members/\\d+/\\d+/remove")) {
+                String[] p = sub.split("/");
+                int blogId = Integer.parseInt(p[1]), memberId = Integer.parseInt(p[2]);
+                if (!hasRoleInBlog(blogId, req, "owner", "admin")) { resp.sendError(403); return; }
+                String current = userService.getRoleInBlog(memberId, blogId);
+                if (!"owner".equals(current))
+                    blogService.removeMember(blogId, memberId);
+                resp.sendRedirect(req.getContextPath() + "/admin/members/" + blogId);
 
             } else {
                 resp.sendError(404);
@@ -112,32 +158,42 @@ public class AdminServlet extends HttpServlet {
 
     // ─── Handler ──────────────────────────────────────────────────
 
-    private void handleCreateUser(HttpServletRequest req, HttpServletResponse resp)
-            throws Exception {
-        String username    = req.getParameter("username");
-        String displayName = req.getParameter("displayName");
-        String email       = req.getParameter("email");
-        String password    = req.getParameter("password");
-        String role        = req.getParameter("role");
-
+    private void handleCreateUser(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
             req.setAttribute("error", "Benutzername und Passwort sind Pflichtfelder.");
+            req.setAttribute("blogs", blogService.listPublic());
             req.getRequestDispatcher("/WEB-INF/views/admin/user-form.jsp").forward(req, resp);
             return;
         }
-
-        User created = userService.create(username.trim(), displayName, email, password);
+        User created = userService.create(username.trim(), req.getParameter("displayName"),
+                req.getParameter("email"), password);
         if (created == null) {
             req.setAttribute("error", "Benutzername oder E-Mail bereits vergeben.");
+            req.setAttribute("blogs", blogService.listPublic());
             req.getRequestDispatcher("/WEB-INF/views/admin/user-form.jsp").forward(req, resp);
             return;
         }
-
-        if (role != null && !role.isBlank()) {
-            blogService.addMember(BLOG_ID, created.id, role);
+        String role   = req.getParameter("role");
+        String blogIdStr = req.getParameter("blogId");
+        if (role != null && !role.isBlank() && blogIdStr != null && !blogIdStr.isBlank()) {
+            blogService.addMember(Integer.parseInt(blogIdStr), created.id, role);
         }
-
         resp.sendRedirect(req.getContextPath() + "/admin/");
+    }
+
+    private void handleCreateBlog(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        String slug   = req.getParameter("slug");
+        String name   = req.getParameter("name");
+        if (slug == null || slug.isBlank() || name == null || name.isBlank()) {
+            req.setAttribute("error", "Slug und Name sind Pflichtfelder.");
+            req.getRequestDispatcher("/WEB-INF/views/admin/blog-form.jsp").forward(req, resp);
+            return;
+        }
+        Blog blog = blogService.create(slug.trim(), name.trim(),
+                req.getParameter("description"), req.getParameter("accentColor"), userId(req));
+        resp.sendRedirect(req.getContextPath() + "/admin/blogs/");
     }
 
     // ─── Hilfsmethoden ───────────────────────────────────────────
