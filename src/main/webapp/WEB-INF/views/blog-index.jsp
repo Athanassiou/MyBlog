@@ -56,7 +56,14 @@
       <a href="<%= request.getContextPath() %>/<%= blog.slug %>/<%= a.slug %>">
         <h2><span class="dot" style="background:<%= a.accentColor != null ? a.accentColor : accent %>"></span><%= a.title %></h2>
         <% if (a.subtitle != null && !a.subtitle.isEmpty()) { %><div class="sub"><%= a.subtitle %></div><% } %>
-        <div class="meta"><%= a.publishedAt != null ? a.publishedAt.format(fmt) : "" %></div>
+        <div class="meta">
+          <%= a.publishedAt != null ? a.publishedAt.format(fmt) : "" %>
+          <% if (a.commentCount > 0) { %>
+          <span style="margin-left:10px;color:var(--accent);font-weight:600">
+            💬 <%= a.commentCount %>
+          </span>
+          <% } %>
+        </div>
       </a>
     </div>
     <% } %>

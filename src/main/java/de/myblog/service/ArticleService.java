@@ -16,11 +16,18 @@ public class ArticleService {
         List<Article> list = new ArrayList<>();
         try (Connection c = DB.get();
              PreparedStatement ps = c.prepareStatement(
-                     "SELECT id,blog_id,author_id,slug,title,subtitle,accent_color,status,created_at,published_at " +
-                     "FROM articles WHERE blog_id=? ORDER BY created_at DESC")) {
+                     "SELECT a.id,a.blog_id,a.author_id,a.slug,a.title,a.subtitle," +
+                     "a.accent_color,a.status,a.created_at,a.published_at," +
+                     "COUNT(cm.id) AS comment_count " +
+                     "FROM articles a LEFT JOIN comments cm ON cm.article_id=a.id " +
+                     "WHERE a.blog_id=? GROUP BY a.id ORDER BY a.created_at DESC")) {
             ps.setInt(1, blogId);
             try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) list.add(mapArticle(rs));
+                while (rs.next()) {
+                    Article a = mapArticle(rs);
+                    a.commentCount = rs.getInt("comment_count");
+                    list.add(a);
+                }
             }
         }
         return list;

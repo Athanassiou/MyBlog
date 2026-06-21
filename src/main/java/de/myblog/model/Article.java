@@ -16,4 +16,5 @@ public class Article {
     public LocalDateTime publishedAt;
 
     public List<Block> blocks;
+    public int commentCount;
 }
