@@ -25,11 +25,28 @@ public class DashboardServlet extends HttpServlet {
 
     private final ArticleService articleService = new ArticleService();
 
-    // ─── Auth-Guard ───────────────────────────────────────────────
+    // ─── Auth- und Rollen-Guards ──────────────────────────────────
 
     private boolean isLoggedIn(HttpServletRequest req) {
         HttpSession s = req.getSession(false);
         return s != null && s.getAttribute("userId") != null;
+    }
+
+    private String role(HttpServletRequest req) {
+        Object r = req.getSession(false).getAttribute("userRole");
+        return r != null ? (String) r : "";
+    }
+
+    /** owner, admin, author dürfen veröffentlichen */
+    private boolean canPublish(HttpServletRequest req) {
+        String r = role(req);
+        return "owner".equals(r) || "admin".equals(r) || "author".equals(r);
+    }
+
+    /** owner und admin dürfen löschen und Mitglieder verwalten */
+    private boolean canManage(HttpServletRequest req) {
+        String r = role(req);
+        return "owner".equals(r) || "admin".equals(r);
     }
 
     private void requireLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -81,14 +98,17 @@ public class DashboardServlet extends HttpServlet {
             } else if (sub.matches("\\d+")) {
                 handleSave(req, resp, Integer.parseInt(sub));
             } else if (sub.matches("\\d+/publish")) {
+                if (!canPublish(req)) { resp.sendError(403, "Keine Berechtigung zum Veröffentlichen"); return; }
                 int id = Integer.parseInt(sub.split("/")[0]);
                 articleService.publish(id);
                 resp.sendRedirect(req.getContextPath() + "/dashboard/");
             } else if (sub.matches("\\d+/unpublish")) {
+                if (!canPublish(req)) { resp.sendError(403, "Keine Berechtigung"); return; }
                 int id = Integer.parseInt(sub.split("/")[0]);
                 articleService.unpublish(id);
                 resp.sendRedirect(req.getContextPath() + "/dashboard/");
             } else if (sub.matches("\\d+/delete")) {
+                if (!canManage(req)) { resp.sendError(403, "Keine Berechtigung zum Löschen"); return; }
                 int id = Integer.parseInt(sub.split("/")[0]);
                 articleService.delete(id);
                 resp.sendRedirect(req.getContextPath() + "/dashboard/");
@@ -106,6 +126,8 @@ public class DashboardServlet extends HttpServlet {
             throws Exception {
         List<Article> articles = articleService.listByBlog(BLOG_ID);
         req.setAttribute("articles", articles);
+        req.setAttribute("canPublish", canPublish(req));
+        req.setAttribute("canManage",  canManage(req));
         req.getRequestDispatcher("/WEB-INF/views/dashboard/list.jsp").forward(req, resp);
     }
 

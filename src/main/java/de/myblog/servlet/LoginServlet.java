@@ -4,12 +4,18 @@ import de.myblog.model.User;
 import de.myblog.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
+import java.sql.SQLException;
 
 import java.io.IOException;
 
 public class LoginServlet extends HttpServlet {
 
     private final UserService userService = new UserService();
+
+    private String getRoleInBlog(User user) {
+        try { return userService.getRoleInBlog(user.id, 1); }
+        catch (SQLException e) { return null; }
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -35,10 +41,13 @@ public class LoginServlet extends HttpServlet {
                 req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
                 return;
             }
+            String role = getRoleInBlog(user);
+
             HttpSession session = req.getSession(true);
             session.setAttribute("userId", user.id);
             session.setAttribute("username", user.username);
             session.setAttribute("displayName", user.displayName);
+            session.setAttribute("userRole", role != null ? role : "");
 
             String next = req.getParameter("next");
             resp.sendRedirect(next != null && next.startsWith("/") ? next

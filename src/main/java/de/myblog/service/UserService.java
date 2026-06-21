@@ -5,6 +5,8 @@ import de.myblog.util.DB;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserService {
 
@@ -53,6 +55,42 @@ public class UserService {
             }
         }
         return null;
+    }
+
+    public List<User> listAll() throws SQLException {
+        List<User> list = new ArrayList<>();
+        try (Connection c = DB.get();
+             PreparedStatement ps = c.prepareStatement(
+                     "SELECT id,username,display_name,email,password_hash,avatar_url,created_at FROM users ORDER BY username")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(map(rs));
+            }
+        }
+        return list;
+    }
+
+    /** Rolle des Users in einem Blog, null wenn kein Mitglied. */
+    public String getRoleInBlog(int userId, int blogId) throws SQLException {
+        try (Connection c = DB.get();
+             PreparedStatement ps = c.prepareStatement(
+                     "SELECT role FROM blog_members WHERE user_id=? AND blog_id=?")) {
+            ps.setInt(1, userId);
+            ps.setInt(2, blogId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getString("role") : null;
+            }
+        }
+    }
+
+    public void resetPassword(int userId, String rawPassword) throws SQLException {
+        String hash = BCrypt.hashpw(rawPassword, BCrypt.gensalt(12));
+        try (Connection c = DB.get();
+             PreparedStatement ps = c.prepareStatement(
+                     "UPDATE users SET password_hash=? WHERE id=?")) {
+            ps.setString(1, hash);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        }
     }
 
     private User map(ResultSet rs) throws SQLException {

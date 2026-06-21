@@ -1,0 +1,16 @@
+<div class="topbar">
+  <div class="topbar-left">
+    <a class="topbar-brand" href="<%=request.getContextPath()%>/dashboard/">MyBlog</a>
+    <span class="topbar-section">Admin</span>
+    <nav class="topbar-nav">
+      <a href="<%=request.getContextPath()%>/admin/"
+         class="<%=request.getServletPath().equals("/admin/") || request.getPathInfo()==null || request.getPathInfo().equals("/") || (request.getPathInfo()!=null&&request.getPathInfo().startsWith("/users"))?"active":""%>">Benutzer</a>
+      <a href="<%=request.getContextPath()%>/admin/members"
+         class="<%=request.getPathInfo()!=null&&request.getPathInfo().startsWith("/members")?"active":""%>">Mitglieder</a>
+    </nav>
+  </div>
+  <span class="topbar-user">
+    <%=session.getAttribute("displayName")%>
+    <a href="<%=request.getContextPath()%>/dashboard/">Dashboard</a>
+  </span>
+</div>
