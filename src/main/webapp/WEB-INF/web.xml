@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+    <display-name>MyBlog</display-name>
+    <description>Multi-Blog CMS Platform</description>
+
+    <!-- ─── Servlets ──────────────────────────────────────────── -->
+
+    <servlet>
+        <servlet-name>BlogPlatformServlet</servlet-name>
+        <servlet-class>de.myblog.servlet.BlogPlatformServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BlogPlatformServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>de.myblog.servlet.LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DashboardServlet</servlet-name>
+        <servlet-class>de.myblog.servlet.DashboardServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DashboardServlet</servlet-name>
+        <url-pattern>/dashboard/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ApiServlet</servlet-name>
+        <servlet-class>de.myblog.servlet.ApiServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ApiServlet</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UploadServlet</servlet-name>
+        <servlet-class>de.myblog.servlet.UploadServlet</servlet-class>
+        <multipart-config>
+            <file-size-threshold>1048576</file-size-threshold>
+            <max-file-size>20971520</max-file-size>
+            <max-request-size>26214400</max-request-size>
+        </multipart-config>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadServlet</servlet-name>
+        <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>FilesServlet</servlet-name>
+        <servlet-class>de.myblog.servlet.FilesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FilesServlet</servlet-name>
+        <url-pattern>/files/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- ─── Session ──────────────────────────────────────────── -->
+
+    <session-config>
+        <session-timeout>60</session-timeout>
+        <cookie-config>
+            <http-only>true</http-only>
+        </cookie-config>
+    </session-config>
+
+    <!-- ─── DB-URL (JNDI env-entry, kein Passwort nötig) ────── -->
+
+    <env-entry>
+        <env-entry-name>DB_URL</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>jdbc:postgresql://localhost:5432/myblog_db</env-entry-value>
+    </env-entry>
+
+    <!-- ─── Error Pages ──────────────────────────────────────── -->
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/WEB-INF/views/error/404.html</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/WEB-INF/views/error/500.html</location>
+    </error-page>
+
+</web-app>
