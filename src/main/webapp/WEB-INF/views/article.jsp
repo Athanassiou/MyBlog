@@ -81,6 +81,47 @@
   .img-row { display:flex; gap:16px; margin:20px 0 6px; flex-wrap:wrap; }
   .img-row img { flex:1; min-width:0; width:0; }
 
+  /* ── PDF-Link ── */
+  .pdf-link { display:flex; align-items:center; gap:18px; background:#f4f7fc;
+    border:1px solid var(--border); border-left:3px solid var(--accent);
+    border-radius:3px; padding:16px 20px; text-decoration:none; color:inherit; margin:16px 0; }
+  .pdf-link:hover { background:#eef2f9; }
+  .pdf-link-icon { font-size:32px; opacity:.55; flex-shrink:0; line-height:1; }
+  .pdf-link-thumb { width:56px; flex-shrink:0; border-radius:2px; }
+  .pdf-link-title { font-weight:700; font-size:14px; }
+  .pdf-link-sub   { font-size:12px; color:var(--muted); margin-top:3px; }
+
+  /* ── Timeline ── */
+  .timeline { margin:24px 0; }
+  .timeline-entry { display:grid; grid-template-columns:70px 14px 1fr; gap:0 12px; }
+  .tl-year { font-weight:700; color:var(--accent); font-size:14px; text-align:right; padding-top:2px; }
+  .tl-spine { display:flex; flex-direction:column; align-items:center; }
+  .tl-dot { width:12px; height:12px; border-radius:50%; background:var(--accent); flex-shrink:0; margin-top:4px; }
+  .tl-line { flex:1; width:2px; background:var(--border); margin-top:2px; }
+  .timeline-entry:last-child .tl-line { display:none; }
+  .tl-text { padding-bottom:20px; font-size:14px; line-height:1.65; }
+
+  /* ── Infobox ── */
+  .infobox { display:flex; align-items:flex-start; gap:12px; border-radius:4px;
+    padding:14px 18px; margin:20px 0; border-left:3px solid var(--accent); }
+  .infobox-icon { font-size:18px; flex-shrink:0; line-height:1.5; }
+  .infobox-text { font-size:14px; line-height:1.65; }
+  .infobox.info    { background:#f0f7ff; border-color:#2272c3; }
+  .infobox.warning { background:#fffbeb; border-color:#d97706; }
+  .infobox.tip     { background:#f0fdf4; border-color:#16a34a; }
+
+  /* ── Grey Mode ── */
+  body.grey-mode {
+    --body-bg:#ddd; --content-bg:#e8e8e8;
+    --sidebar-bg:#d4d4d4; --sidebar-border:#bbb; --border:#ccc;
+  }
+  body.grey-mode { background:var(--body-bg); }
+  body.grey-mode nav { background:var(--sidebar-bg); border-color:var(--sidebar-border); }
+  body.grey-mode .pdf-link { background:#dde4ef; }
+  body.grey-mode .infobox.info    { background:#d8e8f5; }
+  body.grey-mode .infobox.warning { background:#f5edcc; }
+  body.grey-mode .infobox.tip     { background:#d4edda; }
+
   .article-nav {
     display:flex; justify-content:space-between; align-items:center;
     margin-top:60px; padding-top:28px; border-top:2px solid var(--accent);
@@ -178,6 +219,59 @@
                   String url = file != null ? file.optString("url", "") : "";
                   String caption = data.optString("caption", "");
                   out.print("<div style=\"text-align:center;margin:20px 0\"><img src=\"" + url + "\" alt=\"" + caption + "\"></div>");
+                  break;
+                case "imagePair":
+                  org.json.JSONObject ipl = data.optJSONObject("left");
+                  org.json.JSONObject ipr = data.optJSONObject("right");
+                  String lu = ipl != null ? ipl.optString("url","") : "";
+                  String ru = ipr != null ? ipr.optString("url","") : "";
+                  String la = ipl != null ? ipl.optString("alt","") : "";
+                  String ra = ipr != null ? ipr.optString("alt","") : "";
+                  if (!lu.isEmpty() || !ru.isEmpty()) {
+                    out.print("<div class=\"img-row\">");
+                    if (!lu.isEmpty()) out.print("<img src=\""+lu+"\" alt=\""+la+"\">");
+                    if (!ru.isEmpty()) out.print("<img src=\""+ru+"\" alt=\""+ra+"\">");
+                    out.print("</div>");
+                  }
+                  break;
+                case "pdfLink":
+                  String pu = data.optString("url","");
+                  String pt = data.optString("title","");
+                  String pd = data.optString("description","");
+                  String ph = data.optString("thumb","");
+                  if (!pu.isEmpty()) {
+                    out.print("<a class=\"pdf-link\" href=\""+pu+"\" target=\"_blank\">");
+                    if (!ph.isEmpty()) out.print("<img class=\"pdf-link-thumb\" src=\""+ph+"\">");
+                    else out.print("<span class=\"pdf-link-icon\">📄</span>");
+                    out.print("<div><div class=\"pdf-link-title\">"+pt+"</div>");
+                    if (!pd.isEmpty()) out.print("<div class=\"pdf-link-sub\">"+pd+"</div>");
+                    out.print("</div></a>");
+                  }
+                  break;
+                case "timeline":
+                  org.json.JSONArray tl = data.optJSONArray("entries");
+                  if (tl != null && tl.length() > 0) {
+                    out.print("<div class=\"timeline\">");
+                    for (int ti = 0; ti < tl.length(); ti++) {
+                      org.json.JSONObject te = tl.optJSONObject(ti);
+                      if (te == null) continue;
+                      out.print("<div class=\"timeline-entry\">");
+                      out.print("<div class=\"tl-year\">"+te.optString("year","")+"</div>");
+                      out.print("<div class=\"tl-spine\"><div class=\"tl-dot\"></div><div class=\"tl-line\"></div></div>");
+                      out.print("<div class=\"tl-text\">"+te.optString("text","")+"</div>");
+                      out.print("</div>");
+                    }
+                    out.print("</div>");
+                  }
+                  break;
+                case "infobox":
+                  String ibs = data.optString("style","info");
+                  String ibi = data.optString("icon","ℹ");
+                  String ibt = data.optString("text","");
+                  out.print("<div class=\"infobox "+ibs+"\">");
+                  out.print("<span class=\"infobox-icon\">"+ibi+"</span>");
+                  out.print("<div class=\"infobox-text\">"+ibt+"</div>");
+                  out.print("</div>");
                   break;
               }
             } catch (Exception ignored) {}

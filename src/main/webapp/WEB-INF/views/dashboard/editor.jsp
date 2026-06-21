@@ -248,6 +248,197 @@
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest/dist/delimiter.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest/dist/image.umd.min.js"></script>
 
+<!-- ── Custom EditorJS Tools ── -->
+<script>
+// ─── ImagePairTool ───────────────────────────────────────────
+class ImagePairTool {
+  static get toolbox() {
+    return { title: 'Bildpaar', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="9" height="14" rx="1"/><rect x="13" y="3" width="9" height="14" rx="1"/></svg>' };
+  }
+  constructor({ data, config }) {
+    this.data = { left: data.left||{url:'',alt:''}, right: data.right||{url:'',alt:''} };
+    this.uploadUrl = config.uploadUrl || '/upload';
+    this.wrapper = null;
+  }
+  render() {
+    this.wrapper = document.createElement('div');
+    this.wrapper.style.cssText = 'display:flex;gap:12px;margin:4px 0';
+    ['left','right'].forEach(side => {
+      const box = document.createElement('div');
+      box.style.cssText = 'flex:1;display:flex;flex-direction:column;gap:6px';
+      const img = document.createElement('img');
+      img.src = this.data[side].url || '';
+      img.style.cssText = 'width:100%;border-radius:4px;' + (this.data[side].url ? '' : 'display:none');
+      const lbl = document.createElement('label');
+      lbl.style.cssText = 'cursor:pointer;padding:7px;border:1.5px dashed #ccc;border-radius:4px;text-align:center;font-size:12px;color:#777;display:block';
+      lbl.textContent = this.data[side].url ? 'Bild ersetzen' : 'Bild hochladen';
+      const inp = document.createElement('input');
+      inp.type='file'; inp.accept='image/*'; inp.style.display='none';
+      inp.onchange = async e => {
+        const f = e.target.files[0]; if (!f) return;
+        const fd = new FormData(); fd.append('image', f);
+        const r = await fetch(this.uploadUrl, {method:'POST',body:fd});
+        const j = await r.json();
+        if (j.success) {
+          this.data[side] = { url: j.file.url, alt: altInp.value };
+          img.src = j.file.url; img.style.display='block';
+          lbl.textContent = 'Bild ersetzen';
+        }
+      };
+      lbl.appendChild(inp);
+      const altInp = document.createElement('input');
+      altInp.type='text'; altInp.placeholder='Beschreibung (alt)';
+      altInp.value = this.data[side].alt||'';
+      altInp.style.cssText = 'border:1px solid #e8e8e8;border-radius:4px;padding:5px 8px;font-size:12px;width:100%;box-sizing:border-box';
+      altInp.oninput = () => { this.data[side] = {...this.data[side], alt: altInp.value}; };
+      box.append(img, lbl, altInp);
+      this.wrapper.append(box);
+    });
+    return this.wrapper;
+  }
+  save() { return this.data; }
+}
+
+// ─── PdfLinkTool ────────────────────────────────────────────
+class PdfLinkTool {
+  static get toolbox() {
+    return { title: 'PDF-Link', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>' };
+  }
+  constructor({ data }) {
+    this.data = { url: data.url||'', title: data.title||'', description: data.description||'', thumb: data.thumb||'' };
+    this.wrapper = null;
+  }
+  render() {
+    this.wrapper = document.createElement('div');
+    this.wrapper.style.cssText = 'border:1px solid #e8e8e8;border-left:3px solid var(--accent);border-radius:4px;padding:14px;display:flex;flex-direction:column;gap:7px;background:#f4f7fc';
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#777;margin-bottom:2px';
+    hdr.textContent = 'PDF-Link';
+    this.wrapper.append(hdr);
+    [['url','PDF-URL (z.B. /files/dokument.pdf)'],
+     ['title','Titel'],
+     ['description','Beschreibung (z.B. PDF · 2 MB)'],
+     ['thumb','Thumbnail-URL (optional)']
+    ].forEach(([key, ph]) => {
+      const inp = document.createElement('input');
+      inp.type='text'; inp.placeholder=ph; inp.value=this.data[key]||'';
+      inp.style.cssText = 'border:1px solid #e8e8e8;border-radius:4px;padding:6px 9px;font-size:13px;width:100%;box-sizing:border-box;background:#fff';
+      inp.oninput = () => { this.data[key] = inp.value; };
+      this.wrapper.append(inp);
+    });
+    return this.wrapper;
+  }
+  save() { return this.data; }
+}
+
+// ─── TimelineTool ────────────────────────────────────────────
+class TimelineTool {
+  static get toolbox() {
+    return { title: 'Timeline', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><polyline points="17 7 12 2 7 7"/><line x1="5" y1="10" x2="12" y2="10"/><line x1="5" y1="14" x2="12" y2="14"/><line x1="5" y1="18" x2="12" y2="18"/></svg>' };
+  }
+  constructor({ data }) {
+    this.data = { entries: (data.entries||[]).map(e=>({...e})) };
+    this.listWrap = null;
+  }
+  render() {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'border:1px solid #e8e8e8;border-radius:4px;padding:14px';
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#777;margin-bottom:10px';
+    hdr.textContent = 'Timeline';
+    this.listWrap = document.createElement('div');
+    this.listWrap.style.cssText = 'display:flex;flex-direction:column;gap:6px';
+    this.data.entries.forEach(e => this._addRow(e.year, e.text));
+    const addBtn = document.createElement('button');
+    addBtn.type='button'; addBtn.textContent='+ Eintrag';
+    addBtn.style.cssText = 'margin-top:8px;padding:5px 10px;border:1.5px dashed #ccc;border-radius:4px;cursor:pointer;font-size:12px;background:none;width:100%;color:#777';
+    addBtn.onclick = () => this._addRow('','');
+    wrap.append(hdr, this.listWrap, addBtn);
+    return wrap;
+  }
+  _addRow(year, text) {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:8px;align-items:center';
+    const yInp = document.createElement('input');
+    yInp.type='text'; yInp.placeholder='Jahr'; yInp.value=year||'';
+    yInp.style.cssText = 'width:80px;border:1px solid #e8e8e8;border-radius:4px;padding:5px 8px;font-size:13px;flex-shrink:0';
+    const tInp = document.createElement('input');
+    tInp.type='text'; tInp.placeholder='Ereignis …'; tInp.value=text||'';
+    tInp.style.cssText = 'flex:1;border:1px solid #e8e8e8;border-radius:4px;padding:5px 8px;font-size:13px';
+    const del = document.createElement('button');
+    del.type='button'; del.textContent='×';
+    del.style.cssText = 'width:22px;height:22px;border:none;background:none;cursor:pointer;color:#aaa;font-size:16px;flex-shrink:0;padding:0;line-height:1';
+    del.onclick = () => row.remove();
+    row.append(yInp, tInp, del);
+    this.listWrap.append(row);
+  }
+  save() {
+    const entries = [];
+    this.listWrap.querySelectorAll('div').forEach(row => {
+      const [y,t] = row.querySelectorAll('input');
+      if (y && t && (y.value||t.value)) entries.push({year:y.value, text:t.value});
+    });
+    return { entries };
+  }
+}
+
+// ─── InfoboxTool ─────────────────────────────────────────────
+class InfoboxTool {
+  static get toolbox() {
+    return { title: 'Infobox', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' };
+  }
+  static get STYLES() {
+    return {
+      info:    { icon:'ℹ', bg:'#f0f7ff', border:'#2272c3', label:'Info' },
+      warning: { icon:'⚠', bg:'#fffbeb', border:'#d97706', label:'Warnung' },
+      tip:     { icon:'✓', bg:'#f0fdf4', border:'#16a34a', label:'Tipp' }
+    };
+  }
+  constructor({ data }) {
+    this.data = { style: data.style||'info', icon: data.icon||'ℹ', text: data.text||'' };
+    this.wrapper = null;
+    this.textEl = null;
+  }
+  render() {
+    this.wrapper = document.createElement('div');
+    this._rebuild();
+    return this.wrapper;
+  }
+  _rebuild() {
+    const cfg = InfoboxTool.STYLES[this.data.style] || InfoboxTool.STYLES.info;
+    this.wrapper.innerHTML = '';
+    this.wrapper.style.cssText = `border-radius:4px;padding:14px 16px;border-left:3px solid ${cfg.border};background:${cfg.bg}`;
+    const sel = document.createElement('select');
+    sel.style.cssText = 'border:1px solid #e8e8e8;border-radius:4px;padding:3px 8px;font-size:12px;margin-bottom:10px;font-family:inherit;background:#fff';
+    Object.entries(InfoboxTool.STYLES).forEach(([k,v]) => {
+      const o = document.createElement('option');
+      o.value=k; o.textContent=v.label; if(k===this.data.style) o.selected=true;
+      sel.append(o);
+    });
+    sel.onchange = () => {
+      this.data.style = sel.value;
+      this.data.icon  = InfoboxTool.STYLES[sel.value].icon;
+      const cur = this.textEl ? this.textEl.value : this.data.text;
+      this.data.text = cur;
+      this._rebuild();
+    };
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:10px;align-items:flex-start';
+    const icon = document.createElement('span');
+    icon.textContent = cfg.icon;
+    icon.style.cssText = 'font-size:18px;line-height:1.5;flex-shrink:0';
+    this.textEl = document.createElement('textarea');
+    this.textEl.value = this.data.text||'';
+    this.textEl.placeholder = 'Text …';
+    this.textEl.style.cssText = 'flex:1;border:none;background:transparent;font-family:inherit;font-size:14px;resize:vertical;min-height:56px;outline:none;line-height:1.6';
+    this.textEl.oninput = () => { this.data.text = this.textEl.value; };
+    row.append(icon, this.textEl);
+    this.wrapper.append(sel, row);
+  }
+  save() { return { style:this.data.style, icon:this.data.icon, text:this.textEl ? this.textEl.value : this.data.text }; }
+}
+</script>
+
 <script>
 // ── Bestehende Blöcke aus Java übergeben ──
 const existingBlocks = <%
@@ -281,7 +472,14 @@ const editor = new EditorJS({
     image: {
       class: ImageTool,
       config: { endpoints: { byFile: '<%= request.getContextPath() %>/upload' } }
-    }
+    },
+    imagePair: {
+      class: ImagePairTool,
+      config: { uploadUrl: '<%= request.getContextPath() %>/upload' }
+    },
+    pdfLink:  { class: PdfLinkTool },
+    timeline: { class: TimelineTool },
+    infobox:  { class: InfoboxTool }
   }
 });
 
