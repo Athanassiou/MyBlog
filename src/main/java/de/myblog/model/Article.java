@@ -2,6 +2,7 @@ package de.myblog.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import de.myblog.model.Tag;
 
 public class Article {
     public int id;
@@ -16,5 +17,6 @@ public class Article {
     public LocalDateTime publishedAt;
 
     public List<Block> blocks;
-    public int commentCount;
+    public int         commentCount;
+    public List<Tag>   tags;   // optional, nur wenn geladen
 }

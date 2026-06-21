@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="de.myblog.model.Article, de.myblog.model.Block, java.util.List" %>
+<%@ page import="de.myblog.model.Article, de.myblog.model.Block, de.myblog.model.Tag, java.util.List, java.util.stream.Collectors" %>
 <%@ page import="org.json.JSONArray, org.json.JSONObject" %>
 <!DOCTYPE html>
 <html lang="de">
@@ -199,6 +199,24 @@
                    oninput="syncColorFromHex(this.value)">
             <div class="color-preview" id="color-preview"></div>
           </div>
+        </div>
+        <div class="field" style="flex:2">
+          <label for="tags">Tags <span style="font-weight:400;text-transform:none">(kommagetrennt)</span></label>
+          <%
+            String existingTags = "";
+            if (article.tags != null && !article.tags.isEmpty())
+              existingTags = article.tags.stream().map(t -> t.name).collect(Collectors.joining(", "));
+            @SuppressWarnings("unchecked")
+            List<String> blogTagNames = (List<String>) request.getAttribute("blogTagNames");
+          %>
+          <input type="text" id="tags" name="tags" placeholder="z.B. Technik, Java, Tutorial"
+                 value="<%= existingTags %>"
+                 list="tag-suggestions" autocomplete="off">
+          <% if (blogTagNames != null && !blogTagNames.isEmpty()) { %>
+          <datalist id="tag-suggestions">
+            <% for (String tn : blogTagNames) { %><option value="<%= tn %>"><% } %>
+          </datalist>
+          <% } %>
         </div>
       </div>
     </div>

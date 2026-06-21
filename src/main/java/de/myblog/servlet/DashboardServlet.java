@@ -5,6 +5,7 @@ import de.myblog.model.Block;
 import de.myblog.model.Blog;
 import de.myblog.service.ArticleService;
 import de.myblog.service.BlogService;
+import de.myblog.service.TagService;
 import de.myblog.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
@@ -27,6 +28,7 @@ public class DashboardServlet extends HttpServlet {
 
     private final BlogService    blogService    = new BlogService();
     private final ArticleService articleService = new ArticleService();
+    private final TagService     tagService     = new TagService();
     private final UserService    userService    = new UserService();
 
     // ─── Auth ─────────────────────────────────────────────────────
@@ -96,12 +98,14 @@ public class DashboardServlet extends HttpServlet {
                     int id = Integer.parseInt(sub.split("/")[0]);
                     Article article = articleService.findById(id);
                     if (article == null || article.blogId != blog.id) { resp.sendError(404); return; }
+                    article.tags = tagService.listByArticle(article.id);
                     String role = roleIn(blog.id, req);
-                    req.setAttribute("blog", blog);
-                    req.setAttribute("article", article);
-                    req.setAttribute("role", role);
-                    req.setAttribute("canPublish", canPublish(role));
-                    req.setAttribute("canManage",  canManage(role));
+                    req.setAttribute("blog",         blog);
+                    req.setAttribute("article",      article);
+                    req.setAttribute("role",         role);
+                    req.setAttribute("canPublish",   canPublish(role));
+                    req.setAttribute("canManage",    canManage(role));
+                    req.setAttribute("blogTagNames", tagService.listNamesByBlog(blog.id));
                     req.getRequestDispatcher("/WEB-INF/views/dashboard/editor.jsp").forward(req, resp);
                 }
             }
@@ -223,6 +227,7 @@ public class DashboardServlet extends HttpServlet {
         if (blocksJson != null && !blocksJson.isBlank()) {
             articleService.saveBlocks(articleId, parseBlocks(articleId, blocksJson));
         }
+        tagService.saveArticleTags(articleId, blog.id, req.getParameter("tags"));
         resp.sendRedirect(req.getContextPath() + "/dashboard/" + blog.slug + "/" + articleId);
     }
 

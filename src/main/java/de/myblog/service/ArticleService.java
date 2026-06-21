@@ -12,6 +12,32 @@ public class ArticleService {
 
     // ─── Lesen ───────────────────────────────────────────────────
 
+    /** Volltextsuche auf Titel, Untertitel und Tag-Namen. */
+    public List<Article> search(int blogId, String query) throws SQLException {
+        String like = "%" + query.toLowerCase() + "%";
+        List<Article> list = new ArrayList<>();
+        try (Connection c = DB.get();
+             PreparedStatement ps = c.prepareStatement(
+                     "SELECT DISTINCT a.id,a.blog_id,a.author_id,a.slug,a.title,a.subtitle," +
+                     "a.accent_color,a.status,a.created_at,a.published_at,0 AS comment_count " +
+                     "FROM articles a " +
+                     "LEFT JOIN article_tags at ON at.article_id=a.id " +
+                     "LEFT JOIN tags t ON t.id=at.tag_id " +
+                     "WHERE a.blog_id=? AND a.status='published' " +
+                     "AND (lower(a.title) LIKE ? OR lower(coalesce(a.subtitle,'')) LIKE ? " +
+                     "     OR lower(coalesce(t.name,'')) LIKE ?) " +
+                     "ORDER BY a.published_at DESC NULLS LAST")) {
+            ps.setInt(1, blogId);
+            ps.setString(2, like);
+            ps.setString(3, like);
+            ps.setString(4, like);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapArticle(rs));
+            }
+        }
+        return list;
+    }
+
     public List<Article> listByBlog(int blogId) throws SQLException {
         List<Article> list = new ArrayList<>();
         try (Connection c = DB.get();

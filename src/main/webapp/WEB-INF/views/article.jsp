@@ -213,6 +213,16 @@
     <% if (article != null && article.subtitle != null && !article.subtitle.isEmpty()) { %>
     <p class="subtitle"><%= article.subtitle %></p>
     <% } %>
+    <% if (article != null && article.tags != null && !article.tags.isEmpty()) { %>
+    <div style="margin:-8px 0 28px;display:flex;flex-wrap:wrap;gap:6px">
+      <% for (de.myblog.model.Tag t : article.tags) { %>
+      <a href="<%= request.getContextPath() %>/<%= blogSlug %>/tag/<%= t.name %>"
+         style="display:inline-block;background:#f0f0f0;color:#555;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;text-decoration:none"
+         onmouseover="this.style.background='<%= accent %>';this.style.color='#fff'"
+         onmouseout="this.style.background='#f0f0f0';this.style.color='#555'">#<%= t.name %></a>
+      <% } %>
+    </div>
+    <% } %>
 
     <!-- Block-Rendering (Stufe 1: Platzhalter, wird in Stufe 4 durch BlockRenderer ersetzt) -->
     <div id="article-content">
