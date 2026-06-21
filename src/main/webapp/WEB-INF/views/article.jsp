@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="de.myblog.model.Article" %>
+<%@ page import="de.myblog.model.Article, de.myblog.model.Comment" %>
+<%@ page import="java.util.*, java.time.*, java.time.temporal.ChronoUnit" %>
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -133,6 +134,43 @@
     width:34px; height:34px; border-radius:50%; border:1.5px solid var(--border);
     display:inline-flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
   }
+  /* ── Kommentare ── */
+  .comments { margin-top:52px; padding-top:36px; border-top:2px solid var(--border); }
+  .comments-hdr { font-size:17px; font-weight:800; margin-bottom:28px; }
+  .comment { display:flex; gap:12px; margin-bottom:22px; }
+  .comment.reply { margin-left:48px; margin-bottom:14px; }
+  .c-avatar { width:36px; height:36px; border-radius:50%; background:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:13px; color:#fff; flex-shrink:0; text-transform:uppercase; }
+  .comment.reply .c-avatar { width:28px; height:28px; font-size:11px; }
+  .c-body { flex:1; min-width:0; }
+  .c-meta { font-size:13px; margin-bottom:4px; }
+  .c-meta strong { color:var(--text); font-weight:700; }
+  .c-meta .c-time { color:var(--muted); margin-left:8px; font-size:12px; }
+  .c-text { font-size:14px; line-height:1.65; margin-bottom:6px; white-space:pre-wrap; }
+  .c-actions { display:flex; gap:14px; }
+  .c-actions button, .c-actions .c-link {
+    background:none; border:none; cursor:pointer; color:var(--muted); font-family:inherit;
+    font-size:12px; font-weight:600; padding:0; text-decoration:none; }
+  .c-actions button:hover, .c-actions .c-link:hover { color:var(--accent); }
+  .c-actions .c-del:hover { color:#dc2626; }
+  .replies-wrap { margin-top:10px; border-left:2px solid var(--border); padding-left:16px; }
+  .reply-form { display:none; margin-top:10px; }
+  .reply-form.open { display:block; }
+  .comment-input { width:100%; border:1px solid var(--border); border-radius:5px; padding:10px 13px;
+    font-family:inherit; font-size:14px; resize:vertical; min-height:72px; outline:none;
+    transition:border-color .15s; box-sizing:border-box; background:var(--content-bg); color:var(--text); }
+  .comment-input:focus { border-color:var(--accent); }
+  .comment-form-row { display:flex; justify-content:flex-end; gap:8px; margin-top:7px; }
+  .btn-cmt { background:var(--accent); color:#fff; border:none; border-radius:5px;
+    padding:7px 16px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+  .btn-cmt:hover { opacity:.88; }
+  .btn-cmt-cancel { background:none; border:1px solid var(--border); border-radius:5px;
+    padding:7px 14px; font-family:inherit; font-size:13px; cursor:pointer; color:var(--muted); }
+  .login-prompt { font-size:14px; color:var(--muted); text-align:center; padding:18px;
+    border:1px dashed var(--border); border-radius:5px; margin-top:20px; }
+  .login-prompt a { color:var(--accent); font-weight:600; text-decoration:none; }
+
   @media(max-width:768px) { nav { display:none; } main { padding:28px 20px 60px; } }
 </style>
 </head>
@@ -282,9 +320,147 @@
 
     <div class="article-nav">
       <span></span>
-      <a class="home" href="<%= request.getContextPath() %>/">⌂ Blog</a>
+      <a class="home" href="<%= request.getContextPath() %>/<%= blogSlug %>/">⌂ Blog</a>
       <span></span>
     </div>
+
+    <!-- ── Kommentare ── -->
+    <%
+      @SuppressWarnings("unchecked")
+      List<Comment> allComments = (List<Comment>) request.getAttribute("comments");
+      if (allComments == null) allComments = Collections.emptyList();
+
+      // Kommentare gruppieren: Top-Level und Replies
+      List<Comment> topLevel = new ArrayList<>();
+      Map<Integer, List<Comment>> replies = new LinkedHashMap<>();
+      for (Comment cm : allComments) {
+        if (cm.parentId == null) topLevel.add(cm);
+        else replies.computeIfAbsent(cm.parentId, k -> new ArrayList<>()).add(cm);
+      }
+
+      // Hilfsmethode: Zeitstempel → "vor X Minuten" etc.
+      // (inline als Lambda nicht möglich in JSP — direkte Berechnung per Methode)
+      // Wird unten per Scriptlet gerechnet.
+
+      Object loggedId = session.getAttribute("userId");
+      String articleUrl = request.getContextPath() + "/" + blogSlug + "/" + (article != null ? article.slug : "");
+    %>
+    <div class="comments" id="comments">
+      <div class="comments-hdr">Kommentare (<%= allComments.size() %>)</div>
+
+      <% for (Comment cm : topLevel) {
+           String initials = cm.authorDisplayName != null && !cm.authorDisplayName.isEmpty()
+               ? cm.authorDisplayName.substring(0,1)
+               : (cm.authorUsername != null ? cm.authorUsername.substring(0,1) : "?");
+           String name = cm.authorDisplayName != null && !cm.authorDisplayName.isEmpty()
+               ? cm.authorDisplayName : cm.authorUsername;
+
+           // Zeitstempel
+           String timeStr = "—";
+           if (cm.createdAt != null) {
+             long mins = ChronoUnit.MINUTES.between(cm.createdAt, LocalDateTime.now());
+             if      (mins < 1)    timeStr = "gerade eben";
+             else if (mins < 60)   timeStr = "vor " + mins + " Min.";
+             else if (mins < 1440) timeStr = "vor " + (mins/60) + " Std.";
+             else timeStr = cm.createdAt.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+           }
+           List<Comment> cmReplies = replies.getOrDefault(cm.id, Collections.emptyList());
+      %>
+      <div class="comment">
+        <div class="c-avatar"><%= initials %></div>
+        <div class="c-body">
+          <div class="c-meta">
+            <strong><%= name != null ? name : "?" %></strong>
+            <span class="c-time"><%= timeStr %></span>
+          </div>
+          <div class="c-text"><%= cm.body %></div>
+          <div class="c-actions">
+            <% if (loggedId != null) { %>
+            <button class="c-link" onclick="toggleReply(<%= cm.id %>)">Antworten</button>
+            <% } %>
+            <% if (loggedId != null && (int)loggedId == cm.authorId) { %>
+            <form method="post" action="<%= articleUrl %>" style="display:inline"
+                  onsubmit="return confirm('Kommentar löschen?')">
+              <input type="hidden" name="_action" value="delete">
+              <input type="hidden" name="commentId" value="<%= cm.id %>">
+              <button type="submit" class="c-actions c-del">Löschen</button>
+            </form>
+            <% } %>
+          </div>
+
+          <!-- Antwortformular -->
+          <% if (loggedId != null) { %>
+          <div class="reply-form" id="reply-<%= cm.id %>">
+            <form method="post" action="<%= articleUrl %>">
+              <input type="hidden" name="parentId" value="<%= cm.id %>">
+              <textarea class="comment-input" name="body" placeholder="Antwort schreiben …" rows="3"></textarea>
+              <div class="comment-form-row">
+                <button type="button" class="btn-cmt-cancel" onclick="toggleReply(<%= cm.id %>)">Abbrechen</button>
+                <button type="submit" class="btn-cmt">Antworten</button>
+              </div>
+            </form>
+          </div>
+          <% } %>
+
+          <!-- Replies -->
+          <% if (!cmReplies.isEmpty()) { %>
+          <div class="replies-wrap">
+            <% for (Comment rep : cmReplies) {
+                 String ri = rep.authorDisplayName != null && !rep.authorDisplayName.isEmpty()
+                     ? rep.authorDisplayName.substring(0,1)
+                     : (rep.authorUsername != null ? rep.authorUsername.substring(0,1) : "?");
+                 String rn = rep.authorDisplayName != null && !rep.authorDisplayName.isEmpty()
+                     ? rep.authorDisplayName : rep.authorUsername;
+                 String rt = "—";
+                 if (rep.createdAt != null) {
+                   long m = ChronoUnit.MINUTES.between(rep.createdAt, LocalDateTime.now());
+                   if      (m < 1)    rt = "gerade eben";
+                   else if (m < 60)   rt = "vor " + m + " Min.";
+                   else if (m < 1440) rt = "vor " + (m/60) + " Std.";
+                   else rt = rep.createdAt.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+                 }
+            %>
+            <div class="comment reply">
+              <div class="c-avatar"><%= ri %></div>
+              <div class="c-body">
+                <div class="c-meta">
+                  <strong><%= rn != null ? rn : "?" %></strong>
+                  <span class="c-time"><%= rt %></span>
+                </div>
+                <div class="c-text"><%= rep.body %></div>
+                <% if (loggedId != null && (int)loggedId == rep.authorId) { %>
+                <div class="c-actions">
+                  <form method="post" action="<%= articleUrl %>" style="display:inline"
+                        onsubmit="return confirm('Kommentar löschen?')">
+                    <input type="hidden" name="_action" value="delete">
+                    <input type="hidden" name="commentId" value="<%= rep.id %>">
+                    <button type="submit" class="c-actions c-del">Löschen</button>
+                  </form>
+                </div>
+                <% } %>
+              </div>
+            </div>
+            <% } %>
+          </div>
+          <% } %>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- Neuer Kommentar -->
+      <% if (loggedId != null) { %>
+      <form method="post" action="<%= articleUrl %>" style="margin-top:8px">
+        <textarea class="comment-input" name="body" placeholder="Kommentar schreiben …" rows="3"></textarea>
+        <div class="comment-form-row">
+          <button type="submit" class="btn-cmt">Kommentieren</button>
+        </div>
+      </form>
+      <% } else { %>
+      <div class="login-prompt">
+        <a href="<%= request.getContextPath() %>/login?next=<%= articleUrl %>">Anmelden</a>, um zu kommentieren.
+      </div>
+      <% } %>
+    </div><!-- /comments -->
   </main>
 </div>
 
@@ -299,6 +475,12 @@ function toggleSidebar() {
   const c = nav.classList.contains('collapsed');
   document.getElementById('sidebar-icon').textContent  = c ? '›' : '‹';
   document.getElementById('sidebar-label').textContent = c ? 'Ausklappen' : 'Einklappen';
+}
+
+// ── Reply-Toggle ──
+function toggleReply(id) {
+  const f = document.getElementById('reply-' + id);
+  if (f) f.classList.toggle('open');
 }
 
 // TOC aus h3-Elementen aufbauen
