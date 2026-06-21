@@ -329,9 +329,20 @@
     </div>
 
     <div class="article-nav">
-      <span></span>
+      <%
+        de.myblog.model.Article prevA = (de.myblog.model.Article) request.getAttribute("prevArticle");
+        de.myblog.model.Article nextA = (de.myblog.model.Article) request.getAttribute("nextArticle");
+        if (prevA != null) { %>
+      <a href="<%= request.getContextPath() %>/<%= blogSlug %>/<%= prevA.slug %>">
+        <span class="nav-circle">‹</span><%= prevA.title %>
+      </a>
+      <% } else { %><span></span><% } %>
       <a class="home" href="<%= request.getContextPath() %>/<%= blogSlug %>/">⌂ Blog</a>
-      <span></span>
+      <% if (nextA != null) { %>
+      <a href="<%= request.getContextPath() %>/<%= blogSlug %>/<%= nextA.slug %>">
+        <%= nextA.title %><span class="nav-circle">›</span>
+      </a>
+      <% } else { %><span></span><% } %>
     </div>
 
     <!-- ── Kommentare ── -->

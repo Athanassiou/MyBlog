@@ -219,10 +219,13 @@ public class BlogPlatformServlet extends HttpServlet {
         List<Comment> comments = commentService.listByArticle(article.id);
         List<Tag>     tags     = tagService.listByArticle(article.id);
         article.tags = tags;
+        Article[] neighbours = articleService.findNeighbours(blog.id, article.publishedAt, article.id);
 
         req.setAttribute("blog",     blog);
         req.setAttribute("article",  article);
         req.setAttribute("comments", comments);
+        req.setAttribute("prevArticle", neighbours[0]);
+        req.setAttribute("nextArticle", neighbours[1]);
         req.getRequestDispatcher("/WEB-INF/views/article.jsp").forward(req, resp);
     }
 

@@ -90,6 +90,40 @@ public class ArticleService {
         }
     }
 
+    /**
+     * Gibt [prevArticle, nextArticle] zurück — jeweils null wenn nicht vorhanden.
+     * Reihenfolge: nach published_at ASC, id als Tiebreaker.
+     */
+    public Article[] findNeighbours(int blogId, java.time.LocalDateTime publishedAt, int articleId)
+            throws SQLException {
+        Article[] result = new Article[2];
+        if (publishedAt == null) return result;
+        String prevSql =
+            "SELECT id,blog_id,author_id,slug,title,subtitle,accent_color,status,created_at,published_at " +
+            "FROM articles WHERE blog_id=? AND status='published' " +
+            "AND (published_at < ? OR (published_at = ? AND id < ?)) " +
+            "ORDER BY published_at DESC, id DESC LIMIT 1";
+        String nextSql =
+            "SELECT id,blog_id,author_id,slug,title,subtitle,accent_color,status,created_at,published_at " +
+            "FROM articles WHERE blog_id=? AND status='published' " +
+            "AND (published_at > ? OR (published_at = ? AND id > ?)) " +
+            "ORDER BY published_at ASC, id ASC LIMIT 1";
+        try (Connection c = DB.get()) {
+            java.sql.Timestamp ts = java.sql.Timestamp.valueOf(publishedAt);
+            try (PreparedStatement ps = c.prepareStatement(prevSql)) {
+                ps.setInt(1, blogId); ps.setTimestamp(2, ts);
+                ps.setTimestamp(3, ts); ps.setInt(4, articleId);
+                try (ResultSet rs = ps.executeQuery()) { if (rs.next()) result[0] = mapArticle(rs); }
+            }
+            try (PreparedStatement ps = c.prepareStatement(nextSql)) {
+                ps.setInt(1, blogId); ps.setTimestamp(2, ts);
+                ps.setTimestamp(3, ts); ps.setInt(4, articleId);
+                try (ResultSet rs = ps.executeQuery()) { if (rs.next()) result[1] = mapArticle(rs); }
+            }
+        }
+        return result;
+    }
+
     // ─── Schreiben ───────────────────────────────────────────────
 
     public Article create(int blogId, int authorId, String title, String slug, String accentColor) throws SQLException {
