@@ -80,6 +80,8 @@
         padding:16px 20px; overflow-x:auto; margin:20px 0; }
   code { font-family:'JetBrains Mono',Consolas,monospace; font-size:13px; }
   hr { border:none; border-top:2px solid var(--border); margin:32px 0; }
+  #article-content a { color:var(--accent); text-decoration:underline; text-decoration-color:var(--accent-dim); }
+  #article-content a:hover { text-decoration-color:var(--accent); }
   img { max-width:100%; border-radius:4px; }
   .img-row { display:flex; gap:16px; margin:20px 0 6px; flex-wrap:wrap; }
   table { border-collapse:collapse; width:100%; margin:16px 0; font-size:14px; font-family:inherit; }
@@ -250,9 +252,15 @@
             try {
               org.json.JSONObject data = new org.json.JSONObject(b.data);
               switch (b.type) {
-                case "paragraph":
-                  out.print("<p>" + data.optString("text", "") + "</p>");
+                case "paragraph": {
+                  String ptext = data.optString("text", "");
+                  // Bare URLs (no protocol) in href attributes → prepend https://
+                  ptext = ptext.replaceAll(
+                      "href=\"(?!https?://|//|/|#|mailto:|tel:)([^\"]+)\"",
+                      "href=\"https://$1\"");
+                  out.print("<p>" + ptext + "</p>");
                   break;
+                }
                 case "header":
                   int level = data.optInt("level", 2);
                   String text = data.optString("text", "");
@@ -555,6 +563,11 @@ function toggleReply(id) {
     heads.forEach(s => obs.observe(s));
   }
 })();
+
+document.querySelectorAll('#article-content a').forEach(a => {
+  a.target = '_blank';
+  a.rel    = 'noopener';
+});
 </script>
 </body>
 </html>

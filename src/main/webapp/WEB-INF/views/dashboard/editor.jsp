@@ -265,6 +265,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest/dist/code.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest/dist/delimiter.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest/dist/image.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/editorjs-hyperlink@latest/dist/bundle.js"></script>
 
 <!-- ── Custom EditorJS Tools ── -->
 <script>
@@ -494,6 +495,15 @@ const editor = new EditorJS({
     imagePair: {
       class: ImagePairTool,
       config: { uploadUrl: '<%= request.getContextPath() %>/upload' }
+    },
+    hyperlink: {
+      class: Hyperlink,
+      config: {
+        shortcut: 'CMD+L',
+        target: '_blank',
+        rel: 'noopener',
+        validate: false,
+      }
     },
     pdfLink:  { class: PdfLinkTool },
     timeline: { class: TimelineTool },
