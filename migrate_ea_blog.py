@@ -19,7 +19,7 @@ BLOG_DESC     = ("Biographischer Entwicklerblog von Eleutherios Athanassiou — 
 BLOG_ACCENT   = "#e5a00d"
 AUTHOR_ID     = 2        # user 'akis'
 
-# (dir_name, article_slug, year, month, day)
+# (dir_name, article_slug, year, month, day [, explicit_html_filename])
 ARTICLES = [
     ('01_bubblesort',       'bubblesort',       2022, 11,  1),
     ('02_days2go',          'days2go',          2022, 12,  1),
@@ -38,6 +38,8 @@ ARTICLES = [
     ('15_opencv',           'opencv',           2023, 11,  1),
     ('16_GPI',              'gpi',              2024,  2,  1),
     ('17_browser',          'browser',          2024,  2, 15),
+    ('17_browser',          'browser-2',        2024,  2, 16, 'browser-2.html'),
+    ('17_browser',          'browser-3',        2024,  2, 17, 'browser-3.html'),
     ('18_MediaBrowser',     'mediabrowser',     2024,  5,  1),
     ('19_ubuntu',           'ubuntu',           2024,  8,  1),
     ('20_mynetflix',        'mynetflix',        2025,  2,  1),
@@ -447,25 +449,34 @@ def main():
     total_articles = 0
     total_blocks   = 0
 
-    for dir_name, article_slug, year, month, day in ARTICLES:
+    for entry in ARTICLES:
+        dir_name, article_slug, year, month, day = entry[:5]
+        explicit_html = entry[5] if len(entry) > 5 else None
+
         article_dir = os.path.join(BLOG_EA_DIR, dir_name)
         if not os.path.isdir(article_dir):
             print(f"  SKIP {dir_name}: Verzeichnis nicht gefunden")
             continue
 
-        # Find the main article HTML file: must contain article-topline
-        html_files = [f for f in os.listdir(article_dir) if f.endswith('.html')]
-        html_file = None
-        for hf in sorted(html_files):
-            candidate = os.path.join(article_dir, hf)
-            with open(candidate, encoding='utf-8', errors='ignore') as f:
-                sample = f.read(4096)
-            if 'article-topline' in sample:
-                html_file = candidate
-                break
-        if html_file is None:
-            print(f"  SKIP {dir_name}: kein HTML mit article-topline")
-            continue
+        if explicit_html:
+            html_file = os.path.join(article_dir, explicit_html)
+            if not os.path.exists(html_file):
+                print(f"  SKIP {dir_name}/{explicit_html}: Datei nicht gefunden")
+                continue
+        else:
+            # Find the main article HTML file: must contain article-topline
+            html_files = [f for f in os.listdir(article_dir) if f.endswith('.html')]
+            html_file = None
+            for hf in sorted(html_files):
+                candidate = os.path.join(article_dir, hf)
+                with open(candidate, encoding='utf-8', errors='ignore') as f:
+                    sample = f.read(4096)
+                if 'article-topline' in sample:
+                    html_file = candidate
+                    break
+            if html_file is None:
+                print(f"  SKIP {dir_name}: kein HTML mit article-topline")
+                continue
         with open(html_file, encoding='utf-8') as f:
             html_content = f.read()
 
