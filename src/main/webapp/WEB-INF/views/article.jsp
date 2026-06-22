@@ -11,6 +11,8 @@
   de.myblog.model.Blog artBlog = (de.myblog.model.Blog) request.getAttribute("blog");
   String  blogSlug = artBlog != null ? artBlog.slug : "";
   String accent = (article != null && article.accentColor != null) ? article.accentColor : "#e5a00d";
+  Article prevA = (Article) request.getAttribute("prevArticle");
+  Article nextA = (Article) request.getAttribute("nextArticle");
 %>
 <title><%= article != null ? article.title : "Artikel" %> · MyBlog</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -208,7 +210,19 @@
     </div>
 
     <div class="title-row">
+      <% if (prevA != null) { %>
+      <a class="title-nav" href="<%= request.getContextPath() %>/<%= blogSlug %>/<%= prevA.slug %>"
+         title="<%= prevA.title %>">‹</a>
+      <% } else { %>
+      <span class="title-nav" style="visibility:hidden">‹</span>
+      <% } %>
       <h1><%= article != null ? article.title : "" %></h1>
+      <% if (nextA != null) { %>
+      <a class="title-nav" href="<%= request.getContextPath() %>/<%= blogSlug %>/<%= nextA.slug %>"
+         title="<%= nextA.title %>">›</a>
+      <% } else { %>
+      <span class="title-nav" style="visibility:hidden">›</span>
+      <% } %>
     </div>
     <% if (article != null && article.subtitle != null && !article.subtitle.isEmpty()) { %>
     <p class="subtitle"><%= article.subtitle %></p>
@@ -329,10 +343,7 @@
     </div>
 
     <div class="article-nav">
-      <%
-        de.myblog.model.Article prevA = (de.myblog.model.Article) request.getAttribute("prevArticle");
-        de.myblog.model.Article nextA = (de.myblog.model.Article) request.getAttribute("nextArticle");
-        if (prevA != null) { %>
+      <% if (prevA != null) { %>
       <a href="<%= request.getContextPath() %>/<%= blogSlug %>/<%= prevA.slug %>">
         <span class="nav-circle">‹</span><%= prevA.title %>
       </a>
