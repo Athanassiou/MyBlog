@@ -373,6 +373,9 @@ def parse_blocks(html_content, source_dir, article_slug, dest_dir):
             if url:
                 blocks.append({'type': 'image', 'data': {'file': {'url': url}, 'caption': alt}})
 
+        elif tag_name == 'table':
+            blocks.append({'type': 'html', 'data': {'html': elem.strip()}})
+
         elif tag_name == 'div':
             blocks.extend(parse_div(elem, source_dir, article_slug, dest_dir))
 

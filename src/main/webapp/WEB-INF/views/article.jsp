@@ -82,6 +82,10 @@
   hr { border:none; border-top:2px solid var(--border); margin:32px 0; }
   img { max-width:100%; border-radius:4px; }
   .img-row { display:flex; gap:16px; margin:20px 0 6px; flex-wrap:wrap; }
+  table { border-collapse:collapse; width:100%; margin:16px 0; font-size:14px; }
+  th, td { border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top; }
+  th { background:var(--accent-dim); font-weight:700; }
+  tr:nth-child(even) td { background:#fafafa; }
   .img-row img { flex:1; min-width:0; width:0; }
 
   /* ── PDF-Link ── */
@@ -334,6 +338,9 @@
                   out.print("<span class=\"infobox-icon\">"+ibi+"</span>");
                   out.print("<div class=\"infobox-text\">"+ibt+"</div>");
                   out.print("</div>");
+                  break;
+                case "html":
+                  out.print(data.optString("html",""));
                   break;
               }
             } catch (Exception ignored) {}
