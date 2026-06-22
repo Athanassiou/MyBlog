@@ -147,6 +147,8 @@
     <% if (!isNew) { %>
     <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/">← Zurück</a>
     <button class="btn btn-primary" onclick="saveArticle()">Speichern</button>
+    <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= article.id %>/preview"
+       target="_blank" onclick="return saveFirst(this)">Vorschau</a>
     <% if ("published".equals(article.status)) { %>
     <form method="post" action="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= article.id %>/unpublish" style="display:inline">
       <button class="btn btn-unpublish" type="submit">Zurückziehen</button>
@@ -512,6 +514,12 @@ const editor = new EditorJS({
 });
 
 // ── Speichern ──
+async function saveFirst(link) {
+  await saveArticle();
+  window.open(link.href, '_blank');
+  return false;
+}
+
 async function saveArticle() {
   const data   = await editor.save();
   document.getElementById('blocks-input').value = JSON.stringify(data);

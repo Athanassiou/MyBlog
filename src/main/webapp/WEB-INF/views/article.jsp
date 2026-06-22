@@ -13,6 +13,7 @@
   String accent = (article != null && article.accentColor != null) ? article.accentColor : "#e5a00d";
   Article prevA = (Article) request.getAttribute("prevArticle");
   Article nextA = (Article) request.getAttribute("nextArticle");
+  boolean previewMode = Boolean.TRUE.equals(request.getAttribute("previewMode"));
 %>
 <title><%= article != null ? article.title : "Artikel" %> · MyBlog</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -83,6 +84,15 @@
   #article-content a { color:var(--accent); text-decoration:underline; text-decoration-color:var(--accent-dim); }
   #article-content a:hover { text-decoration-color:var(--accent); }
   img { max-width:100%; border-radius:4px; }
+  #article-content img:not(a img) { cursor:zoom-in; }
+  .lb-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,.88);
+    display:flex; align-items:center; justify-content:center;
+    z-index:9000; cursor:zoom-out; animation:lb-in .15s ease;
+  }
+  @keyframes lb-in { from { opacity:0; } to { opacity:1; } }
+  .lb-overlay img { max-width:92vw; max-height:92vh; border-radius:6px;
+    box-shadow:0 8px 48px rgba(0,0,0,.6); cursor:default; }
   .img-row { display:flex; gap:16px; margin:20px 0 6px; flex-wrap:wrap; }
   table { border-collapse:collapse; width:100%; margin:16px 0; font-size:14px; font-family:inherit; }
   th, td { border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top; font-family:inherit; }
@@ -202,6 +212,15 @@
   </nav>
 
   <main>
+    <% if (previewMode) { %>
+    <div style="background:#fffbeb;border:1px solid #fbbf24;border-radius:5px;padding:10px 18px;
+                margin-bottom:24px;font-size:13px;display:flex;align-items:center;gap:12px;">
+      <span style="font-size:16px;">✎</span>
+      <span><strong>Vorschau</strong> — Dieser Artikel ist noch nicht veröffentlicht.</span>
+      <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= article != null ? article.id : "" %>"
+         style="margin-left:auto;color:#92400e;font-weight:600;text-decoration:none;">← Editor</a>
+    </div>
+    <% } %>
     <div class="article-topline">
       <div class="article-meta">
         <%
@@ -567,6 +586,24 @@ function toggleReply(id) {
 document.querySelectorAll('#article-content a').forEach(a => {
   a.target = '_blank';
   a.rel    = 'noopener';
+});
+
+// ── Lightbox ──
+document.querySelectorAll('#article-content img').forEach(img => {
+  if (img.closest('a')) return;
+  img.addEventListener('click', () => {
+    const ov = document.createElement('div');
+    ov.className = 'lb-overlay';
+    const big = document.createElement('img');
+    big.src = img.src;
+    big.alt = img.alt;
+    ov.appendChild(big);
+    const close = () => ov.remove();
+    ov.addEventListener('click', close);
+    big.addEventListener('click', e => e.stopPropagation());
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); }, { once: true });
+    document.body.appendChild(ov);
+  });
 });
 </script>
 </body>

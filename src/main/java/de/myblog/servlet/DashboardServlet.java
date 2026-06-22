@@ -94,19 +94,32 @@ public class DashboardServlet extends HttpServlet {
                     req.getRequestDispatcher("/WEB-INF/views/dashboard/blog-settings.jsp").forward(req, resp);
 
                 } else {
-                    // /{id} oder /{id}/...  — nur erste Zahl nehmen
-                    int id = Integer.parseInt(sub.split("/")[0]);
+                    String[] subParts = sub.split("/");
+                    int id = Integer.parseInt(subParts[0]);
+                    boolean isPreview = subParts.length > 1 && "preview".equals(subParts[1]);
                     Article article = articleService.findById(id);
                     if (article == null || article.blogId != blog.id) { resp.sendError(404); return; }
                     article.tags = tagService.listByArticle(article.id);
-                    String role = roleIn(blog.id, req);
-                    req.setAttribute("blog",         blog);
-                    req.setAttribute("article",      article);
-                    req.setAttribute("role",         role);
-                    req.setAttribute("canPublish",   canPublish(role));
-                    req.setAttribute("canManage",    canManage(role));
-                    req.setAttribute("blogTagNames", tagService.listNamesByBlog(blog.id));
-                    req.getRequestDispatcher("/WEB-INF/views/dashboard/editor.jsp").forward(req, resp);
+
+                    if (isPreview) {
+                        Article[] nb = articleService.findNeighbours(blog.id, article.publishedAt, article.id);
+                        req.setAttribute("blog",        blog);
+                        req.setAttribute("article",     article);
+                        req.setAttribute("comments",    java.util.Collections.emptyList());
+                        req.setAttribute("prevArticle", nb[0]);
+                        req.setAttribute("nextArticle", nb[1]);
+                        req.setAttribute("previewMode", Boolean.TRUE);
+                        req.getRequestDispatcher("/WEB-INF/views/article.jsp").forward(req, resp);
+                    } else {
+                        String role = roleIn(blog.id, req);
+                        req.setAttribute("blog",         blog);
+                        req.setAttribute("article",      article);
+                        req.setAttribute("role",         role);
+                        req.setAttribute("canPublish",   canPublish(role));
+                        req.setAttribute("canManage",    canManage(role));
+                        req.setAttribute("blogTagNames", tagService.listNamesByBlog(blog.id));
+                        req.getRequestDispatcher("/WEB-INF/views/dashboard/editor.jsp").forward(req, resp);
+                    }
                 }
             }
         } catch (NumberFormatException e) {
