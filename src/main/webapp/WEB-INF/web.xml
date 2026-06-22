@@ -91,18 +91,24 @@
     <env-entry>
         <env-entry-name>DB_URL</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>jdbc:postgresql://localhost:5432/myblog_db</env-entry-value>
+        <env-entry-value>DB_URL_PLACEHOLDER</env-entry-value>
+    </env-entry>
+
+    <env-entry>
+        <env-entry-name>ROOT</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>ROOT_PLACEHOLDER</env-entry-value>
     </env-entry>
 
     <!-- ─── Error Pages ──────────────────────────────────────── -->
 
     <error-page>
         <error-code>404</error-code>
-        <location>/WEB-INF/views/error/404.html</location>
+        <location>/WEB-INF/views/error/404.jsp</location>
     </error-page>
     <error-page>
         <error-code>500</error-code>
-        <location>/WEB-INF/views/error/500.html</location>
+        <location>/WEB-INF/views/error/500.jsp</location>
     </error-page>
 
 </web-app>

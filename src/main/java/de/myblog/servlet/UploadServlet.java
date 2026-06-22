@@ -5,6 +5,8 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.*;
 import org.json.JSONObject;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import java.io.File;
 import java.io.IOException;
 
@@ -15,7 +17,16 @@ import java.io.IOException;
 )
 public class UploadServlet extends HttpServlet {
 
-    static final String UPLOAD_DIR = System.getProperty("user.home") + "/myblog-uploads/";
+    static final String UPLOAD_DIR = resolveUploadDir();
+
+    private static String resolveUploadDir() {
+        try {
+            Context env = (Context) new InitialContext().lookup("java:comp/env");
+            String root = (String) env.lookup("ROOT");
+            if (root != null && !root.isBlank()) return root.endsWith("/") ? root : root + "/";
+        } catch (Exception ignored) {}
+        return System.getProperty("user.home") + "/myblog-uploads/";
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
