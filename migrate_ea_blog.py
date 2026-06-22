@@ -37,7 +37,7 @@ ARTICLES = [
     ('14_indexing',         'indexing',         2023, 10, 20),
     ('15_opencv',           'opencv',           2023, 11,  1),
     ('16_GPI',              'gpi',              2024,  2,  1),
-    ('17_browser',          'browser',          2024,  2, 15),
+    ('17_browser',          'browser',          2024,  2, 15, 'browser.html'),
     ('17_browser',          'browser-2',        2024,  2, 16, 'browser-2.html'),
     ('17_browser',          'browser-3',        2024,  2, 17, 'browser-3.html'),
     ('18_MediaBrowser',     'mediabrowser',     2024,  5,  1),
@@ -357,8 +357,12 @@ def parse_blocks(html_content, source_dir, article_slug, dest_dir):
         elif tag_name == 'pre':
             code_inner = strip_outer_tag(elem)
             code_inner = re.sub(r'</?code[^>]*>', '', code_inner)
-            code_inner = html_mod.unescape(code_inner)
-            blocks.append({'type': 'code', 'data': {'code': code_inner}})
+            code_inner = html_mod.unescape(code_inner).strip()
+            # <pre> containing an actual PDF-link with image → render as HTML, not code
+            if re.match(r'<a\s[^>]*href="[^"]*\.pdf"', code_inner, re.I):
+                blocks.append({'type': 'html', 'data': {'html': code_inner}})
+            else:
+                blocks.append({'type': 'code', 'data': {'code': code_inner}})
 
         elif tag_name == 'ul':
             blocks.extend(parse_list(elem, 'unordered'))

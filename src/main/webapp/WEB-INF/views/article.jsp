@@ -82,8 +82,8 @@
   hr { border:none; border-top:2px solid var(--border); margin:32px 0; }
   img { max-width:100%; border-radius:4px; }
   .img-row { display:flex; gap:16px; margin:20px 0 6px; flex-wrap:wrap; }
-  table { border-collapse:collapse; width:100%; margin:16px 0; font-size:14px; }
-  th, td { border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top; }
+  table { border-collapse:collapse; width:100%; margin:16px 0; font-size:14px; font-family:inherit; }
+  th, td { border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top; font-family:inherit; }
   th { background:var(--accent-dim); font-weight:700; }
   tr:nth-child(even) td { background:#fafafa; }
   .img-row img { flex:1; min-width:0; width:0; }
@@ -274,9 +274,12 @@
                 case "quote":
                   out.print("<blockquote>" + data.optString("text","") + "</blockquote>");
                   break;
-                case "code":
-                  out.print("<pre><code>" + data.optString("code","") + "</code></pre>");
+                case "code": {
+                  String raw = data.optString("code","")
+                      .replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
+                  out.print("<pre><code>" + raw + "</code></pre>");
                   break;
+                }
                 case "delimiter":
                   out.print("<hr>");
                   break;
@@ -527,12 +530,14 @@ function toggleReply(id) {
   const nav     = document.getElementById('sidebar');
   const section = nav.querySelector('.nav-section');
   const heads   = document.querySelectorAll('h3[id]');
+  let after = section;
   heads.forEach(h => {
     const a = document.createElement('a');
     a.className = 'toc-link';
     a.href = '#' + h.id;
     a.textContent = h.textContent;
-    section.after(a);
+    after.after(a);
+    after = a;
   });
 
   // Scroll-Spy
