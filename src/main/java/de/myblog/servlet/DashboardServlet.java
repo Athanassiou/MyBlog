@@ -160,6 +160,11 @@ public class DashboardServlet extends HttpServlet {
                 if (!canManage(role)) { resp.sendError(403); return; }
                 handleBlogSettings(req, resp, blog);
 
+            } else if ("delete-blog".equals(sub)) {
+                if (!canManage(role)) { resp.sendError(403); return; }
+                blogService.delete(blog.id);
+                resp.sendRedirect(req.getContextPath() + "/dashboard/");
+
             } else if (sub.matches("\\d+")) {
                 handleSaveArticle(req, resp, blog, Integer.parseInt(sub));
 

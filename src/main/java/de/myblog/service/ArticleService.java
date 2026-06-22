@@ -38,6 +38,30 @@ public class ArticleService {
         return list;
     }
 
+    /** Erstes Bild (image-Block) pro Artikel — Map articleId → imageUrl. */
+    public java.util.Map<Integer,String> findFirstImages(java.util.List<Integer> articleIds)
+            throws SQLException {
+        java.util.Map<Integer,String> map = new java.util.HashMap<>();
+        if (articleIds == null || articleIds.isEmpty()) return map;
+        try (Connection c = DB.get();
+             PreparedStatement ps = c.prepareStatement(
+                 "SELECT DISTINCT ON (article_id) article_id, " +
+                 "  CASE type " +
+                 "    WHEN 'image'     THEN data->'file'->>'url' " +
+                 "    WHEN 'imagePair' THEN data->'left'->>'url' " +
+                 "  END AS url " +
+                 "FROM blocks WHERE article_id = ANY(?) AND type IN ('image','imagePair') " +
+                 "  AND (  (type='image'     AND data->'file'->>'url' IS NOT NULL) " +
+                 "       OR (type='imagePair' AND data->'left'->>'url' IS NOT NULL)) " +
+                 "ORDER BY article_id, position")) {
+            ps.setArray(1, c.createArrayOf("integer", articleIds.toArray(new Integer[0])));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) map.put(rs.getInt("article_id"), rs.getString("url"));
+            }
+        }
+        return map;
+    }
+
     public List<Article> listByBlog(int blogId) throws SQLException {
         List<Article> list = new ArrayList<>();
         try (Connection c = DB.get();

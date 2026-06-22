@@ -86,9 +86,9 @@
       </div>
 
       <div class="field">
-        <label for="description">Beschreibung</label>
-        <input type="text" id="description" name="description"
-               value="<%= blog != null && blog.description != null ? blog.description : "" %>">
+        <label for="description">Beschreibung (HTML erlaubt)</label>
+        <textarea id="description" name="description" rows="5"
+                  style="resize:vertical"><%= blog != null && blog.description != null ? blog.description : "" %></textarea>
       </div>
 
       <div class="field">
@@ -114,6 +114,19 @@
         <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/" class="btn btn-ghost">Abbrechen</a>
         <button type="submit" class="btn btn-primary">Speichern</button>
       </div>
+    </form>
+  </div>
+
+  <!-- ── Gefahrenzone ── -->
+  <div class="card" style="margin-top:28px;border-color:#fca5a5;">
+    <h3 style="font-size:14px;font-weight:700;color:#dc2626;margin-bottom:12px;">Gefahrenzone</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">
+      Den Blog <strong><%= blogName %></strong> und alle dazugehörigen Artikel unwiderruflich löschen.
+    </p>
+    <form method="post" action="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/delete-blog"
+          onsubmit="return confirm('Blog «<%= blogName %>» und alle Artikel wirklich löschen? Das kann nicht rückgängig gemacht werden.')">
+      <button type="submit" class="btn"
+              style="background:#dc2626;color:#fff;border-color:#dc2626;">Blog löschen</button>
     </form>
   </div>
 </div>

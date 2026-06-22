@@ -56,14 +56,18 @@ public class BlogPlatformServlet extends HttpServlet {
                 if (q != null && !q.isBlank())
                     showSearch(req, resp, parts[0], q.trim());
                 else
-                    showBlogIndex(req, resp, parts[0]);
+                    showBlogHome(req, resp, parts[0]);
 
             } else {
                 String blogSlug = parts[0];
-                String sub      = parts[1];   // "feed" | "tag/xyz" | article-slug
+                String sub      = parts[1];   // "feed" | "list" | "tag/xyz" | article-slug
 
                 if ("feed".equals(sub)) {
                     showRss(req, resp, blogSlug);
+                } else if ("home".equals(sub)) {
+                    resp.sendRedirect(req.getContextPath() + "/" + blogSlug + "/");
+                } else if ("list".equals(sub)) {
+                    showBlogIndex(req, resp, blogSlug);
                 } else if (sub.startsWith("tag/")) {
                     showTagFilter(req, resp, blogSlug, sub.substring(4));
                 } else {
@@ -141,6 +145,33 @@ public class BlogPlatformServlet extends HttpServlet {
         req.setAttribute("articles", articles);
         req.setAttribute("tagNames", tagService.listNamesByBlog(blog.id));
         req.getRequestDispatcher("/WEB-INF/views/blog-index.jsp").forward(req, resp);
+    }
+
+    private void showBlogHome(HttpServletRequest req, HttpServletResponse resp, String blogSlug)
+            throws Exception {
+        Blog blog = findPublicBlog(blogSlug, resp); if (blog == null) return;
+
+        List<Article> articles = articleService.listByBlog(blog.id);
+        articles.removeIf(a -> !"published".equals(a.status));
+        articles.sort((a, b) -> {
+            if (a.publishedAt == null) return 1;
+            if (b.publishedAt == null) return -1;
+            return b.publishedAt.compareTo(a.publishedAt);
+        });
+
+        int split = Math.min(6, articles.size());
+        List<Article> recent = articles.subList(0, split);
+        List<Article> older  = articles.subList(split, articles.size());
+
+        java.util.List<Integer> ids = new java.util.ArrayList<>();
+        for (Article a : articles) ids.add(a.id);
+        java.util.Map<Integer,String> images = articleService.findFirstImages(ids);
+
+        req.setAttribute("blog",    blog);
+        req.setAttribute("recent",  recent);
+        req.setAttribute("older",   older);
+        req.setAttribute("images",  images);
+        req.getRequestDispatcher("/WEB-INF/views/blog-home.jsp").forward(req, resp);
     }
 
     private void showSearch(HttpServletRequest req, HttpServletResponse resp,

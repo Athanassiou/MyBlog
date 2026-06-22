@@ -121,6 +121,14 @@ public class BlogService {
         }
     }
 
+    public void delete(int blogId) throws SQLException {
+        try (Connection c = DB.get();
+             PreparedStatement ps = c.prepareStatement("DELETE FROM blogs WHERE id=?")) {
+            ps.setInt(1, blogId);
+            ps.executeUpdate();
+        }
+    }
+
     private Blog mapBlog(ResultSet rs) throws SQLException {
         Blog b = new Blog();
         b.id                 = rs.getInt("id");

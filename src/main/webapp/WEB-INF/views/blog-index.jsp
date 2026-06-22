@@ -67,6 +67,7 @@
     <a href="<%= request.getContextPath() %>/">← Alle Blogs</a>
     <% if (blog != null) { %>
     &nbsp;·&nbsp;<a href="<%= request.getContextPath() %>/<%= blogSlug %>/feed" class="rss-link">RSS ↗</a>
+    &nbsp;·&nbsp;<a href="<%= request.getContextPath() %>/<%= blogSlug %>/" class="rss-link">⊞ Schaufenster</a>
     <% } %>
   </div>
   <div class="header-row">
