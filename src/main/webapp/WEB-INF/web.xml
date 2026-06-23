@@ -91,13 +91,13 @@
     <env-entry>
         <env-entry-name>DB_URL</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>DB_URL_PLACEHOLDER</env-entry-value>
+        <env-entry-value>jdbc:postgresql://localhost:5432/myblog_db</env-entry-value>
     </env-entry>
 
     <env-entry>
         <env-entry-name>ROOT</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>ROOT_PLACEHOLDER</env-entry-value>
+        <env-entry-value>/opt/tomcat/webapps/ROOT</env-entry-value>
     </env-entry>
 
     <!-- ─── Error Pages ──────────────────────────────────────── -->
