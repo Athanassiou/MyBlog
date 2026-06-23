@@ -49,9 +49,9 @@
         <servlet-name>UploadServlet</servlet-name>
         <servlet-class>de.myblog.servlet.UploadServlet</servlet-class>
         <multipart-config>
-            <file-size-threshold>1048576</file-size-threshold>
             <max-file-size>20971520</max-file-size>
             <max-request-size>26214400</max-request-size>
+            <file-size-threshold>1048576</file-size-threshold>
         </multipart-config>
     </servlet>
     <servlet-mapping>
