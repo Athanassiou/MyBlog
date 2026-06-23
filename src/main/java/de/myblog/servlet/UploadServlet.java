@@ -47,11 +47,15 @@ public class UploadServlet extends HttpServlet {
             return;
         }
 
-        File dest = uniqueFile(sanitize(part.getSubmittedFileName()));
+        String blogSlug = req.getParameter("blogSlug");
+        if (blogSlug == null || blogSlug.isBlank()) blogSlug = "ea-blog";
+        blogSlug = blogSlug.replaceAll("[^a-zA-Z0-9_-]", "");
+
+        File dest = uniqueFile(blogSlug, sanitize(part.getSubmittedFileName()));
         dest.getParentFile().mkdirs();
         part.write(dest.getAbsolutePath());
 
-        String url = req.getContextPath() + "/files/" + dest.getName();
+        String url = req.getContextPath() + "/files/" + blogSlug + "/" + dest.getName();
         resp.getWriter().write(new JSONObject()
             .put("success", 1)
             .put("file", new JSONObject().put("url", url))
@@ -67,15 +71,16 @@ public class UploadServlet extends HttpServlet {
     }
 
     /** Gibt eine Datei zurück die noch nicht existiert — bei Kollision wird -1, -2, … angehängt. */
-    private File uniqueFile(String name) {
+    private File uniqueFile(String blogSlug, String name) {
         int dot = name.lastIndexOf('.');
         String base = dot > 0 ? name.substring(0, dot) : name;
         String ext  = dot > 0 ? name.substring(dot)    : "";
 
-        File f = new File(UPLOAD_DIR + name);
+        String dir = UPLOAD_DIR + blogSlug + "/";
+        File f = new File(dir + name);
         int counter = 1;
         while (f.exists()) {
-            f = new File(UPLOAD_DIR + base + "-" + counter + ext);
+            f = new File(dir + base + "-" + counter + ext);
             counter++;
         }
         return f;

@@ -492,11 +492,11 @@ const editor = new EditorJS({
     delimiter: { class: Delimiter },
     image: {
       class: ImageTool,
-      config: { endpoints: { byFile: '<%= request.getContextPath() %>/upload' } }
+      config: { endpoints: { byFile: '<%= request.getContextPath() %>/upload?blogSlug=<%= blogSlug %>' } }
     },
     imagePair: {
       class: ImagePairTool,
-      config: { uploadUrl: '<%= request.getContextPath() %>/upload' }
+      config: { uploadUrl: '<%= request.getContextPath() %>/upload?blogSlug=<%= blogSlug %>' }
     },
     hyperlink: {
       class: Hyperlink,
