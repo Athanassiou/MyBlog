@@ -56,7 +56,7 @@
 
   /* ── Shelf (horizontal scroll) ── */
   .shelf {
-    display:flex; overflow-x:auto; gap:16px;
+    display:flex; overflow-x:auto; gap:24px;
     padding:4px 2px 18px; scroll-snap-type:x mandatory;
     -webkit-overflow-scrolling:touch;
   }
@@ -66,25 +66,25 @@
 
   /* ── Große Karten (neuere Beiträge) ── */
   .card-lg {
-    flex:0 0 calc((100% - 32px) / 3); min-width:260px;
+    flex:0 0 calc((100% - 48px) / 3); min-width:220px; min-height:420px;
     background:#fff; border-radius:8px; overflow:hidden;
     box-shadow:0 3px 10px rgba(0,0,0,.10);
     text-decoration:none; color:inherit; display:flex; flex-direction:column;
     scroll-snap-align:start; transition:box-shadow .2s, transform .2s;
   }
   .card-lg:hover { box-shadow:0 8px 24px rgba(0,0,0,.18); transform:translateY(-3px); }
-  .card-lg-img { width:100%; height:220px; object-fit:cover; display:block; flex-shrink:0; }
+  .card-lg-img { width:100%; flex:1; object-fit:cover; display:block; opacity:.8; min-height:0; }
   .card-lg-placeholder {
-    width:100%; height:220px; flex-shrink:0; background:#1c1c1c;
+    flex:1; min-height:0; background:#1c1c1c;
     display:flex; align-items:flex-end; padding:20px;
   }
   .card-lg-placeholder span { color:var(--accent); font-size:18px; font-weight:800; line-height:1.3; }
-  .card-lg-body { padding:16px 18px 18px; flex:1; display:flex; flex-direction:column; }
-  .card-lg-body h3 { font-size:15px; font-weight:700; margin-bottom:4px; color:#111; line-height:1.35; }
-  .card-lg-date { font-size:11px; color:var(--muted); margin-bottom:10px; }
+  .card-lg-body { padding:20px 22px 20px; flex:1; display:flex; flex-direction:column; }
+  .card-lg-body h3 { font-size:17px; font-weight:700; margin-bottom:6px; color:#111; line-height:1.35; }
+  .card-lg-date { font-size:12px; color:var(--muted); margin-bottom:12px; }
   .card-lg-body p {
-    font-size:13px; color:#444; margin:0 0 14px; line-height:1.55; flex:1;
-    display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden;
+    font-size:14px; color:#444; margin:0 0 14px; line-height:1.6; flex:1;
+    display:-webkit-box; -webkit-line-clamp:8; -webkit-box-orient:vertical; overflow:hidden;
   }
   .card-footer { display:flex; align-items:center; justify-content:space-between; margin-top:auto; }
   .card-btn { padding:5px 12px; background:#fff; border:1px solid #ccc;
@@ -100,7 +100,7 @@
     scroll-snap-align:start; transition:box-shadow .2s, transform .2s;
   }
   .card-sm:hover { box-shadow:0 5px 16px rgba(0,0,0,.16); transform:translateY(-2px); }
-  .card-sm-img { width:100%; height:110px; object-fit:cover; display:block; }
+  .card-sm-img { width:100%; height:110px; object-fit:cover; display:block; opacity:.8; }
   .card-sm-placeholder {
     width:100%; height:110px; background:#dde;
     display:flex; align-items:center; justify-content:center; font-size:28px; color:#999;
@@ -134,7 +134,7 @@
 
 <div class="home-header">
   <div class="breadcrumb">
-    <a href="<%= ctx %>/">← Alle Blogs</a>
+    <a href="/">⌂ athanassiou.me</a>
     &nbsp;·&nbsp;
     <a href="<%= ctx %>/<%= slug %>/feed" style="opacity:.65">RSS ↗</a>
   </div>

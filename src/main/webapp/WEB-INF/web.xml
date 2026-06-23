@@ -7,6 +7,17 @@
     <display-name>MyBlog</display-name>
     <description>Multi-Blog CMS Platform</description>
 
+    <!-- ─── Session-Filter ────────────────────────────────────── -->
+
+    <filter>
+        <filter-name>SessionFilter</filter-name>
+        <filter-class>de.myblog.servlet.SessionFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SessionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <!-- ─── Servlets ──────────────────────────────────────────── -->
 
     <servlet>
@@ -77,6 +88,15 @@
         <url-pattern>/files/*</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>de.myblog.servlet.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
     <!-- ─── Session ──────────────────────────────────────────── -->
 
     <session-config>
@@ -99,6 +119,32 @@
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>/opt/tomcat/webapps/ROOT</env-entry-value>
     </env-entry>
+
+    <!-- ─── Container-Managed Auth ───────────────────────────── -->
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Geschützter Bereich</web-resource-name>
+            <url-pattern>/dashboard/*</url-pattern>
+            <url-pattern>/admin/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>USER</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <realm-name>MyBlog</realm-name>
+        <form-login-config>
+            <form-login-page>/login.jsp</form-login-page>
+            <form-error-page>/login-error.jsp</form-error-page>
+        </form-login-config>
+    </login-config>
+
+    <security-role>
+        <role-name>USER</role-name>
+    </security-role>
 
     <!-- ─── Error Pages ──────────────────────────────────────── -->
 

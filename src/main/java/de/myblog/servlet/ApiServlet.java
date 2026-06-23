@@ -28,6 +28,20 @@ public class ApiServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String[] parts = req.getPathInfo().replaceFirst("^/", "").split("/");
+        // /api/session
+        if (parts.length == 1 && parts[0].equals("session")) {
+            HttpSession s = req.getSession(false);
+            if (s != null && s.getAttribute("userId") != null) {
+                json(resp, 200, new JSONObject()
+                        .put("loggedIn", true)
+                        .put("displayName", s.getAttribute("displayName"))
+                        .put("username", s.getAttribute("username"))
+                        .toString());
+            } else {
+                json(resp, 200, new JSONObject().put("loggedIn", false).toString());
+            }
+            return;
+        }
         // /api/article/{id}/blocks
         if (parts.length == 3 && parts[0].equals("article") && parts[2].equals("blocks")) {
             try {

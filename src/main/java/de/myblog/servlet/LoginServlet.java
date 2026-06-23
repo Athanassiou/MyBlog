@@ -14,12 +14,11 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session != null && session.getAttribute("userId") != null) {
+        if (req.getUserPrincipal() != null) {
             resp.sendRedirect(req.getContextPath() + "/dashboard/");
             return;
         }
-        req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
+        req.getRequestDispatcher("/login.jsp").forward(req, resp);
     }
 
     @Override
@@ -27,24 +26,25 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
+        String next     = req.getParameter("next");
 
         try {
-            User user = userService.authenticate(username, password);
-            if (user == null) {
-                req.setAttribute("error", "Benutzername oder Passwort falsch.");
-                req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
-                return;
-            }
-            HttpSession session = req.getSession(true);
-            session.setAttribute("userId", user.id);
-            session.setAttribute("username", user.username);
-            session.setAttribute("displayName", user.displayName);
+            req.login(username, password);
 
-            String next = req.getParameter("next");
+            User user = userService.findByUsername(username);
+            if (user != null) {
+                HttpSession s = req.getSession(true);
+                s.setAttribute("userId",      user.id);
+                s.setAttribute("username",    user.username);
+                s.setAttribute("displayName", user.displayName);
+            }
+
             resp.sendRedirect(next != null && next.startsWith("/") ? next
                     : req.getContextPath() + "/dashboard/");
+
         } catch (Exception e) {
-            throw new ServletException(e);
+            req.setAttribute("error", "Benutzername oder Passwort falsch.");
+            req.getRequestDispatcher("/login.jsp").forward(req, resp);
         }
     }
 }
