@@ -12,6 +12,7 @@ public class Article {
     public String title;
     public String subtitle;
     public String accentColor;
+    public String theme;           // "light" | "dark"
     public String status;          // "draft" | "published"
     public LocalDateTime createdAt;
     public LocalDateTime publishedAt;

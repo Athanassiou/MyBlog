@@ -239,7 +239,8 @@ public class DashboardServlet extends HttpServlet {
                 req.getParameter("title"),
                 req.getParameter("subtitle"),
                 req.getParameter("slug"),
-                req.getParameter("accentColor"));
+                req.getParameter("accentColor"),
+                req.getParameter("theme"));
 
         String blocksJson = req.getParameter("blocks");
         if (blocksJson != null && !blocksJson.isBlank()) {

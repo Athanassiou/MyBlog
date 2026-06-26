@@ -167,6 +167,9 @@ public class BlogPlatformServlet extends HttpServlet {
         for (Article a : articles) ids.add(a.id);
         java.util.Map<Integer,String> images = articleService.findFirstImages(ids);
 
+        Map<Integer, List<Tag>> tagMap = tagService.mapByBlog(blog.id);
+        articles.forEach(a -> a.tags = tagMap.getOrDefault(a.id, java.util.Collections.emptyList()));
+
         req.setAttribute("blog",    blog);
         req.setAttribute("recent",  recent);
         req.setAttribute("older",   older);

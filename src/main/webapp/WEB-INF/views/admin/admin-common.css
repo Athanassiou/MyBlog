@@ -1,6 +1,6 @@
 :root { --accent:#e5a00d; --accent-dim:rgba(229,160,13,.10); --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
 * { box-sizing:border-box; margin:0; padding:0; }
-body { font-family:Raleway,sans-serif; background:#f5f5f5; color:var(--text); min-height:100vh; }
+body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:#f5f5f5; color:var(--text); min-height:100vh; }
 .topbar { background:#fff; border-bottom:1px solid var(--border); padding:0 28px; height:52px;
   display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
 .topbar-left { display:flex; align-items:center; gap:14px; }

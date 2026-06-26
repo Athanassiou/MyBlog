@@ -13,8 +13,6 @@
       : request.getContextPath() + "/admin/blogs/" + blog.id + "/edit";
 %>
 <title><%= isNew ? "Neuer Blog" : "Blog bearbeiten" %> · Admin · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 <%@ include file="admin-common.css" %>
 .color-row { display:flex; align-items:center; gap:10px; }

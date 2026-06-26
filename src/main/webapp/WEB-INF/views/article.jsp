@@ -11,23 +11,28 @@
   de.myblog.model.Blog artBlog = (de.myblog.model.Blog) request.getAttribute("blog");
   String  blogSlug = artBlog != null ? artBlog.slug : "";
   String accent = (article != null && article.accentColor != null) ? article.accentColor : "#e5a00d";
+  boolean isDark = article != null && "dark".equals(article.theme);
   Article prevA = (Article) request.getAttribute("prevArticle");
   Article nextA = (Article) request.getAttribute("nextArticle");
   boolean previewMode = Boolean.TRUE.equals(request.getAttribute("previewMode"));
 %>
 <title><%= article != null ? article.title : "Artikel" %> · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --accent: <%= accent %>;
     --accent-dim: rgba(229,160,13,.10);
+<% if (isDark) { %>
+    --sidebar-bg: #111; --sidebar-border: #333;
+    --body-bg: #000; --content-bg: #111;
+    --text: #e8e8e8; --muted: #999; --border: #333;
+<% } else { %>
     --sidebar-bg: #f2f2f2; --sidebar-border: #e0e0e0;
     --body-bg: #ffffff; --content-bg: #ffffff;
     --text: #1a1a1a; --muted: #777; --border: #e8e8e8;
+<% } %>
   }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:Raleway,sans-serif; background:var(--body-bg); color:var(--text); font-size:15px; line-height:1.78; }
+  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:var(--body-bg); color:var(--text); font-size:15px; line-height:1.78; }
   .layout { display:flex; min-height:100vh; }
   nav {
     width:210px; flex-shrink:0; background:var(--sidebar-bg);
@@ -128,6 +133,19 @@
   .infobox.info    { background:#f0f7ff; border-color:#2272c3; }
   .infobox.warning { background:#fffbeb; border-color:#d97706; }
   .infobox.tip     { background:#f0fdf4; border-color:#16a34a; }
+
+  /* ── Dark Article overrides ── */
+<% if (isDark) { %>
+  pre  { background:#1a1a1a; }
+  code { color:#c9d1d9; }
+  tr:nth-child(even) td { background:#181818; }
+  .infobox.info    { background:#0d1926; }
+  .infobox.warning { background:#1a1500; }
+  .infobox.tip     { background:#0a1f0a; }
+  .pdf-link        { background:#111827; }
+  blockquote       { background:rgba(229,160,13,.08); }
+  #grey-btn        { display:none; }
+<% } %>
 
   /* ── Grey Mode ── */
   body.grey-mode {

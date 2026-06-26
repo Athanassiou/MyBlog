@@ -17,6 +17,13 @@
   .topbar-user  { font-size:13px; color:var(--muted); }
   .topbar-user a { color:var(--muted); text-decoration:none; margin-left:14px; }
   .topbar-user a:hover { color:var(--accent); }
+  .topbar-greeting { font-size:14px; font-weight:600; color:var(--muted); }
+  .topbar-link { font-size:13px; color:var(--muted); text-decoration:none; padding:0 6px; }
+  .topbar-link:hover { color:var(--accent); }
+  .topbar-logout { background:transparent; border:1px solid var(--accent); border-radius:4px;
+    padding:5px 14px; font-family:inherit; font-size:12px; font-weight:600; letter-spacing:.3px;
+    color:var(--accent); margin-left:8px; cursor:pointer; transition:background .15s,color .15s; }
+  .topbar-logout:hover { background:var(--accent); color:#111; }
   .content { max-width:900px; margin:0 auto; padding:40px 24px 80px; }
   .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
   .page-header h1 { font-size:22px; font-weight:800; }
@@ -55,17 +62,25 @@
 <body>
 
 <div class="topbar">
-  <span class="topbar-brand">MyBlog</span>
-  <span class="topbar-user">
-    <%= session.getAttribute("displayName") %>
-    <a href="<%= request.getContextPath() %>/">Blogs</a>
-    <a href="<%= request.getContextPath() %>/login">Abmelden</a>
-  </span>
+  <div style="flex:1;display:flex;align-items:center">
+    <a href="<%= request.getContextPath() %>/dashboard/" class="topbar-brand" style="text-decoration:none">
+      <span style="color:var(--accent)">My</span><span style="color:#1a1a1a">Blog</span>
+    </a>
+  </div>
+  <div style="flex:1;display:flex;justify-content:center;align-items:center">
+    <span class="topbar-greeting"><%= session.getAttribute("displayName") %></span>
+  </div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:flex-end;gap:4px">
+    <a href="/" class="topbar-link">← Home</a>
+    <form method="post" action="<%= request.getContextPath() %>/logout" style="display:inline">
+      <button type="submit" class="topbar-logout">Abmelden</button>
+    </form>
+  </div>
 </div>
 
 <div class="content">
   <div class="page-header">
-    <h1>Meine Blogs</h1>
+    <h1>Meine Blogs: Bearbeiten</h1>
     <button class="btn btn-primary" onclick="document.getElementById('new-overlay').classList.add('open')">+ Neuer Blog</button>
   </div>
 

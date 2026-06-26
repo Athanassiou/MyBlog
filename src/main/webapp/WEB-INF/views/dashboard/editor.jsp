@@ -13,53 +13,18 @@
   boolean isNew    = (article == null);
   String pageTitle = isNew ? "Neuer Artikel" : article.title;
 %>
+<% String dashAccent = (!isNew && article.accentColor != null) ? article.accentColor : "#e5a00d"; %>
 <title><%= pageTitle %> · Dashboard · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --accent:     <%= (!isNew && article.accentColor != null) ? article.accentColor : "#e5a00d" %>;
-    --accent-dim: rgba(229,160,13,.10);
-    --border:     #e8e8e8;
-    --text:       #1a1a1a;
-    --muted:      #777;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Raleway, sans-serif; background: #f5f5f5; color: var(--text); min-height: 100vh; }
-
-  /* ── Topbar ── */
-  .topbar {
-    background: #fff;
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 20;
-  }
+<%@ include file="../fragments/dashboard-css.jspf" %>
+  /* ── Topbar (Editor-spezifisch) ── */
+  .topbar { padding: 0 24px; z-index: 20; }
   .topbar-left { display: flex; align-items: center; gap: 16px; }
-  .topbar-brand { font-size: 16px; font-weight: 800; color: var(--accent); letter-spacing: -.3px; text-decoration: none; }
+  .topbar-brand { font-size: 16px; }
   .topbar-sep { color: var(--border); }
   .topbar-title { font-size: 14px; color: var(--muted); font-weight: 600; max-width: 340px;
                   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .topbar-actions { display: flex; gap: 8px; }
-
-  /* ── Buttons ── */
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    border-radius: 5px; padding: 8px 16px;
-    font-family: inherit; font-size: 13px; font-weight: 600;
-    cursor: pointer; border: 1px solid transparent;
-    transition: opacity .15s, background .15s, border-color .15s;
-    text-decoration: none;
-  }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { opacity: .88; }
-  .btn-ghost { background: #fff; color: var(--text); border-color: var(--border); }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
   .btn-publish { background: #16a34a; color: #fff; }
   .btn-publish:hover { opacity: .88; }
   .btn-unpublish { background: #fff; color: #6b7280; border-color: var(--border); }
@@ -219,6 +184,19 @@
             <% for (String tn : blogTagNames) { %><option value="<%= tn %>"><% } %>
           </datalist>
           <% } %>
+        </div>
+        <div class="field" style="flex:0 0 auto;min-width:120px">
+          <label>Theme</label>
+          <div style="display:flex;gap:8px;align-items:center;padding-top:4px">
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer">
+              <input type="radio" name="theme" value="light" <%= !"dark".equals(article.theme) ? "checked" : "" %>>
+              ☀ Hell
+            </label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer">
+              <input type="radio" name="theme" value="dark" <%= "dark".equals(article.theme) ? "checked" : "" %>>
+              ● Dunkel
+            </label>
+          </div>
         </div>
       </div>
     </div>

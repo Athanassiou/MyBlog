@@ -12,29 +12,13 @@
   String accent   = blog != null && blog.defaultAccentColor != null ? blog.defaultAccentColor : "#e5a00d";
 %>
 <title><%= blogName %> · Einstellungen · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
+<% String dashAccent = accent; %>
 <style>
-  :root { --accent:<%= accent %>; --accent-dim:rgba(229,160,13,.10); --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:Raleway,sans-serif; background:#f5f5f5; color:var(--text); min-height:100vh; }
-  .topbar { background:#fff; border-bottom:1px solid var(--border); padding:0 32px; height:52px;
-    display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
-  .topbar-brand { font-size:17px; font-weight:800; color:var(--accent); text-decoration:none; }
-  .topbar-user  { font-size:13px; color:var(--muted); }
-  .topbar-user a { color:var(--muted); text-decoration:none; margin-left:14px; }
-  .topbar-user a:hover { color:var(--accent); }
+<%@ include file="../fragments/dashboard-css.jspf" %>
   .content { max-width:600px; margin:0 auto; padding:40px 24px 80px; }
   .page-header { margin-bottom:24px; }
   .page-header h1 { font-size:22px; font-weight:800; margin-top:4px; }
   .card { background:#fff; border:1px solid var(--border); border-radius:8px; padding:28px 32px; }
-  .btn { display:inline-flex; align-items:center; border-radius:5px; padding:8px 16px;
-    font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; border:1px solid transparent;
-    text-decoration:none; transition:opacity .15s,background .15s; }
-  .btn-primary { background:var(--accent); color:#fff; }
-  .btn-primary:hover { opacity:.88; }
-  .btn-ghost { background:#fff; color:var(--text); border-color:var(--border); }
-  .btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
   .field { display:flex; flex-direction:column; gap:5px; margin-bottom:16px; }
   .field label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); }
   .field input, .field select, .field textarea { border:1px solid var(--border); border-radius:5px;

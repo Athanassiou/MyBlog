@@ -16,6 +16,7 @@
 <title><%= blog != null ? blog.name : "Blog" %> · MyBlog</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/fa/css/all.css">
 <link rel="alternate" type="application/rss+xml" title="<%= blog != null ? blog.name : "RSS" %>"
       href="<%= request.getContextPath() %>/<%= blogSlug %>/feed">
 <style>
@@ -26,11 +27,35 @@
   .header h1 { font-size:34px; font-weight:800; }
   .header p  { color:var(--muted); margin-top:6px; font-size:15px; }
   .header-row { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; }
-  .breadcrumb { font-size:13px; color:var(--muted); margin-bottom:14px; }
-  .breadcrumb a { color:var(--muted); text-decoration:none; font-weight:600; }
-  .breadcrumb a:hover { color:var(--accent); }
-  .rss-link { font-size:12px; color:var(--muted); text-decoration:none; opacity:.7; }
-  .rss-link:hover { color:#e05d00; opacity:1; }
+  /* ── N3 Site Header ── */
+  .site-header {
+    background: #111; border-bottom: 1px solid #2e2e2e;
+    padding: 0 40px; height: 54px;
+    display: flex; align-items: center;
+    position: sticky; top: 0; z-index: 20;
+  }
+  .site-logo { flex:1; display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .logo-icon {
+    width:30px; height:30px; background:var(--accent); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#111; font-weight:700; font-size:11px; letter-spacing:.4px; flex-shrink:0;
+  }
+  .logo-text { font-size:15px; font-weight:700; color:#e0e0e0; letter-spacing:.2px; }
+  .logo-text span { color:var(--accent); }
+  .site-header-center { flex:1; display:flex; justify-content:center; align-items:center; }
+  #user-greeting { font-size:14px; font-weight:600; color:#888; display:none; }
+  .site-header-right { flex:1; display:flex; align-items:center; justify-content:flex-end; gap:12px; }
+  #site-clock { font-size:13px; font-weight:700; color:#e0e0e0; font-variant-numeric:tabular-nums; }
+  .header-login-btn {
+    font-family:inherit; font-size:12px; font-weight:600; padding:5px 14px;
+    border-radius:4px; cursor:pointer; text-decoration:none; letter-spacing:.3px;
+    border:1px solid var(--accent); background:transparent; color:var(--accent);
+    transition:background .15s, color .15s;
+  }
+  .header-login-btn:hover { background:var(--accent); color:#111; }
+  /* ── View-Toggle (Schaufenster ↔ Liste) ── */
+  .view-toggle { font-size:13px; color:var(--muted); text-decoration:none; font-weight:600; display:inline-block; margin-top:8px; }
+  .view-toggle:hover { color:var(--accent); }
   /* Suchfeld */
   .search-form { display:flex; gap:6px; margin-top:16px; }
   .search-input { border:1.5px solid var(--border); border-radius:5px; padding:8px 12px;
@@ -58,23 +83,33 @@
   .tag-pill { display:inline-block; background:#f0f0f0; color:#555; border-radius:20px;
     padding:2px 9px; font-size:11px; font-weight:600; text-decoration:none; transition:background .15s; }
   .tag-pill:hover { background:var(--accent); color:#fff; }
+  .cmt-badge { font-size:13px; color:var(--accent); font-weight:600; white-space:nowrap; }
   .empty { text-align:center; padding:60px 0; color:var(--muted); }
 </style>
 </head>
 <body>
-<div class="header">
-  <div class="breadcrumb">
-    <a href="<%= request.getContextPath() %>/">← Alle Blogs</a>
-    <% if (blog != null) { %>
-    &nbsp;·&nbsp;<a href="<%= request.getContextPath() %>/<%= blogSlug %>/feed" class="rss-link">RSS ↗</a>
-    &nbsp;·&nbsp;<a href="<%= request.getContextPath() %>/<%= blogSlug %>/" class="rss-link">⊞ Schaufenster</a>
-    <% } %>
+<header class="site-header">
+  <a class="site-logo" href="/">
+    <div class="logo-icon">EA</div>
+    <span class="logo-text"><span>athanassiou</span>.me</span>
+  </a>
+  <div class="site-header-center">
+    <span id="user-greeting"></span>
   </div>
+  <div class="site-header-right">
+    <span id="site-clock"></span>
+    <a class="header-login-btn" id="header-login-btn" href="/MyBlog/login?next=/">Anmelden</a>
+  </div>
+</header>
+<div class="header">
   <div class="header-row">
     <div>
       <h1><%= blog != null ? blog.name : "" %></h1>
       <% if (blog != null && blog.description != null && !blog.description.isEmpty()) { %>
       <p><%= blog.description %></p>
+      <% } %>
+      <% if (blog != null) { %>
+      <a href="<%= request.getContextPath() %>/<%= blogSlug %>/" class="view-toggle">⊞ Schaufenster</a>
       <% } %>
     </div>
     <form class="search-form" method="get" action="<%= request.getContextPath() %>/<%= blogSlug %>/">
@@ -118,7 +153,7 @@
     </a>
     <div class="meta">
       <span><%= a.publishedAt != null ? a.publishedAt.format(fmt) : "" %></span>
-      <% if (a.commentCount > 0) { %><span>💬 <%= a.commentCount %></span><% } %>
+      <% if (a.commentCount > 0) { %><span class="cmt-badge"><i class="fa-regular fa-comment"></i> <%= a.commentCount %></span><% } %>
       <% if (a.tags != null) { for (Tag t : a.tags) { %>
       <a class="tag-pill" href="<%= request.getContextPath() %>/<%= blogSlug %>/tag/<%= t.name %>">#<%= t.name %></a>
       <% } } %>
@@ -126,4 +161,32 @@
   </div>
   <% } } %>
 </div>
+
+<script>
+(async () => {
+  try {
+    const r = await fetch('/MyBlog/api/session', { credentials: 'include' });
+    const d = await r.json();
+    if (d.loggedIn) {
+      const g = document.getElementById('user-greeting');
+      g.textContent = 'Hallo, ' + d.displayName;
+      g.style.display = 'block';
+      const btn = document.getElementById('header-login-btn');
+      if (btn) btn.style.display = 'none';
+    }
+  } catch(e) {}
+})();
+(function() {
+  const el = document.getElementById('site-clock');
+  function tick() {
+    const now = new Date();
+    const date = now.toLocaleDateString('de-DE', { weekday:'short', day:'2-digit', month:'2-digit', year:'numeric' });
+    const time = now.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    el.innerHTML = '<span style="color:var(--accent)">' + date + '</span>'
+                 + '<span style="color:#555"> · </span>' + time;
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
 </body></html>
