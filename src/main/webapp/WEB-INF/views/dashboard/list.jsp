@@ -31,23 +31,23 @@
   .site-header { background:#d7d7d7; border-bottom:1px solid #ccc; padding:0 40px; height:54px;
     display:flex; align-items:center; position:sticky; top:0; z-index:20; }
   .site-header-left { flex:1; display:flex; align-items:center; gap:10px; }
-  .site-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
-  .logo-icon { width:30px; height:30px; background:var(--accent); border-radius:50%;
+  .site-logo { display:flex; align-items:center; gap:28px; text-decoration:none; }
+  .logo-icon { width:32px; height:32px; background:var(--accent); border-radius:50%;
     display:flex; align-items:center; justify-content:center;
-    color:#111; font-weight:700; font-size:11px; letter-spacing:.4px; flex-shrink:0; }
-  .logo-text { font-size:15px; font-weight:700; color:#222; letter-spacing:.2px; }
+    color:#111; font-weight:700; font-size:12px; letter-spacing:.4px; flex-shrink:0; }
+  .logo-text { font-size:16px; font-weight:700; color:#222; letter-spacing:.3px; }
   .logo-text span { color:var(--accent); }
   .site-sep { color:#bbb; font-size:16px; }
   .site-ctx { font-size:14px; font-weight:700; color:#444; text-decoration:none; }
   .site-header-center { flex:1; display:flex; justify-content:center; align-items:center; }
   .site-greeting { font-size:14px; font-weight:600; color:#555; }
   .site-header-right { flex:1; display:flex; align-items:center; justify-content:flex-end; gap:12px; }
-  #site-clock { font-size:13px; font-weight:700; color:#333; font-variant-numeric:tabular-nums; }
+  #site-clock { font-size:14px; font-weight:700; color:#333; font-variant-numeric:tabular-nums; letter-spacing:.3px; }
   .header-nav-link { font-size:13px; color:#555; text-decoration:none; padding:0 4px; }
   .header-nav-link:hover { color:var(--accent); }
-  .header-logout { background:transparent; border:1px solid var(--accent); border-radius:4px;
-    padding:5px 14px; font-family:inherit; font-size:12px; font-weight:600; letter-spacing:.3px;
-    color:var(--accent); cursor:pointer; transition:background .15s,color .15s; }
+  .header-logout { background:transparent; border:1px solid var(--accent); border-radius:6px;
+    padding:6px 16px; font-family:inherit; font-size:12px; font-weight:600; letter-spacing:.3px;
+    color:var(--accent); cursor:pointer; transition:background .15s,color .15s,border-color .15s; }
   .header-logout:hover { background:var(--accent); color:#111; }
 
   /* ── Content ── */

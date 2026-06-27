@@ -26,15 +26,15 @@
   body { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; background: #f5f5f5; color: var(--text); min-height: 100vh; }
 
   /* ── N3 Editor Header ── */
-  .site-header { background:#d7d7d7; border-bottom:1px solid #ccc; padding:0 24px; height:54px;
+  .site-header { background:#d7d7d7; border-bottom:1px solid #ccc; padding:0 40px; height:54px;
     display:flex; align-items:center; justify-content:space-between;
     position:sticky; top:0; z-index:20; }
   .site-header-left { display:flex; align-items:center; gap:12px; }
-  .site-logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
-  .logo-icon { width:28px; height:28px; background:var(--accent); border-radius:50%;
+  .site-logo { display:flex; align-items:center; gap:12px; text-decoration:none; }
+  .logo-icon { width:32px; height:32px; background:var(--accent); border-radius:50%;
     display:flex; align-items:center; justify-content:center;
-    color:#111; font-weight:700; font-size:10px; flex-shrink:0; }
-  .logo-text { font-size:14px; font-weight:700; color:#222; }
+    color:#111; font-weight:700; font-size:12px; letter-spacing:.4px; flex-shrink:0; }
+  .logo-text { font-size:16px; font-weight:700; color:#222; letter-spacing:.3px; }
   .logo-text span { color:var(--accent); }
   .site-sep { color:#bbb; }
   .site-ctx { font-size:14px; font-weight:700; color:#444; text-decoration:none; }

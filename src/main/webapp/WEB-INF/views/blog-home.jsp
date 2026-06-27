@@ -41,23 +41,23 @@
     display: flex; align-items: center;
     position: sticky; top: 0; z-index: 20;
   }
-  .site-logo { flex:1; display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .site-logo { flex:1; display:flex; align-items:center; gap:28px; text-decoration:none; }
   .logo-icon {
-    width:30px; height:30px; background:var(--accent); border-radius:50%;
+    width:32px; height:32px; background:var(--accent); border-radius:50%;
     display:flex; align-items:center; justify-content:center;
-    color:#111; font-weight:700; font-size:11px; letter-spacing:.4px; flex-shrink:0;
+    color:#111; font-weight:700; font-size:12px; letter-spacing:.4px; flex-shrink:0;
   }
-  .logo-text { font-size:15px; font-weight:700; color:#222; letter-spacing:.2px; }
+  .logo-text { font-size:16px; font-weight:700; color:#222; letter-spacing:.3px; }
   .logo-text span { color:var(--accent); }
   .site-header-center { flex:1; display:flex; justify-content:center; align-items:center; }
   #user-greeting { font-size:14px; font-weight:600; color:#555; display:none; }
   .site-header-right { flex:1; display:flex; align-items:center; justify-content:flex-end; gap:12px; }
-  #site-clock { font-size:13px; font-weight:700; color:#333; font-variant-numeric:tabular-nums; }
+  #site-clock { font-size:14px; font-weight:700; color:#333; font-variant-numeric:tabular-nums; letter-spacing:.3px; }
   .header-login-btn {
-    font-family:inherit; font-size:12px; font-weight:600; padding:5px 14px;
-    border-radius:4px; cursor:pointer; text-decoration:none; letter-spacing:.3px;
+    font-family:inherit; font-size:12px; font-weight:600; padding:6px 16px;
+    border-radius:6px; cursor:pointer; text-decoration:none; letter-spacing:.3px;
     border:1px solid var(--accent); background:transparent; color:var(--accent);
-    transition:background .15s, color .15s;
+    transition:background .15s, color .15s, border-color .15s;
   }
   .header-login-btn:hover { background:var(--accent); color:#111; }
   /* ── View-Toggle (Schaufenster ↔ Liste) ── */
