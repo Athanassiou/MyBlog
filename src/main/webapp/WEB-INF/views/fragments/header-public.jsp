@@ -1,5 +1,6 @@
 <%-- N3 Site-Header für öffentliche Blog-Seiten (blog-home, blog-index).
      Login-Status wird per JS gesteuert (keine Session-Abhängigkeit). --%>
+<script>if(localStorage.getItem('greyMode')==='1')document.body.classList.add('grey-mode');</script>
 <header class="site-header">
   <div class="site-header-left">
     <a class="site-logo" href="/">
