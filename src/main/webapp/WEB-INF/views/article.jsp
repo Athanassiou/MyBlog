@@ -23,6 +23,9 @@
     --sidebar-bg: #252525; --sidebar-border: #3e3e3e;
     --body-bg: #1c1c1c; --content-bg: #1c1c1c;
     --text: #e0e0e0; --muted: #888; --border: #3e3e3e;
+    --header-bg:#111111; --header-border:#3e3e3e;
+    --header-text:#e0e0e0; --header-sep:#555; --header-ctx:#aaa;
+    --header-muted:#888; --header-greeting:#888; --header-clock:#e0e0e0;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:var(--body-bg); color:var(--text); font-size:15px; line-height:1.78; }
@@ -30,7 +33,7 @@
   nav {
     width:210px; flex-shrink:0; background:var(--sidebar-bg);
     border-right:1px solid var(--sidebar-border);
-    position:sticky; top:0; height:100vh; overflow-y:auto;
+    position:sticky; top:54px; height:calc(100vh - 54px); overflow-y:auto;
     display:flex; flex-direction:column; transition:width .2s;
   }
   .nav-top { padding:20px 16px 8px; display:flex; align-items:center; gap:10px; }
@@ -145,6 +148,9 @@
     --body-bg: #ffffff; --content-bg: #ffffff;
     --sidebar-bg: #f2f2f2; --sidebar-border: #e0e0e0;
     --text: #1a1a1a; --muted: #777; --border: #e8e8e8;
+    --header-bg:#d7d7d7; --header-border:#ccc;
+    --header-text:#222; --header-sep:#bbb; --header-ctx:#444;
+    --header-muted:#777; --header-greeting:#555; --header-clock:#333;
   }
   body.grey-mode pre { background: #f0f4fa; }
   body.grey-mode tr:nth-child(even) td { background: #fafafa; }
@@ -203,10 +209,12 @@
   .login-prompt a { color:var(--accent); font-weight:600; text-decoration:none; }
 
   @media(max-width:768px) { nav { display:none; } main { padding:28px 20px 60px; } }
+  <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
 </style>
 </head>
 <body>
 <script>if(localStorage.getItem('greyMode')==='1')document.body.classList.add('grey-mode');</script>
+<%@ include file="/WEB-INF/views/fragments/header-public.jsp" %>
 <div class="layout">
   <nav id="sidebar">
     <div class="nav-top">
@@ -615,7 +623,9 @@ document.querySelectorAll('#article-content a').forEach(a => {
   a.target = '_blank';
   a.rel    = 'noopener';
 });
-
+</script>
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
+<script>
 // ── Lightbox ──
 document.querySelectorAll('#article-content img').forEach(img => {
   if (img.closest('a')) return;
