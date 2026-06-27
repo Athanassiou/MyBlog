@@ -1,6 +1,5 @@
-/* Gemeinsame Styles für alle Dashboard-Seiten (my-blogs, list, blog-settings, editor).
-   :root mit --accent bleibt pro Seite (wird dynamisch aus DB gesetzt).
-   Einbinden mit: <%@ include file="/WEB-INF/views/fragments/dashboard-common.css" %> */
+/* Gemeinsame Styles fuer alle Dashboard-Seiten (my-blogs, list, blog-settings, editor).
+   :root mit --accent bleibt pro Seite (wird dynamisch aus DB gesetzt). */
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; background: #f5f5f5; color: var(--text); min-height: 100vh; }
