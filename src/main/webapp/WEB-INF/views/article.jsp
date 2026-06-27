@@ -203,7 +203,7 @@
     <!-- TOC wird via JS befüllt -->
     <div class="nav-footer">
       <button class="footer-btn" id="grey-btn" onclick="toggleGreyMode()">
-        <span class="btn-icon">◑</span><span class="btn-label">Grey Mode</span>
+        <span class="btn-icon">&#9681;</span><span class="btn-label">Grey Mode</span>
       </button>
       <button class="footer-btn" id="sidebar-btn" onclick="toggleSidebar()">
         <span class="btn-icon" id="sidebar-icon">‹</span>

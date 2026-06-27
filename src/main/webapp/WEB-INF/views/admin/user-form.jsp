@@ -6,7 +6,6 @@
 <title>Admin · Neuer Benutzer · MyBlog</title>
 <style>
 <%@ include file="admin-common.css" %>
-<%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
   .content { max-width:860px; }
 </style>
 </head>
@@ -57,5 +56,6 @@
     </form>
   </div>
 </div>
+<%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
 <%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </body></html>
