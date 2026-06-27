@@ -25,32 +25,7 @@
   .header h1 { font-size:34px; font-weight:800; }
   .header p  { color:var(--muted); margin-top:6px; font-size:15px; line-height:1.6; }
   .header-row { max-width:1060px; margin:0 auto; padding:0 32px; display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; }
-  /* ── N3 Site Header ── */
-  .site-header {
-    background: #d7d7d7; border-bottom: 1px solid #ccc;
-    padding: 0 40px; height: 54px;
-    display: flex; align-items: center;
-    position: sticky; top: 0; z-index: 20;
-  }
-  .site-logo { flex:1; display:flex; align-items:center; gap:28px; text-decoration:none; }
-  .logo-icon {
-    width:32px; height:32px; background:var(--accent); border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    color:#111; font-weight:700; font-size:12px; letter-spacing:.4px; flex-shrink:0;
-  }
-  .logo-text { font-size:16px; font-weight:700; color:#222; letter-spacing:.3px; }
-  .logo-text span { color:var(--accent); }
-  .site-header-center { flex:1; display:flex; justify-content:center; align-items:center; }
-  #user-greeting { font-size:14px; font-weight:600; color:#555; display:none; }
-  .site-header-right { flex:1; display:flex; align-items:center; justify-content:flex-end; gap:12px; }
-  #site-clock { font-size:14px; font-weight:700; color:#333; font-variant-numeric:tabular-nums; letter-spacing:.3px; }
-  .header-login-btn {
-    font-family:inherit; font-size:12px; font-weight:600; padding:6px 16px;
-    border-radius:6px; cursor:pointer; text-decoration:none; letter-spacing:.3px;
-    border:1px solid var(--accent); background:transparent; color:var(--accent);
-    transition:background .15s, color .15s, border-color .15s;
-  }
-  .header-login-btn:hover { background:var(--accent); color:#111; }
+  <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
   /* ── View-Toggle (Schaufenster ↔ Liste) ── */
   .view-toggle { font-size:13px; color:var(--muted); text-decoration:none; font-weight:600; display:inline-block; margin-top:8px; }
   .view-toggle:hover { color:var(--accent); }
@@ -86,19 +61,7 @@
 </style>
 </head>
 <body>
-<header class="site-header">
-  <a class="site-logo" href="/">
-    <div class="logo-icon">EA</div>
-    <span class="logo-text"><span>athanassiou</span>.me</span>
-  </a>
-  <div class="site-header-center">
-    <span id="user-greeting"></span>
-  </div>
-  <div class="site-header-right">
-    <span id="site-clock"></span>
-    <a class="header-login-btn" id="header-login-btn" href="/MyBlog/login?next=/">Anmelden</a>
-  </div>
-</header>
+<%@ include file="/WEB-INF/views/fragments/header-public.jsp" %>
 <div class="header">
   <div class="header-row">
     <div>
@@ -174,17 +137,6 @@
     }
   } catch(e) {}
 })();
-(function() {
-  const el = document.getElementById('site-clock');
-  function tick() {
-    const now = new Date();
-    const date = now.toLocaleDateString('de-DE', { weekday:'short', day:'2-digit', month:'2-digit', year:'numeric' });
-    const time = now.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-    el.innerHTML = '<span style="color:var(--accent)">' + date + '</span>'
-                 + '<span style="color:#999"> · </span>' + time;
-  }
-  tick();
-  setInterval(tick, 1000);
-})();
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </script>
 </body></html>

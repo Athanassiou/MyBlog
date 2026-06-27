@@ -6,10 +6,17 @@
 <title>Admin · Neuer Benutzer · MyBlog</title>
 <style>
 <%@ include file="admin-common.css" %>
+<%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
+  .content { max-width:860px; }
 </style>
 </head>
 <body>
-<%@ include file="admin-nav.html" %>
+<%
+  String hBlogSlug = "admin"; String hBlogName = "Admin";
+  String hBlogLink = request.getContextPath() + "/admin/";
+  String hPageTitle = "Neuer Benutzer"; String hTopbarTitle = null;
+%>
+<%@ include file="/WEB-INF/views/fragments/header-dashboard.jsp" %>
 <div class="content">
   <div class="page-header">
     <h1>Neuer Benutzer</h1>
@@ -50,4 +57,5 @@
     </form>
   </div>
 </div>
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </body></html>

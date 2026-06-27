@@ -1,9 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="de.myblog.model.Blog" %>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <%
   Blog   blog   = (Blog)   request.getAttribute("blog");
   String error  = (String) request.getAttribute("error");
@@ -11,20 +7,32 @@
   String formAction = isNew
       ? request.getContextPath() + "/admin/blogs/new"
       : request.getContextPath() + "/admin/blogs/" + blog.id + "/edit";
+  String defAccent = isNew ? "#e5a00d" : (blog.defaultAccentColor != null ? blog.defaultAccentColor : "#e5a00d");
 %>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title><%= isNew ? "Neuer Blog" : "Blog bearbeiten" %> · Admin · MyBlog</title>
 <style>
 <%@ include file="admin-common.css" %>
-.color-row { display:flex; align-items:center; gap:10px; }
-input[type=color] { width:36px; height:36px; border:1px solid var(--border); border-radius:5px;
-  padding:2px; cursor:pointer; background:none; }
-.color-hex { border:1px solid var(--border); border-radius:5px; padding:9px 12px;
-  font-family:monospace; font-size:13px; width:110px; outline:none; color:var(--text); }
-.color-hex:focus { border-color:var(--accent); }
+<%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
+  .content { max-width:860px; }
+  .color-row { display:flex; align-items:center; gap:10px; }
+  input[type=color] { width:36px; height:36px; border:1px solid var(--border); border-radius:5px;
+    padding:2px; cursor:pointer; background:none; }
+  .color-hex { border:1px solid var(--border); border-radius:5px; padding:9px 12px;
+    font-family:monospace; font-size:13px; width:110px; outline:none; color:var(--text); }
+  .color-hex:focus { border-color:var(--accent); }
 </style>
 </head>
 <body>
-<%@ include file="admin-nav.html" %>
+<%
+  String hBlogSlug = "admin"; String hBlogName = "Admin";
+  String hBlogLink = request.getContextPath() + "/admin/";
+  String hPageTitle = isNew ? "Neuer Blog" : "Blog bearbeiten"; String hTopbarTitle = null;
+%>
+<%@ include file="/WEB-INF/views/fragments/header-dashboard.jsp" %>
 <div class="content">
   <div class="page-header">
     <div>
@@ -65,9 +73,6 @@ input[type=color] { width:36px; height:36px; border:1px solid var(--border); bor
 
       <div class="field">
         <label>Akzentfarbe</label>
-        <%
-          String defAccent = isNew ? "#e5a00d" : (blog.defaultAccentColor != null ? blog.defaultAccentColor : "#e5a00d");
-        %>
         <div class="color-row">
           <input type="color" id="color-picker" value="<%= defAccent %>" oninput="syncColor(this.value)">
           <input type="text" class="color-hex" id="color-hex" name="accentColor" maxlength="7"
@@ -103,14 +108,12 @@ function autoSlug(v) {
       .replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-').replace(/-+/g,'-');
   }
 }
-function syncColor(hex) {
-  document.getElementById('color-hex').value = hex;
-}
+function syncColor(hex) { document.getElementById('color-hex').value = hex; }
 function syncColorFromHex(val) {
-  if (/^#[0-9a-fA-F]{6}$/.test(val))
-    document.getElementById('color-picker').value = val;
+  if (/^#[0-9a-fA-F]{6}$/.test(val)) document.getElementById('color-picker').value = val;
 }
 const slugEl = document.getElementById('slug');
 if (slugEl) slugEl.addEventListener('input', () => slugEl._edited = true);
 </script>
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </body></html>

@@ -15,135 +15,68 @@
 %>
 <title><%= pageTitle %> · Dashboard · MyBlog</title>
 <style>
-  :root {
-    --accent:     <%= (!isNew && article.accentColor != null) ? article.accentColor : "#e5a00d" %>;
-    --accent-dim: rgba(229,160,13,.10);
-    --border:     #e8e8e8;
-    --text:       #1a1a1a;
-    --muted:      #777;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; background: #f5f5f5; color: var(--text); min-height: 100vh; }
+  <%@ include file="/WEB-INF/views/fragments/dashboard-common.css" %>
+  :root { --accent: <%= (!isNew && article.accentColor != null) ? article.accentColor : "#e5a00d" %>; }
 
-  /* ── N3 Editor Header ── */
-  .site-header { background:#d7d7d7; border-bottom:1px solid #ccc; padding:0 40px; height:54px;
-    display:flex; align-items:center; justify-content:space-between;
-    position:sticky; top:0; z-index:20; }
-  .site-header-left { display:flex; align-items:center; gap:12px; }
-  .site-logo { display:flex; align-items:center; gap:12px; text-decoration:none; }
-  .logo-icon { width:32px; height:32px; background:var(--accent); border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    color:#111; font-weight:700; font-size:12px; letter-spacing:.4px; flex-shrink:0; }
-  .logo-text { font-size:16px; font-weight:700; color:#222; letter-spacing:.3px; }
-  .logo-text span { color:var(--accent); }
-  .site-sep { color:#bbb; }
-  .site-ctx { font-size:14px; font-weight:700; color:#444; text-decoration:none; }
-  .site-ctx:hover { color:var(--accent); }
-  .topbar-title { font-size:14px; color:#777; font-weight:600; max-width:340px;
-    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .topbar-actions { display:flex; gap:8px; }
+  /* ── Editor-Aktionsleiste ── */
+  .editor-actions { display:flex; gap:8px; justify-content:flex-end; margin-bottom:20px; }
 
-  /* ── Buttons ── */
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    border-radius: 5px; padding: 8px 16px;
-    font-family: inherit; font-size: 13px; font-weight: 600;
-    cursor: pointer; border: 1px solid transparent;
-    transition: opacity .15s, background .15s, border-color .15s;
-    text-decoration: none;
-  }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { opacity: .88; }
-  .btn-ghost { background: transparent; color: #444; border-color: #bbb; }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-publish { background: #16a34a; color: #fff; }
-  .btn-publish:hover { opacity: .88; }
-  .btn-unpublish { background: transparent; color: #666; border-color: #bbb; }
-  .btn-unpublish:hover { border-color: #dc2626; color: #dc2626; }
+  /* ── Editor-spezifische Button-Varianten ── */
+  .btn-publish   { background:#16a34a; color:#fff; }
+  .btn-publish:hover { opacity:.88; }
+  .btn-unpublish { background:transparent; color:#666; border-color:#bbb; }
+  .btn-unpublish:hover { border-color:#dc2626; color:#dc2626; }
 
   /* ── Layout ── */
-  .editor-wrap { max-width: 860px; margin: 0 auto; padding: 32px 24px 80px; }
+  .editor-wrap { max-width:860px; margin:0 auto; padding:32px 24px 80px; }
 
   /* ── Meta-Karte ── */
-  .meta-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 24px 28px;
-    margin-bottom: 24px;
-  }
-  .meta-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
-  .meta-row:last-child { margin-bottom: 0; }
-  .field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 180px; }
-  .field label {
-    font-size: 11px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .5px; color: var(--muted);
-  }
-  .field input[type=text] {
-    border: 1px solid var(--border); border-radius: 5px;
-    padding: 9px 12px; font-family: inherit; font-size: 14px;
-    color: var(--text); outline: none; transition: border-color .15s;
-  }
-  .field input:focus { border-color: var(--accent); }
-  .field-title input { font-size: 16px; font-weight: 700; }
+  .meta-card { background:var(--card-bg); border:1px solid var(--border); border-radius:8px;
+    padding:24px 28px; margin-bottom:24px; }
+  .meta-row { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px; }
+  .meta-row:last-child { margin-bottom:0; }
+  .meta-row .field { flex:1; min-width:180px; margin-bottom:0; }
+  .field-title input { font-size:16px; font-weight:700; }
 
-  /* Farb-Picker */
-  .color-row { display: flex; align-items: center; gap: 10px; }
-  input[type=color] {
-    width: 36px; height: 36px; border: 1px solid var(--border);
-    border-radius: 5px; padding: 2px; cursor: pointer; background: none;
-  }
-  .color-hex {
-    border: 1px solid var(--border); border-radius: 5px;
-    padding: 9px 12px; font-family: monospace; font-size: 13px;
-    width: 100px; outline: none; color: var(--text);
-    transition: border-color .15s;
-  }
-  .color-hex:focus { border-color: var(--accent); }
-  .color-preview {
-    width: 20px; height: 20px; border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--accent);
-    flex-shrink: 0;
-  }
+  /* ── Farb-Picker ── */
+  .color-row { display:flex; align-items:center; gap:10px; }
+  input[type=color] { width:36px; height:36px; border:1px solid var(--border);
+    border-radius:5px; padding:2px; cursor:pointer; background:none; }
+  .color-hex { border:1px solid var(--border); border-radius:5px; padding:9px 12px;
+    font-family:monospace; font-size:13px; width:100px; outline:none; color:var(--text);
+    transition:border-color .15s; }
+  .color-hex:focus { border-color:var(--accent); }
+  .color-preview { width:20px; height:20px; border-radius:50%;
+    border:1px solid var(--border); background:var(--accent); flex-shrink:0; }
 
   /* ── Editor-Bereich ── */
-  .editor-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 32px 40px;
-    min-height: 400px;
-  }
-  #editorjs { outline: none; }
+  .editor-card { background:var(--card-bg); border:1px solid var(--border); border-radius:8px;
+    padding:32px 40px; min-height:400px; }
+  #editorjs { outline:none; }
 
   /* ── Neu-Artikel Dialog ── */
-  .new-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,.35);
-    display: flex; align-items: center; justify-content: center; z-index: 100;
-  }
-  .new-card {
-    background: #fff; border-radius: 10px; padding: 36px 40px;
-    width: 100%; max-width: 440px; box-shadow: 0 8px 40px rgba(0,0,0,.15);
-  }
-  .new-card h2 { font-size: 20px; font-weight: 800; margin-bottom: 22px; }
+  .new-overlay { position:fixed; inset:0; background:rgba(0,0,0,.35);
+    display:flex; align-items:center; justify-content:center; z-index:100; }
+  .new-card { background:var(--card-bg); border-radius:10px; padding:36px 40px;
+    width:100%; max-width:440px; box-shadow:0 8px 40px rgba(0,0,0,.15); }
+  .new-card h2 { font-size:20px; font-weight:800; margin-bottom:22px; }
 </style>
 </head>
 <body>
 
-<header class="site-header">
-  <div class="site-header-left">
-    <a class="site-logo" href="/">
-      <div class="logo-icon">EA</div>
-      <span class="logo-text"><span>athanassiou</span>.me</span>
-    </a>
-    <span class="site-sep">/</span>
-    <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/" class="site-ctx"><%= blogSlug %></a>
-    <span class="site-sep">/</span>
-    <span class="topbar-title" id="topbar-title"><%= isNew ? "Neuer Artikel" : (article.title != null ? article.title : "Artikel") %></span>
-  </div>
-  <div class="topbar-actions">
-    <% if (!isNew) { %>
+<%
+  String hBlogSlug = blogSlug;
+  String hBlogName = blogSlug;
+  String hBlogLink = null;
+  String hPageTitle = null;
+  String hTopbarTitle = isNew ? "Neuer Artikel" : (article.title != null ? article.title : "Artikel");
+%>
+<%@ include file="/WEB-INF/views/fragments/header-dashboard.jsp" %>
+
+<div class="editor-wrap">
+
+  <% if (!isNew) { %>
+  <div class="editor-actions">
     <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/">← Zurück</a>
     <button class="btn btn-primary" onclick="saveArticle()">Speichern</button>
     <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= article.id %>/preview"
@@ -155,13 +88,8 @@
     <% } else { %>
     <button class="btn btn-publish" onclick="saveAndPublish()">Veröffentlichen</button>
     <% } %>
-    <% } %>
   </div>
-</header>
 
-<div class="editor-wrap">
-
-  <% if (!isNew) { %>
   <!-- ── Meta-Formular (bestehender Artikel) ── -->
   <form id="meta-form" method="post" action="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= article.id %>">
     <input type="hidden" id="blocks-input" name="blocks" value="">
@@ -342,7 +270,7 @@ class PdfLinkTool {
     ].forEach(([key, ph]) => {
       const inp = document.createElement('input');
       inp.type='text'; inp.placeholder=ph; inp.value=this.data[key]||'';
-      inp.style.cssText = 'border:1px solid #e8e8e8;border-radius:4px;padding:6px 9px;font-size:13px;width:100%;box-sizing:border-box;background:#fff';
+      inp.style.cssText = 'border:1px solid var(--border);border-radius:4px;padding:6px 9px;font-size:13px;width:100%;box-sizing:border-box;background:var(--input-bg);color:var(--text)';
       inp.oninput = () => { this.data[key] = inp.value; };
       this.wrapper.append(inp);
     });
@@ -429,7 +357,7 @@ class InfoboxTool {
     this.wrapper.innerHTML = '';
     this.wrapper.style.cssText = `border-radius:4px;padding:14px 16px;border-left:3px solid ${cfg.border};background:${cfg.bg}`;
     const sel = document.createElement('select');
-    sel.style.cssText = 'border:1px solid #e8e8e8;border-radius:4px;padding:3px 8px;font-size:12px;margin-bottom:10px;font-family:inherit;background:#fff';
+    sel.style.cssText = 'border:1px solid var(--border);border-radius:4px;padding:3px 8px;font-size:12px;margin-bottom:10px;font-family:inherit;background:var(--input-bg);color:var(--text)';
     Object.entries(InfoboxTool.STYLES).forEach(([k,v]) => {
       const o = document.createElement('option');
       o.value=k; o.textContent=v.label; if(k===this.data.style) o.selected=true;
@@ -567,5 +495,7 @@ function autoSlug(title) {
 </script>
 <% } %>
 
+<%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </body>
 </html>
