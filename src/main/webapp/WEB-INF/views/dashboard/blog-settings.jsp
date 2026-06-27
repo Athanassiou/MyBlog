@@ -14,31 +14,15 @@
 <title><%= blogName %> · Einstellungen · MyBlog</title>
 <style>
   :root { --accent:<%= accent %>; --accent-dim:rgba(229,160,13,.10); --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:#f5f5f5; color:var(--text); min-height:100vh; }
+  <%@ include file="/WEB-INF/views/fragments/dashboard-common.css" %>
   <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
-  .content { max-width:860px; margin:0 auto; padding:40px 24px 80px; }
+  .content { max-width:860px; }
   .page-header { margin-bottom:24px; }
-  .page-header h1 { font-size:22px; font-weight:800; margin-top:4px; }
-  .card { background:#fff; border:1px solid var(--border); border-radius:8px; padding:28px 32px; }
-  .btn { display:inline-flex; align-items:center; border-radius:5px; padding:8px 16px;
-    font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; border:1px solid transparent;
-    text-decoration:none; transition:opacity .15s,background .15s; }
-  .btn-primary { background:var(--accent); color:#fff; }
-  .btn-primary:hover { opacity:.88; }
-  .btn-ghost { background:#fff; color:var(--text); border-color:var(--border); }
-  .btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
-  .field { display:flex; flex-direction:column; gap:5px; margin-bottom:16px; }
-  .field label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); }
-  .field input, .field select, .field textarea { border:1px solid var(--border); border-radius:5px;
-    padding:9px 12px; font-family:inherit; font-size:14px; color:var(--text); outline:none; transition:border-color .15s; }
-  .field input:focus, .field select:focus, .field textarea:focus { border-color:var(--accent); }
+  .page-header h1 { margin-top:4px; }
   .color-row { display:flex; align-items:center; gap:10px; }
   input[type=color] { width:36px; height:36px; border:1px solid var(--border); border-radius:5px;
     padding:2px; cursor:pointer; background:none; }
   .color-hex { font-family:monospace; width:110px; }
-  .error-box { background:#fff3f3; border:1px solid #f9c6c6; border-left:3px solid #dc2626;
-    border-radius:4px; padding:10px 14px; font-size:14px; color:#b91c1c; margin-bottom:18px; }
 </style>
 </head>
 <body>

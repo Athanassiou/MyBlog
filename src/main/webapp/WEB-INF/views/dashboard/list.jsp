@@ -15,100 +15,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><%= blogName %> · Dashboard · MyBlog</title>
 <style>
-  :root {
-    --accent:     #e5a00d;
-    --accent-dim: rgba(229,160,13,.10);
-    --border:     #e8e8e8;
-    --text:       #1a1a1a;
-    --muted:      #777;
-    --bg:         #f5f5f5;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
+  :root { --accent:#e5a00d; --accent-dim:rgba(229,160,13,.10); --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
+  <%@ include file="/WEB-INF/views/fragments/dashboard-common.css" %>
   <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
-
-  /* ── Content ── */
-  .content { max-width: 1060px; margin: 0 auto; padding: 40px 24px 80px; }
-
-  .page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 28px;
-  }
-  .page-header h1 { font-size: 22px; font-weight: 800; }
-
-  /* ── Buttons ── */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border-radius: 5px;
-    padding: 8px 16px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    border: 1px solid transparent;
-    transition: opacity .15s, background .15s;
-  }
-  .btn-primary   { background: var(--accent); color: #fff; }
-  .btn-primary:hover { opacity: .88; }
-  .btn-ghost     { background: #fff; color: var(--text); border-color: var(--border); }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
-  .btn-danger    { background: #fff; color: #dc2626; border-color: #f9c6c6; }
-  .btn-danger:hover { background: #fff3f3; }
-  .btn-sm { padding: 5px 11px; font-size: 12px; }
-
-  /* ── Tabelle ── */
-  .table-wrap {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  table { width: 100%; border-collapse: collapse; }
-  th {
-    text-align: left;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .6px;
-    color: var(--muted);
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    background: #fafafa;
-  }
-  td { padding: 13px 16px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: #fafef5; }
-
-  .article-title { font-weight: 700; color: var(--text); }
-  .article-sub   { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-  .badge {
-    display: inline-block;
-    border-radius: 20px;
-    padding: 2px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .4px;
-  }
-  .badge-published { background: #dcfce7; color: #15803d; }
-  .badge-draft     { background: #f3f4f6; color: #6b7280; }
-
-  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
-
-  /* ── Leer-Zustand ── */
-  .empty {
-    text-align: center;
-    padding: 60px 24px;
-    color: var(--muted);
-  }
-  .empty p { margin-bottom: 16px; }
+  .content { max-width:1060px; }
+  .article-title { font-weight:700; color:var(--text); }
+  .article-sub   { font-size:12px; color:var(--muted); margin-top:2px; }
+  .actions { display:flex; gap:6px; flex-wrap:wrap; }
 </style>
 </head>
 <body>

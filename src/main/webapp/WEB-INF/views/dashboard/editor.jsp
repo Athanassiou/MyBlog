@@ -22,97 +22,51 @@
     --text:       #1a1a1a;
     --muted:      #777;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; background: #f5f5f5; color: var(--text); min-height: 100vh; }
-
+  <%@ include file="/WEB-INF/views/fragments/dashboard-common.css" %>
   <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
+
   /* ── Editor-Aktionsleiste ── */
   .editor-actions { display:flex; gap:8px; justify-content:flex-end; margin-bottom:20px; }
 
-  /* ── Buttons ── */
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    border-radius: 5px; padding: 8px 16px;
-    font-family: inherit; font-size: 13px; font-weight: 600;
-    cursor: pointer; border: 1px solid transparent;
-    transition: opacity .15s, background .15s, border-color .15s;
-    text-decoration: none;
-  }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { opacity: .88; }
-  .btn-ghost { background: transparent; color: #444; border-color: #bbb; }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-publish { background: #16a34a; color: #fff; }
-  .btn-publish:hover { opacity: .88; }
-  .btn-unpublish { background: transparent; color: #666; border-color: #bbb; }
-  .btn-unpublish:hover { border-color: #dc2626; color: #dc2626; }
+  /* ── Editor-spezifische Button-Varianten ── */
+  .btn-publish   { background:#16a34a; color:#fff; }
+  .btn-publish:hover { opacity:.88; }
+  .btn-unpublish { background:transparent; color:#666; border-color:#bbb; }
+  .btn-unpublish:hover { border-color:#dc2626; color:#dc2626; }
 
   /* ── Layout ── */
-  .editor-wrap { max-width: 860px; margin: 0 auto; padding: 32px 24px 80px; }
+  .editor-wrap { max-width:860px; margin:0 auto; padding:32px 24px 80px; }
 
   /* ── Meta-Karte ── */
-  .meta-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 24px 28px;
-    margin-bottom: 24px;
-  }
-  .meta-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
-  .meta-row:last-child { margin-bottom: 0; }
-  .field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 180px; }
-  .field label {
-    font-size: 11px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .5px; color: var(--muted);
-  }
-  .field input[type=text] {
-    border: 1px solid var(--border); border-radius: 5px;
-    padding: 9px 12px; font-family: inherit; font-size: 14px;
-    color: var(--text); outline: none; transition: border-color .15s;
-  }
-  .field input:focus { border-color: var(--accent); }
-  .field-title input { font-size: 16px; font-weight: 700; }
+  .meta-card { background:#fff; border:1px solid var(--border); border-radius:8px;
+    padding:24px 28px; margin-bottom:24px; }
+  .meta-row { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px; }
+  .meta-row:last-child { margin-bottom:0; }
+  .meta-row .field { flex:1; min-width:180px; margin-bottom:0; }
+  .field-title input { font-size:16px; font-weight:700; }
 
-  /* Farb-Picker */
-  .color-row { display: flex; align-items: center; gap: 10px; }
-  input[type=color] {
-    width: 36px; height: 36px; border: 1px solid var(--border);
-    border-radius: 5px; padding: 2px; cursor: pointer; background: none;
-  }
-  .color-hex {
-    border: 1px solid var(--border); border-radius: 5px;
-    padding: 9px 12px; font-family: monospace; font-size: 13px;
-    width: 100px; outline: none; color: var(--text);
-    transition: border-color .15s;
-  }
-  .color-hex:focus { border-color: var(--accent); }
-  .color-preview {
-    width: 20px; height: 20px; border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--accent);
-    flex-shrink: 0;
-  }
+  /* ── Farb-Picker ── */
+  .color-row { display:flex; align-items:center; gap:10px; }
+  input[type=color] { width:36px; height:36px; border:1px solid var(--border);
+    border-radius:5px; padding:2px; cursor:pointer; background:none; }
+  .color-hex { border:1px solid var(--border); border-radius:5px; padding:9px 12px;
+    font-family:monospace; font-size:13px; width:100px; outline:none; color:var(--text);
+    transition:border-color .15s; }
+  .color-hex:focus { border-color:var(--accent); }
+  .color-preview { width:20px; height:20px; border-radius:50%;
+    border:1px solid var(--border); background:var(--accent); flex-shrink:0; }
 
   /* ── Editor-Bereich ── */
-  .editor-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 32px 40px;
-    min-height: 400px;
-  }
-  #editorjs { outline: none; }
+  .editor-card { background:#fff; border:1px solid var(--border); border-radius:8px;
+    padding:32px 40px; min-height:400px; }
+  #editorjs { outline:none; }
 
   /* ── Neu-Artikel Dialog ── */
-  .new-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,.35);
-    display: flex; align-items: center; justify-content: center; z-index: 100;
-  }
-  .new-card {
-    background: #fff; border-radius: 10px; padding: 36px 40px;
-    width: 100%; max-width: 440px; box-shadow: 0 8px 40px rgba(0,0,0,.15);
-  }
-  .new-card h2 { font-size: 20px; font-weight: 800; margin-bottom: 22px; }
+  .new-overlay { position:fixed; inset:0; background:rgba(0,0,0,.35);
+    display:flex; align-items:center; justify-content:center; z-index:100; }
+  .new-card { background:#fff; border-radius:10px; padding:36px 40px;
+    width:100%; max-width:440px; box-shadow:0 8px 40px rgba(0,0,0,.15); }
+  .new-card h2 { font-size:20px; font-weight:800; margin-bottom:22px; }
 </style>
 </head>
 <body>

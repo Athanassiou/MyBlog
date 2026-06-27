@@ -7,17 +7,9 @@
 <title>Dashboard · MyBlog</title>
 <style>
   :root { --accent:#e5a00d; --accent-dim:rgba(229,160,13,.10); --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:#f5f5f5; color:var(--text); min-height:100vh; }
+  <%@ include file="/WEB-INF/views/fragments/dashboard-common.css" %>
   <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
-  .content { max-width:1060px; margin:0 auto; padding:40px 24px 80px; }
-  .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
-  .page-header h1 { font-size:22px; font-weight:800; }
-  .btn { display:inline-flex; align-items:center; gap:6px; border-radius:5px; padding:8px 16px;
-    font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; border:1px solid transparent;
-    text-decoration:none; transition:opacity .15s,background .15s; }
-  .btn-primary { background:var(--accent); color:#fff; }
-  .btn-primary:hover { opacity:.88; }
+  .content { max-width:1060px; }
   .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
   .blog-card { background:#fff; border:1px solid var(--border); border-radius:10px;
     padding:24px 22px; text-decoration:none; color:inherit; display:block;
@@ -29,7 +21,6 @@
   .card-role { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; }
   .role-owner { color:#92400e; } .role-admin { color:#5b21b6; }
   .role-author { color:#15803d; } .role-contributor { color:#6b7280; }
-  .empty { text-align:center; padding:60px 0; color:var(--muted); }
   /* Neuer-Blog-Dialog */
   .overlay { position:fixed; inset:0; background:rgba(0,0,0,.35);
     display:none; align-items:center; justify-content:center; z-index:100; }
@@ -37,11 +28,6 @@
   .dialog { background:#fff; border-radius:10px; padding:36px 40px; width:100%; max-width:460px;
     box-shadow:0 8px 40px rgba(0,0,0,.15); }
   .dialog h2 { font-size:20px; font-weight:800; margin-bottom:22px; }
-  .field { display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
-  .field label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); }
-  .field input, .field textarea { border:1px solid var(--border); border-radius:5px; padding:9px 12px;
-    font-family:inherit; font-size:14px; color:var(--text); outline:none; transition:border-color .15s; }
-  .field input:focus, .field textarea:focus { border-color:var(--accent); }
   .dialog-actions { display:flex; gap:10px; margin-top:20px; }
 </style>
 </head>
