@@ -1,32 +1,36 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="de.myblog.model.User, de.myblog.model.Blog, de.myblog.model.BlogMember, java.util.List, java.util.Set, java.util.stream.Collectors" %>
+<%
+  Blog blog = (Blog) request.getAttribute("blog");
+  int  blogId = blog != null ? blog.id : 0;
+  @SuppressWarnings("unchecked") List<BlogMember> members  = (List<BlogMember>) request.getAttribute("members");
+  @SuppressWarnings("unchecked") List<User>       allUsers = (List<User>)       request.getAttribute("allUsers");
+  Set<Integer> memberIds = members.stream().map(m -> m.user.id).collect(Collectors.toSet());
+  String[] roles = {"owner","admin","author","contributor"};
+%>
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin · Mitglieder · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Mitglieder · <%= blog != null ? blog.name : "" %> · MyBlog</title>
 <style>
 <%@ include file="admin-common.css" %>
+<%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
+  .content { max-width:1060px; }
 </style>
 </head>
 <body>
-<%@ include file="admin-nav.html" %>
+<%
+  String hBlogSlug    = blog != null ? blog.slug : null;
+  String hBlogName    = blog != null ? blog.name : null;
+  String hBlogLink    = null;
+  String hPageTitle   = "Mitglieder";
+  String hTopbarTitle = null;
+%>
+<%@ include file="/WEB-INF/views/fragments/header-dashboard.jsp" %>
 <div class="content">
-  <%
-    Blog blog = (Blog) request.getAttribute("blog");
-    int  blogId = blog != null ? blog.id : 0;
-    @SuppressWarnings("unchecked") List<BlogMember> members  = (List<BlogMember>) request.getAttribute("members");
-    @SuppressWarnings("unchecked") List<User>       allUsers = (List<User>)       request.getAttribute("allUsers");
-    Set<Integer> memberIds = members.stream().map(m -> m.user.id).collect(Collectors.toSet());
-    String[] roles = {"owner","admin","author","contributor"};
-  %>
   <div class="page-header">
-    <div>
-      <a href="<%= request.getContextPath() %>/admin/blogs/" style="font-size:13px;color:var(--muted);text-decoration:none">← Alle Blogs</a>
-      <h1 style="margin-top:4px">Mitglieder · <%= blog != null ? blog.name : "" %></h1>
-    </div>
+    <h1>Mitglieder · <%= blog != null ? blog.name : "" %></h1>
   </div>
 
   <div class="table-wrap" style="margin-bottom:28px">
@@ -87,4 +91,5 @@
   </div>
   <% } %>
 </div>
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </body></html>

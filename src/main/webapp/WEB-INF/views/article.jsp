@@ -16,8 +16,6 @@
   boolean previewMode = Boolean.TRUE.equals(request.getAttribute("previewMode"));
 %>
 <title><%= article != null ? article.title : "Artikel" %> · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --accent: <%= accent %>;
@@ -27,7 +25,7 @@
     --text: #1a1a1a; --muted: #777; --border: #e8e8e8;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:Raleway,sans-serif; background:var(--body-bg); color:var(--text); font-size:15px; line-height:1.78; }
+  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:var(--body-bg); color:var(--text); font-size:15px; line-height:1.78; }
   .layout { display:flex; min-height:100vh; }
   nav {
     width:210px; flex-shrink:0; background:var(--sidebar-bg);
@@ -55,7 +53,7 @@
   nav.collapsed .btn-label, nav.collapsed .nav-section,
   nav.collapsed .nav-blog-title, nav.collapsed a.toc-link span { display:none; }
 
-  main { flex:1; padding:52px 64px 80px; max-width:820px; }
+  main { flex:1; padding:52px 64px 80px; max-width:850px; }
   .article-topline { display:flex; justify-content:space-between; align-items:center;
                      margin-bottom:28px; font-size:13px; color:var(--muted); }
   .blog-home-link { color:var(--muted); text-decoration:none; font-weight:600; }

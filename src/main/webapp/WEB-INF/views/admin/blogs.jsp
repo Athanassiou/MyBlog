@@ -5,15 +5,20 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Admin · Blogs · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 <%@ include file="admin-common.css" %>
-.accent-dot { display:inline-block; width:12px; height:12px; border-radius:50%; vertical-align:middle; margin-right:6px; }
+<%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
+  .content { max-width:1060px; }
+  .accent-dot { display:inline-block; width:12px; height:12px; border-radius:50%; vertical-align:middle; margin-right:6px; }
 </style>
 </head>
 <body>
-<%@ include file="admin-nav.html" %>
+<%
+  String hBlogSlug = "admin"; String hBlogName = "Admin";
+  String hBlogLink = request.getContextPath() + "/admin/";
+  String hPageTitle = "Blogs"; String hTopbarTitle = null;
+%>
+<%@ include file="/WEB-INF/views/fragments/header-dashboard.jsp" %>
 <div class="content">
   <div class="page-header">
     <h1>Blogs</h1>
@@ -59,4 +64,5 @@
     </table>
   </div>
 </div>
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </body></html>

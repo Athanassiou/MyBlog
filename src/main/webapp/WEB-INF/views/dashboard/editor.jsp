@@ -14,8 +14,6 @@
   String pageTitle = isNew ? "Neuer Artikel" : article.title;
 %>
 <title><%= pageTitle %> · Dashboard · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --accent:     <%= (!isNew && article.accentColor != null) ? article.accentColor : "#e5a00d" %>;
@@ -25,27 +23,11 @@
     --muted:      #777;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Raleway, sans-serif; background: #f5f5f5; color: var(--text); min-height: 100vh; }
+  body { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; background: #f5f5f5; color: var(--text); min-height: 100vh; }
 
-  /* ── Topbar ── */
-  .topbar {
-    background: #fff;
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 20;
-  }
-  .topbar-left { display: flex; align-items: center; gap: 16px; }
-  .topbar-brand { font-size: 16px; font-weight: 800; color: var(--accent); letter-spacing: -.3px; text-decoration: none; }
-  .topbar-sep { color: var(--border); }
-  .topbar-title { font-size: 14px; color: var(--muted); font-weight: 600; max-width: 340px;
-                  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .topbar-actions { display: flex; gap: 8px; }
+  <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
+  /* ── Editor-Aktionsleiste ── */
+  .editor-actions { display:flex; gap:8px; justify-content:flex-end; margin-bottom:20px; }
 
   /* ── Buttons ── */
   .btn {
@@ -58,11 +40,11 @@
   }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-primary:hover { opacity: .88; }
-  .btn-ghost { background: #fff; color: var(--text); border-color: var(--border); }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+  .btn-ghost { background: transparent; color: #444; border-color: #bbb; }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
   .btn-publish { background: #16a34a; color: #fff; }
   .btn-publish:hover { opacity: .88; }
-  .btn-unpublish { background: #fff; color: #6b7280; border-color: var(--border); }
+  .btn-unpublish { background: transparent; color: #666; border-color: #bbb; }
   .btn-unpublish:hover { border-color: #dc2626; color: #dc2626; }
 
   /* ── Layout ── */
@@ -135,16 +117,19 @@
 </head>
 <body>
 
-<div class="topbar">
-  <div class="topbar-left">
-    <a class="topbar-brand" href="<%= request.getContextPath() %>/dashboard/" style="text-decoration:none">MyBlog</a>
-    <span class="topbar-sep">/</span>
-    <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/" style="font-size:14px;font-weight:700;color:#1a1a1a;text-decoration:none"><%= blogSlug %></a>
-    <span class="topbar-sep">/</span>
-    <span class="topbar-title" id="topbar-title"><%= isNew ? "Neuer Artikel" : (article.title != null ? article.title : "Artikel") %></span>
-  </div>
-  <div class="topbar-actions">
-    <% if (!isNew) { %>
+<%
+  String hBlogSlug = blogSlug;
+  String hBlogName = blogSlug;
+  String hBlogLink = null;
+  String hPageTitle = null;
+  String hTopbarTitle = isNew ? "Neuer Artikel" : (article.title != null ? article.title : "Artikel");
+%>
+<%@ include file="/WEB-INF/views/fragments/header-dashboard.jsp" %>
+
+<div class="editor-wrap">
+
+  <% if (!isNew) { %>
+  <div class="editor-actions">
     <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/">← Zurück</a>
     <button class="btn btn-primary" onclick="saveArticle()">Speichern</button>
     <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= article.id %>/preview"
@@ -156,13 +141,8 @@
     <% } else { %>
     <button class="btn btn-publish" onclick="saveAndPublish()">Veröffentlichen</button>
     <% } %>
-    <% } %>
   </div>
-</div>
 
-<div class="editor-wrap">
-
-  <% if (!isNew) { %>
   <!-- ── Meta-Formular (bestehender Artikel) ── -->
   <form id="meta-form" method="post" action="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/<%= article.id %>">
     <input type="hidden" id="blocks-input" name="blocks" value="">
@@ -568,5 +548,6 @@ function autoSlug(title) {
 </script>
 <% } %>
 
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </body>
 </html>

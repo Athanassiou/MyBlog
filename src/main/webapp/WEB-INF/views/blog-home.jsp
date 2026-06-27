@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="de.myblog.model.Article, de.myblog.model.Blog" %>
+<%@ page import="de.myblog.model.Article, de.myblog.model.Blog, de.myblog.model.Tag" %>
 <%@ page import="java.util.*, java.time.format.DateTimeFormatter, java.util.Locale" %>
 <%
   Blog   blog   = (Blog)   request.getAttribute("blog");
@@ -20,34 +20,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><%= blog != null ? blog.name : "Blog" %> · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/fa/css/all.css">
 <link rel="alternate" type="application/rss+xml" title="<%= blog != null ? blog.name : "RSS" %>"
       href="<%= ctx %>/<%= slug %>/feed">
 <style>
   :root { --accent:<%= accent %>; --accent-dim:rgba(229,160,13,.10); --border:#e8e8e8;
           --text:#1a1a1a; --muted:#777; }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:Raleway,sans-serif; background:#f0f0f0; color:var(--text); }
+  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:#f5f5f5; color:var(--text); }
 
   /* ── Header ── */
-  .home-header { background:#fff; border-bottom:3px solid var(--accent); padding:40px 48px 32px; }
-  .home-header .breadcrumb { font-size:13px; color:var(--muted); margin-bottom:16px; }
-  .home-header .breadcrumb a { color:var(--muted); text-decoration:none; font-weight:600; }
-  .home-header .breadcrumb a:hover { color:var(--accent); }
-  .home-header h1 { font-size:36px; font-weight:800; margin-bottom:20px; }
-  .header-body { display:flex; gap:40px; align-items:flex-start; }
-  .header-text { flex:1; font-size:15px; line-height:1.75; color:#444; }
-  .header-text p + p { margin-top:12px; }
+  .header { border-bottom:3px solid var(--accent); padding:44px 0 28px; }
+  .header h1 { font-size:34px; font-weight:800; }
+  .header p  { color:var(--muted); margin-top:6px; font-size:15px; line-height:1.6; }
+  .header-row { max-width:1060px; margin:0 auto; padding:0 32px; display:flex; align-items:flex-end; justify-content:space-between; gap:40px; flex-wrap:wrap; }
+  <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
+  /* ── View-Toggle (Schaufenster ↔ Liste) ── */
+  .view-toggle { font-size:13px; color:var(--muted); text-decoration:none; font-weight:600; display:inline-block; margin-top:8px; }
+  .view-toggle:hover { color:var(--accent); }
   .header-img { width:220px; flex-shrink:0; border-radius:6px; overflow:hidden; }
   .header-img img { width:100%; display:block; border-radius:6px; }
-  .view-toggle { display:inline-flex; align-items:center; gap:6px; margin-top:18px;
-    font-size:12px; font-weight:700; color:var(--muted); text-decoration:none;
-    border:1px solid var(--border); border-radius:20px; padding:5px 12px; }
-  .view-toggle:hover { color:var(--accent); border-color:var(--accent); }
+  .search-form { display:flex; gap:6px; }
+  .search-input { border:1.5px solid var(--border); border-radius:5px; padding:8px 12px;
+    font-family:inherit; font-size:14px; outline:none; transition:border-color .15s; width:260px; }
+  .search-input:focus { border-color:var(--accent); }
+  .search-btn { background:var(--accent); color:#fff; border:none; border-radius:5px;
+    padding:8px 14px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+  .tag-pill { display:inline-block; background:#f0f0f0; color:#555; border-radius:20px;
+    padding:2px 9px; font-size:11px; font-weight:600; text-decoration:none; transition:background .15s; }
+  .tag-pill:hover { background:var(--accent); color:#fff; }
+  .cmt-badge { font-size:13px; color:var(--accent); font-weight:600; white-space:nowrap; }
 
   /* ── Sections ── */
-  .content { max-width:1400px; margin:0 auto; padding:0 32px 60px; }
+  .content { max-width:1060px; margin:0 auto; padding:0 32px 60px; }
   .section-title {
     font-size:20px; font-weight:700; margin:36px 0 16px; color:#333;
     display:flex; align-items:center; gap:12px;
@@ -116,13 +121,11 @@
     display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
   }
 
-  /* ── Kommentar-Badge ── */
-  .cmt-badge { font-size:10px; color:var(--muted); white-space:nowrap; }
 
   @media(max-width:960px) { .card-lg { flex:0 0 calc((100% - 16px) / 2); } }
   @media(max-width:640px) {
-    .home-header { padding:24px 20px 20px; }
-    .header-body { flex-direction:column; }
+    .header { padding:24px 20px 20px; }
+    .header-row { flex-direction:column; }
     .header-img { width:100%; }
     .content { padding:0 16px 40px; }
     .card-lg { flex:0 0 80%; }
@@ -132,26 +135,23 @@
 </head>
 <body>
 
-<div class="home-header">
-  <div class="breadcrumb">
-    <a href="/">⌂ athanassiou.me</a>
-    &nbsp;·&nbsp;
-    <a href="<%= ctx %>/<%= slug %>/feed" style="opacity:.65">RSS ↗</a>
-  </div>
-  <h1><%= blog != null ? blog.name : "" %></h1>
-  <div class="header-body">
-    <div class="header-text">
+<%@ include file="/WEB-INF/views/fragments/header-public.jsp" %>
+
+<div class="header">
+  <div class="header-row">
+    <div>
+      <h1><%= blog != null ? blog.name : "" %></h1>
       <% if (blog != null && blog.description != null && !blog.description.isEmpty()) { %>
-      <%= blog.description %>
+      <p><%= blog.description %></p>
       <% } %>
-      <br>
-      <a class="view-toggle" href="<%= ctx %>/<%= slug %>/list">☰ Listenansicht</a>
+      <% if (blog != null) { %>
+      <a href="<%= ctx %>/<%= slug %>/list" class="view-toggle">☰ Listenansicht</a>
+      <% } %>
     </div>
-    <% if (blog != null && blog.coverImage != null && !blog.coverImage.isEmpty()) { %>
-    <div class="header-img">
-      <img src="<%= blog.coverImage %>" alt="<%= blog.name %>">
-    </div>
-    <% } %>
+    <form class="search-form" method="get" action="<%= ctx %>/<%= slug %>/">
+      <input class="search-input" type="search" name="q" placeholder="Suche …">
+      <button class="search-btn" type="submit">↵</button>
+    </form>
   </div>
 </div>
 
@@ -180,10 +180,17 @@
       <% if (a.subtitle != null && !a.subtitle.isEmpty()) { %>
       <p><%= a.subtitle %></p>
       <% } %>
+      <% if (a.tags != null && !a.tags.isEmpty()) { %>
+      <div style="margin-bottom:10px;display:flex;flex-wrap:wrap;gap:4px">
+        <% for (Tag t : a.tags) { %>
+        <span class="tag-pill">#<%= t.name %></span>
+        <% } %>
+      </div>
+      <% } %>
       <div class="card-footer">
         <span class="card-btn">MEHR DAZU »</span>
         <% if (a.commentCount > 0) { %>
-        <span class="cmt-badge">💬 <%= a.commentCount %></span>
+        <span class="cmt-badge"><i class="fa-regular fa-comment"></i> <%= a.commentCount %></span>
         <% } %>
       </div>
     </div>
@@ -213,9 +220,6 @@
       <% if (a.subtitle != null && !a.subtitle.isEmpty()) { %>
       <p><%= a.subtitle %></p>
       <% } %>
-      <% if (a.commentCount > 0) { %>
-      <div class="cmt-badge" style="margin-top:4px">💬 <%= a.commentCount %></div>
-      <% } %>
     </div>
   </a>
   <% } %>
@@ -223,5 +227,22 @@
 <% } %>
 
 </div><!-- /content -->
+
+<script>
+(async () => {
+  try {
+    const r = await fetch('/MyBlog/api/session', { credentials: 'include' });
+    const d = await r.json();
+    if (d.loggedIn) {
+      const g = document.getElementById('user-greeting');
+      g.textContent = 'Hallo, ' + d.displayName;
+      g.style.display = 'block';
+      const btn = document.getElementById('header-login-btn');
+      if (btn) btn.style.display = 'none';
+    }
+  } catch(e) {}
+})();
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
+</script>
 </body>
 </html>

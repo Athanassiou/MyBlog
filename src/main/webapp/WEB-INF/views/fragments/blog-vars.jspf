@@ -1,0 +1,5 @@
+<%-- Gemeinsame CSS-Variablen und Reset für öffentliche Blog-Seiten.
+     Voraussetzung: String accent muss vor dem Include gesetzt sein. --%>
+  :root { --accent:<%= accent %>; --accent-dim:rgba(229,160,13,.10); --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; color:var(--text); }

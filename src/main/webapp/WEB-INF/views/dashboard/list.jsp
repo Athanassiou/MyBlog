@@ -14,8 +14,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><%= blogName %> · Dashboard · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --accent:     #e5a00d;
@@ -26,28 +24,12 @@
     --bg:         #f5f5f5;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Raleway, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  body { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  /* ── Topbar ── */
-  .topbar {
-    background: #fff;
-    border-bottom: 1px solid var(--border);
-    padding: 0 32px;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .topbar-brand { font-size: 17px; font-weight: 800; color: var(--accent); letter-spacing: -.3px; }
-  .topbar-user  { font-size: 13px; color: var(--muted); }
-  .topbar-user a { color: var(--muted); text-decoration: none; margin-left: 14px; }
-  .topbar-user a:hover { color: var(--accent); }
+  <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
 
   /* ── Content ── */
-  .content { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+  .content { max-width: 1060px; margin: 0 auto; padding: 40px 24px 80px; }
 
   .page-header {
     display: flex;
@@ -131,26 +113,23 @@
 </head>
 <body>
 
-<div class="topbar">
-  <div style="display:flex;align-items:center;gap:12px">
-    <a href="<%= request.getContextPath() %>/dashboard/" class="topbar-brand" style="text-decoration:none">MyBlog</a>
-    <span style="color:#e8e8e8">/</span>
-    <span style="font-size:14px;font-weight:700;color:#1a1a1a"><%= blogName %></span>
-  </div>
-  <span class="topbar-user">
-    <%= session.getAttribute("displayName") %>
-    <% if ("owner".equals(userRole) || "admin".equals(userRole)) { %>
-    <a href="<%= request.getContextPath() %>/admin/members/<%= blog != null ? blog.id : 1 %>">Mitglieder</a>
-    <% } %>
-    <a href="<%= request.getContextPath() %>/dashboard/">← Meine Blogs</a>
-    <a href="<%= request.getContextPath() %>/login">Abmelden</a>
-  </span>
-</div>
+<%
+  String hBlogSlug = blogSlug; String hBlogName = blogName;
+  String hBlogLink = null;
+  String hPageTitle = null; String hTopbarTitle = null;
+%>
+<%@ include file="/WEB-INF/views/fragments/header-dashboard.jsp" %>
 
 <div class="content">
   <div class="page-header">
     <h1>Artikel</h1>
-    <a class="btn btn-primary" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/new">+ Neuer Artikel</a>
+    <div style="display:flex;gap:8px">
+      <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/">← Meine Blogs</a>
+      <% if ("owner".equals(userRole) || "admin".equals(userRole)) { %>
+      <a class="btn btn-ghost" href="<%= request.getContextPath() %>/admin/members/<%= blog != null ? blog.id : 1 %>">Mitglieder</a>
+      <% } %>
+      <a class="btn btn-primary" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/new">+ Neuer Artikel</a>
+    </div>
   </div>
 
   <%
@@ -228,5 +207,8 @@
   <% } %>
 </div>
 
+<script>
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
+</script>
 </body>
 </html>

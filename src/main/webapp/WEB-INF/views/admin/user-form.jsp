@@ -4,14 +4,19 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Admin · Neuer Benutzer · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 <%@ include file="admin-common.css" %>
+<%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
+  .content { max-width:860px; }
 </style>
 </head>
 <body>
-<%@ include file="admin-nav.html" %>
+<%
+  String hBlogSlug = "admin"; String hBlogName = "Admin";
+  String hBlogLink = request.getContextPath() + "/admin/";
+  String hPageTitle = "Neuer Benutzer"; String hTopbarTitle = null;
+%>
+<%@ include file="/WEB-INF/views/fragments/header-dashboard.jsp" %>
 <div class="content">
   <div class="page-header">
     <h1>Neuer Benutzer</h1>
@@ -52,4 +57,5 @@
     </form>
   </div>
 </div>
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </body></html>

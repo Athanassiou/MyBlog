@@ -14,23 +14,21 @@
   boolean isTag     = filterTag != null && !filterTag.isBlank();
 %>
 <title><%= blog != null ? blog.name : "Blog" %> · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/fa/css/all.css">
 <link rel="alternate" type="application/rss+xml" title="<%= blog != null ? blog.name : "RSS" %>"
       href="<%= request.getContextPath() %>/<%= blogSlug %>/feed">
 <style>
   :root { --accent:<%= accent %>; --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:Raleway,sans-serif; background:#fff; color:var(--text); }
-  .header { border-bottom:3px solid var(--accent); padding:44px 56px 28px; }
+  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:#f5f5f5; color:var(--text); }
+  .header { border-bottom:3px solid var(--accent); padding:44px 0 28px; }
   .header h1 { font-size:34px; font-weight:800; }
-  .header p  { color:var(--muted); margin-top:6px; font-size:15px; }
-  .header-row { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; }
-  .breadcrumb { font-size:13px; color:var(--muted); margin-bottom:14px; }
-  .breadcrumb a { color:var(--muted); text-decoration:none; font-weight:600; }
-  .breadcrumb a:hover { color:var(--accent); }
-  .rss-link { font-size:12px; color:var(--muted); text-decoration:none; opacity:.7; }
-  .rss-link:hover { color:#e05d00; opacity:1; }
+  .header p  { color:var(--muted); margin-top:6px; font-size:15px; line-height:1.6; }
+  .header-row { max-width:1060px; margin:0 auto; padding:0 32px; display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+  <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
+  /* ── View-Toggle (Schaufenster ↔ Liste) ── */
+  .view-toggle { font-size:13px; color:var(--muted); text-decoration:none; font-weight:600; display:inline-block; margin-top:8px; }
+  .view-toggle:hover { color:var(--accent); }
   /* Suchfeld */
   .search-form { display:flex; gap:6px; margin-top:16px; }
   .search-input { border:1.5px solid var(--border); border-radius:5px; padding:8px 12px;
@@ -44,7 +42,7 @@
   .filter-banner a { color:var(--muted); font-size:12px; text-decoration:none; }
   .filter-banner a:hover { color:var(--accent); }
   /* Liste */
-  .list { max-width:720px; margin:36px auto; padding:0 24px 80px; }
+  .list { max-width:1060px; margin:36px auto; padding:0 32px 80px; }
   .item { border-bottom:1px solid var(--border); padding:22px 0; }
   .item:last-child { border-bottom:none; }
   .item a.item-link { text-decoration:none; color:inherit; display:block; }
@@ -58,23 +56,21 @@
   .tag-pill { display:inline-block; background:#f0f0f0; color:#555; border-radius:20px;
     padding:2px 9px; font-size:11px; font-weight:600; text-decoration:none; transition:background .15s; }
   .tag-pill:hover { background:var(--accent); color:#fff; }
+  .cmt-badge { font-size:13px; color:var(--accent); font-weight:600; white-space:nowrap; }
   .empty { text-align:center; padding:60px 0; color:var(--muted); }
 </style>
 </head>
 <body>
+<%@ include file="/WEB-INF/views/fragments/header-public.jsp" %>
 <div class="header">
-  <div class="breadcrumb">
-    <a href="<%= request.getContextPath() %>/">← Alle Blogs</a>
-    <% if (blog != null) { %>
-    &nbsp;·&nbsp;<a href="<%= request.getContextPath() %>/<%= blogSlug %>/feed" class="rss-link">RSS ↗</a>
-    &nbsp;·&nbsp;<a href="<%= request.getContextPath() %>/<%= blogSlug %>/" class="rss-link">⊞ Schaufenster</a>
-    <% } %>
-  </div>
   <div class="header-row">
     <div>
       <h1><%= blog != null ? blog.name : "" %></h1>
       <% if (blog != null && blog.description != null && !blog.description.isEmpty()) { %>
       <p><%= blog.description %></p>
+      <% } %>
+      <% if (blog != null) { %>
+      <a href="<%= request.getContextPath() %>/<%= blogSlug %>/" class="view-toggle">⊞ Schaufenster</a>
       <% } %>
     </div>
     <form class="search-form" method="get" action="<%= request.getContextPath() %>/<%= blogSlug %>/">
@@ -118,7 +114,7 @@
     </a>
     <div class="meta">
       <span><%= a.publishedAt != null ? a.publishedAt.format(fmt) : "" %></span>
-      <% if (a.commentCount > 0) { %><span>💬 <%= a.commentCount %></span><% } %>
+      <% if (a.commentCount > 0) { %><span class="cmt-badge"><i class="fa-regular fa-comment"></i> <%= a.commentCount %></span><% } %>
       <% if (a.tags != null) { for (Tag t : a.tags) { %>
       <a class="tag-pill" href="<%= request.getContextPath() %>/<%= blogSlug %>/tag/<%= t.name %>">#<%= t.name %></a>
       <% } } %>
@@ -126,4 +122,21 @@
   </div>
   <% } } %>
 </div>
+
+<script>
+(async () => {
+  try {
+    const r = await fetch('/MyBlog/api/session', { credentials: 'include' });
+    const d = await r.json();
+    if (d.loggedIn) {
+      const g = document.getElementById('user-greeting');
+      g.textContent = 'Hallo, ' + d.displayName;
+      g.style.display = 'block';
+      const btn = document.getElementById('header-login-btn');
+      if (btn) btn.style.display = 'none';
+    }
+  } catch(e) {}
+})();
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
+</script>
 </body></html>

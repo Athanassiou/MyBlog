@@ -12,19 +12,12 @@
   String accent   = blog != null && blog.defaultAccentColor != null ? blog.defaultAccentColor : "#e5a00d";
 %>
 <title><%= blogName %> · Einstellungen · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root { --accent:<%= accent %>; --accent-dim:rgba(229,160,13,.10); --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:Raleway,sans-serif; background:#f5f5f5; color:var(--text); min-height:100vh; }
-  .topbar { background:#fff; border-bottom:1px solid var(--border); padding:0 32px; height:52px;
-    display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
-  .topbar-brand { font-size:17px; font-weight:800; color:var(--accent); text-decoration:none; }
-  .topbar-user  { font-size:13px; color:var(--muted); }
-  .topbar-user a { color:var(--muted); text-decoration:none; margin-left:14px; }
-  .topbar-user a:hover { color:var(--accent); }
-  .content { max-width:600px; margin:0 auto; padding:40px 24px 80px; }
+  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:#f5f5f5; color:var(--text); min-height:100vh; }
+  <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
+  .content { max-width:860px; margin:0 auto; padding:40px 24px 80px; }
   .page-header { margin-bottom:24px; }
   .page-header h1 { font-size:22px; font-weight:800; margin-top:4px; }
   .card { background:#fff; border:1px solid var(--border); border-radius:8px; padding:28px 32px; }
@@ -50,17 +43,12 @@
 </head>
 <body>
 
-<div class="topbar">
-  <div style="display:flex;align-items:center;gap:12px">
-    <a href="<%= request.getContextPath() %>/dashboard/" class="topbar-brand">MyBlog</a>
-    <span style="color:#e8e8e8">/</span>
-    <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/" style="font-size:14px;font-weight:700;color:#1a1a1a;text-decoration:none"><%= blogName %></a>
-  </div>
-  <span class="topbar-user">
-    <%= session.getAttribute("displayName") %>
-    <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/">← Artikelliste</a>
-  </span>
-</div>
+<%
+  String hBlogSlug = blogSlug; String hBlogName = blogName;
+  String hBlogLink = null;
+  String hPageTitle = "Einstellungen"; String hTopbarTitle = null;
+%>
+<%@ include file="/WEB-INF/views/fragments/header-dashboard.jsp" %>
 
 <div class="content">
   <div class="page-header">
@@ -136,5 +124,8 @@ function syncColor(hex) { document.getElementById('color-hex').value = hex; }
 function syncColorFromHex(val) {
   if (/^#[0-9a-fA-F]{6}$/.test(val)) document.getElementById('color-picker').value = val;
 }
+</script>
+<script>
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </script>
 </body></html>

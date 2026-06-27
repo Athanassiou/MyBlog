@@ -146,6 +146,12 @@
         <role-name>USER</role-name>
     </security-role>
 
+    <!-- ─── Statische Assets (FontAwesome etc.) ─────────────── -->
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/fa/*</url-pattern>
+    </servlet-mapping>
+
     <!-- ─── Error Pages ──────────────────────────────────────── -->
 
     <error-page>
