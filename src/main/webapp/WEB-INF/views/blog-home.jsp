@@ -256,8 +256,10 @@
       const g = document.getElementById('user-greeting');
       g.textContent = 'Hallo, ' + d.displayName;
       g.style.display = 'block';
-      const btn = document.getElementById('header-login-btn');
-      if (btn) btn.style.display = 'none';
+      const loginBtn = document.getElementById('header-login-btn');
+      if (loginBtn) loginBtn.style.display = 'none';
+      const logoutForm = document.getElementById('header-logout-form');
+      if (logoutForm) logoutForm.style.display = 'block';
     }
   } catch(e) {}
 })();

@@ -15,5 +15,10 @@
     <span id="site-clock"></span>
     <a class="header-login-btn" id="header-login-btn"
        href="<%= request.getContextPath() %>/login?next=/">Anmelden</a>
+    <form id="header-logout-form" method="post"
+          action="<%= request.getContextPath() %>/logout"
+          style="display:none;margin:0">
+      <button type="submit" class="header-logout">Abmelden</button>
+    </form>
   </div>
 </header>
