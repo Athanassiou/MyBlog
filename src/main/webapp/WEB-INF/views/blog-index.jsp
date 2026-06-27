@@ -143,7 +143,5 @@
 </div>
 
 <%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
-<script>
 <%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
-</script>
 </body></html>
