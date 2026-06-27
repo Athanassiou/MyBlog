@@ -13,21 +13,52 @@
   boolean isNew    = (article == null);
   String pageTitle = isNew ? "Neuer Artikel" : article.title;
 %>
-<% String dashAccent = (!isNew && article.accentColor != null) ? article.accentColor : "#e5a00d"; %>
 <title><%= pageTitle %> · Dashboard · MyBlog</title>
 <style>
-<%@ include file="../fragments/dashboard-css.jspf" %>
-  /* ── Topbar (Editor-spezifisch) ── */
-  .topbar { padding: 0 24px; z-index: 20; }
-  .topbar-left { display: flex; align-items: center; gap: 16px; }
-  .topbar-brand { font-size: 16px; }
-  .topbar-sep { color: var(--border); }
-  .topbar-title { font-size: 14px; color: var(--muted); font-weight: 600; max-width: 340px;
-                  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .topbar-actions { display: flex; gap: 8px; }
+  :root {
+    --accent:     <%= (!isNew && article.accentColor != null) ? article.accentColor : "#e5a00d" %>;
+    --accent-dim: rgba(229,160,13,.10);
+    --border:     #e8e8e8;
+    --text:       #1a1a1a;
+    --muted:      #777;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; background: #f5f5f5; color: var(--text); min-height: 100vh; }
+
+  /* ── N3 Editor Header ── */
+  .site-header { background:#d7d7d7; border-bottom:1px solid #ccc; padding:0 24px; height:54px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:20; }
+  .site-header-left { display:flex; align-items:center; gap:12px; }
+  .site-logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
+  .logo-icon { width:28px; height:28px; background:var(--accent); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#111; font-weight:700; font-size:10px; flex-shrink:0; }
+  .logo-text { font-size:14px; font-weight:700; color:#222; }
+  .logo-text span { color:var(--accent); }
+  .site-sep { color:#bbb; }
+  .site-ctx { font-size:14px; font-weight:700; color:#444; text-decoration:none; }
+  .site-ctx:hover { color:var(--accent); }
+  .topbar-title { font-size:14px; color:#777; font-weight:600; max-width:340px;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .topbar-actions { display:flex; gap:8px; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    border-radius: 5px; padding: 8px 16px;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; border: 1px solid transparent;
+    transition: opacity .15s, background .15s, border-color .15s;
+    text-decoration: none;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { opacity: .88; }
+  .btn-ghost { background: transparent; color: #444; border-color: #bbb; }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
   .btn-publish { background: #16a34a; color: #fff; }
   .btn-publish:hover { opacity: .88; }
-  .btn-unpublish { background: #fff; color: #6b7280; border-color: var(--border); }
+  .btn-unpublish { background: transparent; color: #666; border-color: #bbb; }
   .btn-unpublish:hover { border-color: #dc2626; color: #dc2626; }
 
   /* ── Layout ── */
@@ -100,12 +131,15 @@
 </head>
 <body>
 
-<div class="topbar">
-  <div class="topbar-left">
-    <a class="topbar-brand" href="<%= request.getContextPath() %>/dashboard/" style="text-decoration:none">MyBlog</a>
-    <span class="topbar-sep">/</span>
-    <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/" style="font-size:14px;font-weight:700;color:#1a1a1a;text-decoration:none"><%= blogSlug %></a>
-    <span class="topbar-sep">/</span>
+<header class="site-header">
+  <div class="site-header-left">
+    <a class="site-logo" href="/">
+      <div class="logo-icon">EA</div>
+      <span class="logo-text"><span>athanassiou</span>.me</span>
+    </a>
+    <span class="site-sep">/</span>
+    <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/" class="site-ctx"><%= blogSlug %></a>
+    <span class="site-sep">/</span>
     <span class="topbar-title" id="topbar-title"><%= isNew ? "Neuer Artikel" : (article.title != null ? article.title : "Artikel") %></span>
   </div>
   <div class="topbar-actions">
@@ -123,7 +157,7 @@
     <% } %>
     <% } %>
   </div>
-</div>
+</header>
 
 <div class="editor-wrap">
 
@@ -184,19 +218,6 @@
             <% for (String tn : blogTagNames) { %><option value="<%= tn %>"><% } %>
           </datalist>
           <% } %>
-        </div>
-        <div class="field" style="flex:0 0 auto;min-width:120px">
-          <label>Theme</label>
-          <div style="display:flex;gap:8px;align-items:center;padding-top:4px">
-            <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer">
-              <input type="radio" name="theme" value="light" <%= !"dark".equals(article.theme) ? "checked" : "" %>>
-              ☀ Hell
-            </label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer">
-              <input type="radio" name="theme" value="dark" <%= "dark".equals(article.theme) ? "checked" : "" %>>
-              ● Dunkel
-            </label>
-          </div>
         </div>
       </div>
     </div>

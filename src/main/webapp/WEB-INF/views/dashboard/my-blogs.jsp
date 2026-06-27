@@ -5,26 +5,31 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root { --accent:#e5a00d; --accent-dim:rgba(229,160,13,.10); --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:Raleway,sans-serif; background:#f5f5f5; color:var(--text); min-height:100vh; }
-  .topbar { background:#fff; border-bottom:1px solid var(--border); padding:0 32px; height:52px;
-    display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
-  .topbar-brand { font-size:17px; font-weight:800; color:var(--accent); }
-  .topbar-user  { font-size:13px; color:var(--muted); }
-  .topbar-user a { color:var(--muted); text-decoration:none; margin-left:14px; }
-  .topbar-user a:hover { color:var(--accent); }
-  .topbar-greeting { font-size:14px; font-weight:600; color:var(--muted); }
-  .topbar-link { font-size:13px; color:var(--muted); text-decoration:none; padding:0 6px; }
-  .topbar-link:hover { color:var(--accent); }
-  .topbar-logout { background:transparent; border:1px solid var(--accent); border-radius:4px;
+  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:#f5f5f5; color:var(--text); min-height:100vh; }
+  /* ── N3 Site Header ── */
+  .site-header { background:#d7d7d7; border-bottom:1px solid #ccc; padding:0 40px; height:54px;
+    display:flex; align-items:center; position:sticky; top:0; z-index:20; }
+  .site-header-left { flex:1; display:flex; align-items:center; gap:10px; }
+  .site-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .logo-icon { width:30px; height:30px; background:var(--accent); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#111; font-weight:700; font-size:11px; letter-spacing:.4px; flex-shrink:0; }
+  .logo-text { font-size:15px; font-weight:700; color:#222; letter-spacing:.2px; }
+  .logo-text span { color:var(--accent); }
+  .site-header-center { flex:1; display:flex; justify-content:center; align-items:center; }
+  .site-greeting { font-size:14px; font-weight:600; color:#555; }
+  .site-header-right { flex:1; display:flex; align-items:center; justify-content:flex-end; gap:12px; }
+  #site-clock { font-size:13px; font-weight:700; color:#333; font-variant-numeric:tabular-nums; }
+  .header-nav-link { font-size:13px; color:#555; text-decoration:none; padding:0 4px; }
+  .header-nav-link:hover { color:var(--accent); }
+  .header-logout { background:transparent; border:1px solid var(--accent); border-radius:4px;
     padding:5px 14px; font-family:inherit; font-size:12px; font-weight:600; letter-spacing:.3px;
-    color:var(--accent); margin-left:8px; cursor:pointer; transition:background .15s,color .15s; }
-  .topbar-logout:hover { background:var(--accent); color:#111; }
-  .content { max-width:900px; margin:0 auto; padding:40px 24px 80px; }
+    color:var(--accent); cursor:pointer; transition:background .15s,color .15s; }
+  .header-logout:hover { background:var(--accent); color:#111; }
+  .content { max-width:1060px; margin:0 auto; padding:40px 24px 80px; }
   .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
   .page-header h1 { font-size:22px; font-weight:800; }
   .btn { display:inline-flex; align-items:center; gap:6px; border-radius:5px; padding:8px 16px;
@@ -61,22 +66,23 @@
 </head>
 <body>
 
-<div class="topbar">
-  <div style="flex:1;display:flex;align-items:center">
-    <a href="<%= request.getContextPath() %>/dashboard/" class="topbar-brand" style="text-decoration:none">
-      <span style="color:var(--accent)">My</span><span style="color:#1a1a1a">Blog</span>
+<header class="site-header">
+  <div class="site-header-left">
+    <a class="site-logo" href="/">
+      <div class="logo-icon">EA</div>
+      <span class="logo-text"><span>athanassiou</span>.me</span>
     </a>
   </div>
-  <div style="flex:1;display:flex;justify-content:center;align-items:center">
-    <span class="topbar-greeting"><%= session.getAttribute("displayName") %></span>
+  <div class="site-header-center">
+    <span class="site-greeting">Hallo, <%= session.getAttribute("displayName") %></span>
   </div>
-  <div style="flex:1;display:flex;align-items:center;justify-content:flex-end;gap:4px">
-    <a href="/" class="topbar-link">← Home</a>
+  <div class="site-header-right">
+    <span id="site-clock"></span>
     <form method="post" action="<%= request.getContextPath() %>/logout" style="display:inline">
-      <button type="submit" class="topbar-logout">Abmelden</button>
+      <button type="submit" class="header-logout">Abmelden</button>
     </form>
   </div>
-</div>
+</header>
 
 <div class="content">
   <div class="page-header">
@@ -141,5 +147,17 @@ function autoSlug(v) {
     .replace(/[äöüßÄÖÜ]/g,m=>u[m]||m).replace(/[^a-z0-9\s-]/g,'')
     .trim().replace(/\s+/g,'-').replace(/-+/g,'-');
 }
+</script>
+<script>
+(function() {
+  const el = document.getElementById('site-clock');
+  function tick() {
+    const now = new Date();
+    const date = now.toLocaleDateString('de-DE', { weekday:'short', day:'2-digit', month:'2-digit', year:'numeric' });
+    const time = now.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    el.innerHTML = '<span style="color:var(--accent)">' + date + '</span><span style="color:#999"> · </span>' + time;
+  }
+  tick(); setInterval(tick, 1000);
+})();
 </script>
 </body></html>

@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <title>Seite nicht gefunden</title>
 <style>
-  body { font-family: 'Segoe UI','Helvetica Neue',Arial,sans-serif; display: flex; align-items: center; justify-content: center;
+  body { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; display: flex; align-items: center; justify-content: center;
          min-height: 100vh; margin: 0; background: #f2f2f2; color: #1a1a1a; }
   .box { text-align: center; }
   h1 { font-size: 72px; font-weight: 800; margin: 0; color: #e5a00d; }

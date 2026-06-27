@@ -15,7 +15,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: 'Segoe UI','Helvetica Neue',Arial,sans-serif;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     background: #f2f2f2;
     min-height: 100vh;
     display: flex;

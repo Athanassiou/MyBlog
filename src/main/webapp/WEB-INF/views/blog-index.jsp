@@ -14,22 +14,20 @@
   boolean isTag     = filterTag != null && !filterTag.isBlank();
 %>
 <title><%= blog != null ? blog.name : "Blog" %> · MyBlog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<%= request.getContextPath() %>/fa/css/all.css">
 <link rel="alternate" type="application/rss+xml" title="<%= blog != null ? blog.name : "RSS" %>"
       href="<%= request.getContextPath() %>/<%= blogSlug %>/feed">
 <style>
   :root { --accent:<%= accent %>; --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:Raleway,sans-serif; background:#fff; color:var(--text); }
-  .header { border-bottom:3px solid var(--accent); padding:44px 56px 28px; }
+  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:#f5f5f5; color:var(--text); }
+  .header { border-bottom:3px solid var(--accent); padding:44px 0 28px; }
   .header h1 { font-size:34px; font-weight:800; }
-  .header p  { color:var(--muted); margin-top:6px; font-size:15px; }
-  .header-row { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+  .header p  { color:var(--muted); margin-top:6px; font-size:15px; line-height:1.6; }
+  .header-row { max-width:1060px; margin:0 auto; padding:0 32px; display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; }
   /* ── N3 Site Header ── */
   .site-header {
-    background: #111; border-bottom: 1px solid #2e2e2e;
+    background: #d7d7d7; border-bottom: 1px solid #ccc;
     padding: 0 40px; height: 54px;
     display: flex; align-items: center;
     position: sticky; top: 0; z-index: 20;
@@ -40,12 +38,12 @@
     display:flex; align-items:center; justify-content:center;
     color:#111; font-weight:700; font-size:11px; letter-spacing:.4px; flex-shrink:0;
   }
-  .logo-text { font-size:15px; font-weight:700; color:#e0e0e0; letter-spacing:.2px; }
+  .logo-text { font-size:15px; font-weight:700; color:#222; letter-spacing:.2px; }
   .logo-text span { color:var(--accent); }
   .site-header-center { flex:1; display:flex; justify-content:center; align-items:center; }
-  #user-greeting { font-size:14px; font-weight:600; color:#888; display:none; }
+  #user-greeting { font-size:14px; font-weight:600; color:#555; display:none; }
   .site-header-right { flex:1; display:flex; align-items:center; justify-content:flex-end; gap:12px; }
-  #site-clock { font-size:13px; font-weight:700; color:#e0e0e0; font-variant-numeric:tabular-nums; }
+  #site-clock { font-size:13px; font-weight:700; color:#333; font-variant-numeric:tabular-nums; }
   .header-login-btn {
     font-family:inherit; font-size:12px; font-weight:600; padding:5px 14px;
     border-radius:4px; cursor:pointer; text-decoration:none; letter-spacing:.3px;
@@ -69,7 +67,7 @@
   .filter-banner a { color:var(--muted); font-size:12px; text-decoration:none; }
   .filter-banner a:hover { color:var(--accent); }
   /* Liste */
-  .list { max-width:720px; margin:36px auto; padding:0 24px 80px; }
+  .list { max-width:1060px; margin:36px auto; padding:0 32px 80px; }
   .item { border-bottom:1px solid var(--border); padding:22px 0; }
   .item:last-child { border-bottom:none; }
   .item a.item-link { text-decoration:none; color:inherit; display:block; }
@@ -183,7 +181,7 @@
     const date = now.toLocaleDateString('de-DE', { weekday:'short', day:'2-digit', month:'2-digit', year:'numeric' });
     const time = now.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
     el.innerHTML = '<span style="color:var(--accent)">' + date + '</span>'
-                 + '<span style="color:#555"> · </span>' + time;
+                 + '<span style="color:#999"> · </span>' + time;
   }
   tick();
   setInterval(tick, 1000);
