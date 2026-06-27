@@ -5,6 +5,7 @@
        String hBlogLink    — Optionaler vollständiger Link für 2. Ebene (null → /dashboard/<hBlogSlug>/)
        String hPageTitle   — Statischer Text 3. Ebene, z.B. "Einstellungen" (null = keine 3. Ebene)
        String hTopbarTitle — Live-aktualisierter Text 3. Ebene, id="topbar-title" (null = nein) --%>
+<script>if(localStorage.getItem('greyMode')==='1')document.body.classList.add('grey-mode');</script>
 <header class="site-header">
   <div class="site-header-left">
     <a class="site-logo" href="/">

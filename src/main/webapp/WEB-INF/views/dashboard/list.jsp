@@ -15,9 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><%= blogName %> · Dashboard · MyBlog</title>
 <style>
-  :root { --accent:#e5a00d; --accent-dim:rgba(229,160,13,.10); --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
   <%@ include file="/WEB-INF/views/fragments/dashboard-common.css" %>
-  <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
   .content { max-width:1060px; }
   .article-title { font-weight:700; color:var(--text); }
   .article-sub   { font-size:12px; color:var(--muted); margin-top:2px; }
@@ -120,8 +118,7 @@
   <% } %>
 </div>
 
-<script>
+<%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
 <%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
-</script>
 </body>
 </html>

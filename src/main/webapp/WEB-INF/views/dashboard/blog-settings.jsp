@@ -13,9 +13,8 @@
 %>
 <title><%= blogName %> · Einstellungen · MyBlog</title>
 <style>
-  :root { --accent:<%= accent %>; --accent-dim:rgba(229,160,13,.10); --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
   <%@ include file="/WEB-INF/views/fragments/dashboard-common.css" %>
-  <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
+  :root { --accent:<%= accent %>; }
   .content { max-width:860px; }
   .page-header { margin-bottom:24px; }
   .page-header h1 { margin-top:4px; }
@@ -49,7 +48,7 @@
 
       <div class="field">
         <label>Slug (URL)</label>
-        <input type="text" value="<%= blogSlug %>" disabled style="background:#f5f5f5;color:var(--muted)">
+        <input type="text" value="<%= blogSlug %>" disabled style="background:var(--input-bg);color:var(--muted)">
       </div>
 
       <div class="field">
@@ -109,7 +108,6 @@ function syncColorFromHex(val) {
   if (/^#[0-9a-fA-F]{6}$/.test(val)) document.getElementById('color-picker').value = val;
 }
 </script>
-<script>
+<%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
 <%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
-</script>
 </body></html>

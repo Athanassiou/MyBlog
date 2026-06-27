@@ -19,10 +19,10 @@
 <style>
   :root {
     --accent: <%= accent %>;
-    --accent-dim: rgba(229,160,13,.10);
-    --sidebar-bg: #f2f2f2; --sidebar-border: #e0e0e0;
-    --body-bg: #ffffff; --content-bg: #ffffff;
-    --text: #1a1a1a; --muted: #777; --border: #e8e8e8;
+    --accent-dim: rgba(229,160,13,.12);
+    --sidebar-bg: #252525; --sidebar-border: #3e3e3e;
+    --body-bg: #1c1c1c; --content-bg: #1c1c1c;
+    --text: #e0e0e0; --muted: #888; --border: #3e3e3e;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:var(--body-bg); color:var(--text); font-size:15px; line-height:1.78; }
@@ -75,7 +75,7 @@
   li { margin-bottom:4px; }
   blockquote { border-left:3px solid var(--accent); padding:12px 20px; margin:20px 0;
                background:var(--accent-dim); border-radius:0 4px 4px 0; font-style:italic; }
-  pre { background:#f0f4fa; border:1px solid var(--border); border-radius:5px;
+  pre { background:#2a2d3a; border:1px solid var(--border); border-radius:5px;
         padding:16px 20px; overflow-x:auto; margin:20px 0; }
   code { font-family:'JetBrains Mono',Consolas,monospace; font-size:13px; }
   hr { border:none; border-top:2px solid var(--border); margin:32px 0; }
@@ -95,14 +95,14 @@
   table { border-collapse:collapse; width:100%; margin:16px 0; font-size:14px; font-family:inherit; }
   th, td { border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top; font-family:inherit; }
   th { background:var(--accent-dim); font-weight:700; }
-  tr:nth-child(even) td { background:#fafafa; }
+  tr:nth-child(even) td { background:rgba(255,255,255,.05); }
   .img-row img { flex:1; min-width:0; width:0; }
 
   /* ── PDF-Link ── */
-  .pdf-link { display:flex; align-items:center; gap:18px; background:#f4f7fc;
+  .pdf-link { display:flex; align-items:center; gap:18px; background:#1e2a3a;
     border:1px solid var(--border); border-left:3px solid var(--accent);
     border-radius:3px; padding:16px 20px; text-decoration:none; color:inherit; margin:16px 0; }
-  .pdf-link:hover { background:#eef2f9; }
+  .pdf-link:hover { background:#243040; }
   .pdf-link-icon { font-size:32px; opacity:.55; flex-shrink:0; line-height:1; }
   .pdf-link-thumb { width:56px; flex-shrink:0; border-radius:2px; }
   .pdf-link-title { font-weight:700; font-size:14px; }
@@ -123,21 +123,23 @@
     padding:14px 18px; margin:20px 0; border-left:3px solid var(--accent); }
   .infobox-icon { font-size:18px; flex-shrink:0; line-height:1.5; }
   .infobox-text { font-size:14px; line-height:1.65; }
-  .infobox.info    { background:#f0f7ff; border-color:#2272c3; }
-  .infobox.warning { background:#fffbeb; border-color:#d97706; }
-  .infobox.tip     { background:#f0fdf4; border-color:#16a34a; }
+  .infobox.info    { background:#101a2e; border-color:#2272c3; }
+  .infobox.warning { background:#221800; border-color:#d97706; }
+  .infobox.tip     { background:#0e1e0e; border-color:#16a34a; }
 
-  /* ── Grey Mode ── */
+  /* ── Grey Mode (Light) ── */
   body.grey-mode {
-    --body-bg:#ddd; --content-bg:#e8e8e8;
-    --sidebar-bg:#d4d4d4; --sidebar-border:#bbb; --border:#ccc;
+    --body-bg: #ffffff; --content-bg: #ffffff;
+    --sidebar-bg: #f2f2f2; --sidebar-border: #e0e0e0;
+    --text: #1a1a1a; --muted: #777; --border: #e8e8e8;
   }
-  body.grey-mode { background:var(--body-bg); }
-  body.grey-mode nav { background:var(--sidebar-bg); border-color:var(--sidebar-border); }
-  body.grey-mode .pdf-link { background:#dde4ef; }
-  body.grey-mode .infobox.info    { background:#d8e8f5; }
-  body.grey-mode .infobox.warning { background:#f5edcc; }
-  body.grey-mode .infobox.tip     { background:#d4edda; }
+  body.grey-mode pre { background: #f0f4fa; }
+  body.grey-mode tr:nth-child(even) td { background: #fafafa; }
+  body.grey-mode .pdf-link { background: #f4f7fc; }
+  body.grey-mode .pdf-link:hover { background: #eef2f9; }
+  body.grey-mode .infobox.info    { background: #f0f7ff; border-color: #2272c3; }
+  body.grey-mode .infobox.warning { background: #fffbeb; border-color: #d97706; }
+  body.grey-mode .infobox.tip     { background: #f0fdf4; border-color: #16a34a; }
 
   .article-nav {
     display:flex; justify-content:space-between; align-items:center;
@@ -191,6 +193,7 @@
 </style>
 </head>
 <body>
+<script>if(localStorage.getItem('greyMode')==='1')document.body.classList.add('grey-mode');</script>
 <div class="layout">
   <nav id="sidebar">
     <div class="nav-top">
@@ -533,9 +536,22 @@
 
 <script>
 function toggleGreyMode() {
-  document.body.classList.toggle('grey-mode');
-  document.getElementById('grey-btn').classList.toggle('active');
+  var on = document.body.classList.toggle('grey-mode');
+  var btn = document.getElementById('grey-btn');
+  btn.classList.toggle('active', on);
+  var label = btn.querySelector('.btn-label');
+  if (label) label.textContent = on ? 'Dark Mode' : 'Grey Mode';
+  localStorage.setItem('greyMode', on ? '1' : '0');
 }
+(function(){
+  var on = document.body.classList.contains('grey-mode');
+  var btn = document.getElementById('grey-btn');
+  if (btn) {
+    btn.classList.toggle('active', on);
+    var label = btn.querySelector('.btn-label');
+    if (label) label.textContent = on ? 'Dark Mode' : 'Grey Mode';
+  }
+})();
 function toggleSidebar() {
   const nav = document.getElementById('sidebar');
   nav.classList.toggle('collapsed');

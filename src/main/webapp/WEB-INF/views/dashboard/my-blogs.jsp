@@ -6,12 +6,10 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard · MyBlog</title>
 <style>
-  :root { --accent:#e5a00d; --accent-dim:rgba(229,160,13,.10); --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
   <%@ include file="/WEB-INF/views/fragments/dashboard-common.css" %>
-  <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
   .content { max-width:1060px; }
   .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
-  .blog-card { background:#fff; border:1px solid var(--border); border-radius:10px;
+  .blog-card { background:var(--card-bg); border:1px solid var(--border); border-radius:10px;
     padding:24px 22px; text-decoration:none; color:inherit; display:block;
     transition:box-shadow .15s,border-color .15s; position:relative; }
   .blog-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.08); }
@@ -25,7 +23,7 @@
   .overlay { position:fixed; inset:0; background:rgba(0,0,0,.35);
     display:none; align-items:center; justify-content:center; z-index:100; }
   .overlay.open { display:flex; }
-  .dialog { background:#fff; border-radius:10px; padding:36px 40px; width:100%; max-width:460px;
+  .dialog { background:var(--card-bg); border-radius:10px; padding:36px 40px; width:100%; max-width:460px;
     box-shadow:0 8px 40px rgba(0,0,0,.15); }
   .dialog h2 { font-size:20px; font-weight:800; margin-bottom:22px; }
   .dialog-actions { display:flex; gap:10px; margin-top:20px; }
@@ -88,7 +86,7 @@
       </div>
       <input type="hidden" name="accentColor" value="#e5a00d">
       <div class="dialog-actions">
-        <button type="button" class="btn" style="border:1px solid var(--border);background:#fff"
+        <button type="button" class="btn" style="border:1px solid var(--border);background:var(--card-bg)"
                 onclick="document.getElementById('new-overlay').classList.remove('open')">Abbrechen</button>
         <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center">Blog anlegen</button>
       </div>
@@ -104,7 +102,6 @@ function autoSlug(v) {
     .trim().replace(/\s+/g,'-').replace(/-+/g,'-');
 }
 </script>
-<script>
+<%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
 <%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
-</script>
 </body></html>

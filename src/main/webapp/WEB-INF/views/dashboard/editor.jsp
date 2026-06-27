@@ -15,15 +15,8 @@
 %>
 <title><%= pageTitle %> · Dashboard · MyBlog</title>
 <style>
-  :root {
-    --accent:     <%= (!isNew && article.accentColor != null) ? article.accentColor : "#e5a00d" %>;
-    --accent-dim: rgba(229,160,13,.10);
-    --border:     #e8e8e8;
-    --text:       #1a1a1a;
-    --muted:      #777;
-  }
   <%@ include file="/WEB-INF/views/fragments/dashboard-common.css" %>
-  <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
+  :root { --accent: <%= (!isNew && article.accentColor != null) ? article.accentColor : "#e5a00d" %>; }
 
   /* ── Editor-Aktionsleiste ── */
   .editor-actions { display:flex; gap:8px; justify-content:flex-end; margin-bottom:20px; }
@@ -38,7 +31,7 @@
   .editor-wrap { max-width:860px; margin:0 auto; padding:32px 24px 80px; }
 
   /* ── Meta-Karte ── */
-  .meta-card { background:#fff; border:1px solid var(--border); border-radius:8px;
+  .meta-card { background:var(--card-bg); border:1px solid var(--border); border-radius:8px;
     padding:24px 28px; margin-bottom:24px; }
   .meta-row { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px; }
   .meta-row:last-child { margin-bottom:0; }
@@ -57,14 +50,14 @@
     border:1px solid var(--border); background:var(--accent); flex-shrink:0; }
 
   /* ── Editor-Bereich ── */
-  .editor-card { background:#fff; border:1px solid var(--border); border-radius:8px;
+  .editor-card { background:var(--card-bg); border:1px solid var(--border); border-radius:8px;
     padding:32px 40px; min-height:400px; }
   #editorjs { outline:none; }
 
   /* ── Neu-Artikel Dialog ── */
   .new-overlay { position:fixed; inset:0; background:rgba(0,0,0,.35);
     display:flex; align-items:center; justify-content:center; z-index:100; }
-  .new-card { background:#fff; border-radius:10px; padding:36px 40px;
+  .new-card { background:var(--card-bg); border-radius:10px; padding:36px 40px;
     width:100%; max-width:440px; box-shadow:0 8px 40px rgba(0,0,0,.15); }
   .new-card h2 { font-size:20px; font-weight:800; margin-bottom:22px; }
 </style>
@@ -277,7 +270,7 @@ class PdfLinkTool {
     ].forEach(([key, ph]) => {
       const inp = document.createElement('input');
       inp.type='text'; inp.placeholder=ph; inp.value=this.data[key]||'';
-      inp.style.cssText = 'border:1px solid #e8e8e8;border-radius:4px;padding:6px 9px;font-size:13px;width:100%;box-sizing:border-box;background:#fff';
+      inp.style.cssText = 'border:1px solid var(--border);border-radius:4px;padding:6px 9px;font-size:13px;width:100%;box-sizing:border-box;background:var(--input-bg);color:var(--text)';
       inp.oninput = () => { this.data[key] = inp.value; };
       this.wrapper.append(inp);
     });
@@ -364,7 +357,7 @@ class InfoboxTool {
     this.wrapper.innerHTML = '';
     this.wrapper.style.cssText = `border-radius:4px;padding:14px 16px;border-left:3px solid ${cfg.border};background:${cfg.bg}`;
     const sel = document.createElement('select');
-    sel.style.cssText = 'border:1px solid #e8e8e8;border-radius:4px;padding:3px 8px;font-size:12px;margin-bottom:10px;font-family:inherit;background:#fff';
+    sel.style.cssText = 'border:1px solid var(--border);border-radius:4px;padding:3px 8px;font-size:12px;margin-bottom:10px;font-family:inherit;background:var(--input-bg);color:var(--text)';
     Object.entries(InfoboxTool.STYLES).forEach(([k,v]) => {
       const o = document.createElement('option');
       o.value=k; o.textContent=v.label; if(k===this.data.style) o.selected=true;
@@ -502,6 +495,7 @@ function autoSlug(title) {
 </script>
 <% } %>
 
+<%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
 <%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </body>
 </html>
