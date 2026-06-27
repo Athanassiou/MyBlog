@@ -144,21 +144,6 @@
 
 <%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
 <script>
-(async () => {
-  try {
-    const r = await fetch('/MyBlog/api/session', { credentials: 'include' });
-    const d = await r.json();
-    if (d.loggedIn) {
-      const g = document.getElementById('user-greeting');
-      g.textContent = 'Hallo, ' + d.displayName;
-      g.style.display = 'block';
-      const loginBtn = document.getElementById('header-login-btn');
-      if (loginBtn) loginBtn.style.display = 'none';
-      const logoutForm = document.getElementById('header-logout-form');
-      if (logoutForm) logoutForm.style.display = 'block';
-    }
-  } catch(e) {}
-})();
 <%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </script>
 </body></html>
