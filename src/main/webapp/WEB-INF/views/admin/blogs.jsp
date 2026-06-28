@@ -7,7 +7,6 @@
 <title>Admin · Blogs · MyBlog</title>
 <style>
 <%@ include file="admin-common.css" %>
-<%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
   .content { max-width:1060px; }
   .accent-dot { display:inline-block; width:12px; height:12px; border-radius:50%; vertical-align:middle; margin-right:6px; }
 </style>
@@ -64,5 +63,6 @@
     </table>
   </div>
 </div>
+<%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
 <%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </body></html>

@@ -16,7 +16,6 @@
 <title><%= isNew ? "Neuer Blog" : "Blog bearbeiten" %> · Admin · MyBlog</title>
 <style>
 <%@ include file="admin-common.css" %>
-<%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
   .content { max-width:860px; }
   .color-row { display:flex; align-items:center; gap:10px; }
   input[type=color] { width:36px; height:36px; border:1px solid var(--border); border-radius:5px;
@@ -89,6 +88,13 @@
           <option value="invite"  <%= "invite".equals(blog.visibility)  ? "selected" : "" %>>Nur Eingeladene</option>
         </select>
       </div>
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;cursor:pointer">
+          <input type="checkbox" name="showPlatformHeader"
+                 <%= blog.showPlatformHeader ? "checked" : "" %>>
+          Plattform-Header anzeigen (athanassiou.me Logo, Uhr, Login)
+        </label>
+      </div>
       <% } %>
 
       <div style="display:flex;gap:10px;margin-top:20px">
@@ -115,5 +121,6 @@ function syncColorFromHex(val) {
 const slugEl = document.getElementById('slug');
 if (slugEl) slugEl.addEventListener('input', () => slugEl._edited = true);
 </script>
+<%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
 <%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </body></html>

@@ -18,9 +18,23 @@
 <link rel="alternate" type="application/rss+xml" title="<%= blog != null ? blog.name : "RSS" %>"
       href="<%= request.getContextPath() %>/<%= blogSlug %>/feed">
 <style>
-  :root { --accent:<%= accent %>; --border:#e8e8e8; --text:#1a1a1a; --muted:#777; }
+  :root {
+    --accent:<%= accent %>; --accent-dim:rgba(229,160,13,.12);
+    --border:#3e3e3e; --text:#e0e0e0; --muted:#888;
+    --bg:#1c1c1c; --card-bg:#252525; --input-bg:#2e2e2e;
+    --header-bg:#111111; --header-border:#3e3e3e;
+    --header-text:#e0e0e0; --header-sep:#555; --header-ctx:#aaa;
+    --header-muted:#888; --header-greeting:#888; --header-clock:#e0e0e0;
+  }
+  .grey-mode {
+    --border:#e8e8e8; --text:#1a1a1a; --muted:#777;
+    --bg:#f5f5f5; --card-bg:#ffffff; --input-bg:#f0f0f0;
+    --header-bg:#d7d7d7; --header-border:#ccc;
+    --header-text:#222; --header-sep:#bbb; --header-ctx:#444;
+    --header-muted:#777; --header-greeting:#555; --header-clock:#333;
+  }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:#f5f5f5; color:var(--text); }
+  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:var(--bg); color:var(--text); }
   .header { border-bottom:3px solid var(--accent); padding:44px 0 28px; }
   .header h1 { font-size:34px; font-weight:800; }
   .header p  { color:var(--muted); margin-top:6px; font-size:15px; line-height:1.6; }
@@ -32,12 +46,13 @@
   /* Suchfeld */
   .search-form { display:flex; gap:6px; margin-top:16px; }
   .search-input { border:1.5px solid var(--border); border-radius:5px; padding:8px 12px;
-    font-family:inherit; font-size:14px; outline:none; transition:border-color .15s; width:260px; }
+    font-family:inherit; font-size:14px; outline:none; transition:border-color .15s; width:260px;
+    background:var(--input-bg); color:var(--text); }
   .search-input:focus { border-color:var(--accent); }
   .search-btn { background:var(--accent); color:#fff; border:none; border-radius:5px;
     padding:8px 14px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
   /* Filter-Banner */
-  .filter-banner { display:flex; align-items:center; gap:10px; background:#f5f5f5;
+  .filter-banner { display:flex; align-items:center; gap:10px; background:var(--card-bg);
     border-left:3px solid var(--accent); padding:10px 16px; font-size:14px; margin-bottom:8px; }
   .filter-banner a { color:var(--muted); font-size:12px; text-decoration:none; }
   .filter-banner a:hover { color:var(--accent); }
@@ -53,11 +68,15 @@
   .dot { display:inline-block; width:10px; height:10px; border-radius:50%;
     background:var(--accent); margin-right:8px; vertical-align:middle; }
   /* Tag-Pillen */
-  .tag-pill { display:inline-block; background:#f0f0f0; color:#555; border-radius:20px;
+  .tag-pill { display:inline-block; background:var(--input-bg); color:var(--muted); border-radius:20px;
     padding:2px 9px; font-size:11px; font-weight:600; text-decoration:none; transition:background .15s; }
   .tag-pill:hover { background:var(--accent); color:#fff; }
   .cmt-badge { font-size:13px; color:var(--accent); font-weight:600; white-space:nowrap; }
   .empty { text-align:center; padding:60px 0; color:var(--muted); }
+  .site-footer { text-align:center; padding:20px 32px; border-top:1px solid var(--border); }
+  .footer-toggle { background:var(--card-bg); border:1px solid var(--border); border-radius:5px;
+    color:var(--muted); font-size:12px; padding:6px 14px; cursor:pointer; font-family:inherit; transition:color .15s,border-color .15s; }
+  .footer-toggle:hover, .footer-toggle.active { color:var(--accent); border-color:var(--accent); }
 </style>
 </head>
 <body>
@@ -123,20 +142,6 @@
   <% } } %>
 </div>
 
-<script>
-(async () => {
-  try {
-    const r = await fetch('/MyBlog/api/session', { credentials: 'include' });
-    const d = await r.json();
-    if (d.loggedIn) {
-      const g = document.getElementById('user-greeting');
-      g.textContent = 'Hallo, ' + d.displayName;
-      g.style.display = 'block';
-      const btn = document.getElementById('header-login-btn');
-      if (btn) btn.style.display = 'none';
-    }
-  } catch(e) {}
-})();
+<%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
 <%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
-</script>
 </body></html>

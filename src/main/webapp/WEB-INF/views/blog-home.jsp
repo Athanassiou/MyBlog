@@ -24,10 +24,23 @@
 <link rel="alternate" type="application/rss+xml" title="<%= blog != null ? blog.name : "RSS" %>"
       href="<%= ctx %>/<%= slug %>/feed">
 <style>
-  :root { --accent:<%= accent %>; --accent-dim:rgba(229,160,13,.10); --border:#e8e8e8;
-          --text:#1a1a1a; --muted:#777; }
+  :root {
+    --accent:<%= accent %>; --accent-dim:rgba(229,160,13,.12);
+    --border:#3e3e3e; --text:#e0e0e0; --muted:#888;
+    --bg:#1c1c1c; --card-bg:#252525; --input-bg:#2e2e2e;
+    --header-bg:#111111; --header-border:#3e3e3e;
+    --header-text:#e0e0e0; --header-sep:#555; --header-ctx:#aaa;
+    --header-muted:#888; --header-greeting:#888; --header-clock:#e0e0e0;
+  }
+  .grey-mode {
+    --border:#e8e8e8; --text:#1a1a1a; --muted:#777;
+    --bg:#f5f5f5; --card-bg:#ffffff; --input-bg:#f0f0f0;
+    --header-bg:#d7d7d7; --header-border:#ccc;
+    --header-text:#222; --header-sep:#bbb; --header-ctx:#444;
+    --header-muted:#777; --header-greeting:#555; --header-clock:#333;
+  }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:#f5f5f5; color:var(--text); }
+  body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:var(--bg); color:var(--text); }
 
   /* ── Header ── */
   .header { border-bottom:3px solid var(--accent); padding:44px 0 28px; }
@@ -42,11 +55,12 @@
   .header-img img { width:100%; display:block; border-radius:6px; }
   .search-form { display:flex; gap:6px; }
   .search-input { border:1.5px solid var(--border); border-radius:5px; padding:8px 12px;
-    font-family:inherit; font-size:14px; outline:none; transition:border-color .15s; width:260px; }
+    font-family:inherit; font-size:14px; outline:none; transition:border-color .15s; width:260px;
+    background:var(--input-bg); color:var(--text); }
   .search-input:focus { border-color:var(--accent); }
   .search-btn { background:var(--accent); color:#fff; border:none; border-radius:5px;
     padding:8px 14px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
-  .tag-pill { display:inline-block; background:#f0f0f0; color:#555; border-radius:20px;
+  .tag-pill { display:inline-block; background:var(--input-bg); color:var(--muted); border-radius:20px;
     padding:2px 9px; font-size:11px; font-weight:600; text-decoration:none; transition:background .15s; }
   .tag-pill:hover { background:var(--accent); color:#fff; }
   .cmt-badge { font-size:13px; color:var(--accent); font-weight:600; white-space:nowrap; }
@@ -54,7 +68,7 @@
   /* ── Sections ── */
   .content { max-width:1060px; margin:0 auto; padding:0 32px 60px; }
   .section-title {
-    font-size:20px; font-weight:700; margin:36px 0 16px; color:#333;
+    font-size:20px; font-weight:700; margin:36px 0 16px; color:var(--text);
     display:flex; align-items:center; gap:12px;
   }
   .section-title::after { content:''; flex:1; height:2px; background:var(--accent); }
@@ -72,12 +86,12 @@
   /* ── Große Karten (neuere Beiträge) ── */
   .card-lg {
     flex:0 0 calc((100% - 48px) / 3); min-width:220px; min-height:420px;
-    background:#fff; border-radius:8px; overflow:hidden;
-    box-shadow:0 3px 10px rgba(0,0,0,.10);
+    background:var(--card-bg); border-radius:8px; overflow:hidden;
+    box-shadow:0 3px 10px rgba(0,0,0,.25);
     text-decoration:none; color:inherit; display:flex; flex-direction:column;
     scroll-snap-align:start; transition:box-shadow .2s, transform .2s;
   }
-  .card-lg:hover { box-shadow:0 8px 24px rgba(0,0,0,.18); transform:translateY(-3px); }
+  .card-lg:hover { box-shadow:0 8px 24px rgba(0,0,0,.40); transform:translateY(-3px); }
   .card-lg-img { width:100%; flex:1; object-fit:cover; display:block; opacity:.8; min-height:0; }
   .card-lg-placeholder {
     flex:1; min-height:0; background:#1c1c1c;
@@ -85,39 +99,39 @@
   }
   .card-lg-placeholder span { color:var(--accent); font-size:18px; font-weight:800; line-height:1.3; }
   .card-lg-body { padding:20px 22px 20px; flex:1; display:flex; flex-direction:column; }
-  .card-lg-body h3 { font-size:17px; font-weight:700; margin-bottom:6px; color:#111; line-height:1.35; }
+  .card-lg-body h3 { font-size:17px; font-weight:700; margin-bottom:6px; color:var(--text); line-height:1.35; }
   .card-lg-date { font-size:12px; color:var(--muted); margin-bottom:12px; }
   .card-lg-body p {
-    font-size:14px; color:#444; margin:0 0 14px; line-height:1.6; flex:1;
+    font-size:14px; color:var(--muted); margin:0 0 14px; line-height:1.6; flex:1;
     display:-webkit-box; -webkit-line-clamp:8; -webkit-box-orient:vertical; overflow:hidden;
   }
   .card-footer { display:flex; align-items:center; justify-content:space-between; margin-top:auto; }
-  .card-btn { padding:5px 12px; background:#fff; border:1px solid #ccc;
-    font-size:11px; font-weight:700; color:#333; border-radius:3px; }
-  .card-lg:hover .card-btn { background:#f0f0f0; border-color:#999; }
+  .card-btn { padding:5px 12px; background:var(--input-bg); border:1px solid var(--border);
+    font-size:11px; font-weight:700; color:var(--muted); border-radius:3px; }
+  .card-lg:hover .card-btn { border-color:var(--accent); color:var(--accent); }
 
   /* ── Kleine Karten (ältere Beiträge) ── */
   .card-sm {
     flex:0 0 calc((100% - 80px) / 6); min-width:160px;
-    background:#fff; border-radius:6px; overflow:hidden;
-    box-shadow:0 2px 6px rgba(0,0,0,.08);
+    background:var(--card-bg); border-radius:6px; overflow:hidden;
+    box-shadow:0 2px 6px rgba(0,0,0,.20);
     text-decoration:none; color:inherit; display:block;
     scroll-snap-align:start; transition:box-shadow .2s, transform .2s;
   }
-  .card-sm:hover { box-shadow:0 5px 16px rgba(0,0,0,.16); transform:translateY(-2px); }
+  .card-sm:hover { box-shadow:0 5px 16px rgba(0,0,0,.35); transform:translateY(-2px); }
   .card-sm-img { width:100%; height:110px; object-fit:cover; display:block; opacity:.8; }
   .card-sm-placeholder {
-    width:100%; height:110px; background:#dde;
-    display:flex; align-items:center; justify-content:center; font-size:28px; color:#999;
+    width:100%; height:110px; background:var(--input-bg);
+    display:flex; align-items:center; justify-content:center; font-size:28px; color:var(--muted);
   }
   .card-sm-body { padding:8px 10px 10px; }
   .card-sm-body h5 {
-    margin:0 0 3px; font-size:12px; font-weight:700; line-height:1.3; color:#222;
+    margin:0 0 3px; font-size:12px; font-weight:700; line-height:1.3; color:var(--text);
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
   }
   .card-sm-date { font-size:10px; color:var(--muted); margin-bottom:4px; }
   .card-sm-body p {
-    font-size:11px; color:#555; margin:0; line-height:1.4;
+    font-size:11px; color:var(--muted); margin:0; line-height:1.4;
     display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
   }
 
@@ -131,6 +145,10 @@
     .card-lg { flex:0 0 80%; }
     .card-sm { flex:0 0 58%; }
   }
+  .site-footer { text-align:center; padding:20px 32px; border-top:1px solid var(--border); }
+  .footer-toggle { background:var(--card-bg); border:1px solid var(--border); border-radius:5px;
+    color:var(--muted); font-size:12px; padding:6px 14px; cursor:pointer; font-family:inherit; transition:color .15s,border-color .15s; }
+  .footer-toggle:hover, .footer-toggle.active { color:var(--accent); border-color:var(--accent); }
 </style>
 </head>
 <body>
@@ -228,21 +246,7 @@
 
 </div><!-- /content -->
 
-<script>
-(async () => {
-  try {
-    const r = await fetch('/MyBlog/api/session', { credentials: 'include' });
-    const d = await r.json();
-    if (d.loggedIn) {
-      const g = document.getElementById('user-greeting');
-      g.textContent = 'Hallo, ' + d.displayName;
-      g.style.display = 'block';
-      const btn = document.getElementById('header-login-btn');
-      if (btn) btn.style.display = 'none';
-    }
-  } catch(e) {}
-})();
+<%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
 <%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
-</script>
 </body>
 </html>

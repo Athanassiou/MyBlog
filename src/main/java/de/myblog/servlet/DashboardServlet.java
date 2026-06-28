@@ -240,7 +240,7 @@ public class DashboardServlet extends HttpServlet {
                 req.getParameter("subtitle"),
                 req.getParameter("slug"),
                 req.getParameter("accentColor"),
-                req.getParameter("theme"));
+                "on".equals(req.getParameter("showSidebar")));
 
         String blocksJson = req.getParameter("blocks");
         if (blocksJson != null && !blocksJson.isBlank()) {
@@ -256,7 +256,8 @@ public class DashboardServlet extends HttpServlet {
                 req.getParameter("name"),
                 req.getParameter("description"),
                 req.getParameter("accentColor"),
-                req.getParameter("visibility"));
+                req.getParameter("visibility"),
+                "on".equals(req.getParameter("showPlatformHeader")));
         resp.sendRedirect(req.getContextPath() + "/dashboard/" + blog.slug + "/");
     }
 

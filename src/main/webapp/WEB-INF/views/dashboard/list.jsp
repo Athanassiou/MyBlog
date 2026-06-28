@@ -36,6 +36,9 @@
     <h1>Artikel</h1>
     <div style="display:flex;gap:8px">
       <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/">← Meine Blogs</a>
+      <% if (canManage) { %>
+      <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/settings">⚙ Einstellungen</a>
+      <% } %>
       <% if ("owner".equals(userRole) || "admin".equals(userRole)) { %>
       <a class="btn btn-ghost" href="<%= request.getContextPath() %>/admin/members/<%= blog != null ? blog.id : 1 %>">Mitglieder</a>
       <% } %>

@@ -13,6 +13,8 @@ public class Blog {
     public int    ownerId;
     public LocalDateTime createdAt;
 
+    public boolean showPlatformHeader = true;
+
     /** Wird beim Laden für den eingeloggten User befüllt (nicht in DB). */
     public String userRole;
 }

@@ -16,7 +16,7 @@ public class BlogService {
     public Blog findBySlug(String slug) throws SQLException {
         try (Connection c = DB.get();
              PreparedStatement ps = c.prepareStatement(
-                     "SELECT id,slug,name,description,default_accent_color,cover_image,visibility,owner_id,created_at " +
+                     "SELECT id,slug,name,description,default_accent_color,cover_image,visibility,owner_id,created_at,show_platform_header " +
                      "FROM blogs WHERE slug=?")) {
             ps.setString(1, slug);
             try (ResultSet rs = ps.executeQuery()) {
@@ -28,7 +28,7 @@ public class BlogService {
     public Blog findById(int id) throws SQLException {
         try (Connection c = DB.get();
              PreparedStatement ps = c.prepareStatement(
-                     "SELECT id,slug,name,description,default_accent_color,cover_image,visibility,owner_id,created_at " +
+                     "SELECT id,slug,name,description,default_accent_color,cover_image,visibility,owner_id,created_at,show_platform_header " +
                      "FROM blogs WHERE id=?")) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -42,7 +42,7 @@ public class BlogService {
         List<Blog> list = new ArrayList<>();
         try (Connection c = DB.get();
              PreparedStatement ps = c.prepareStatement(
-                     "SELECT id,slug,name,description,default_accent_color,cover_image,visibility,owner_id,created_at " +
+                     "SELECT id,slug,name,description,default_accent_color,cover_image,visibility,owner_id,created_at,show_platform_header " +
                      "FROM blogs ORDER BY created_at DESC")) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) list.add(mapBlog(rs));
@@ -56,7 +56,7 @@ public class BlogService {
         List<Blog> list = new ArrayList<>();
         try (Connection c = DB.get();
              PreparedStatement ps = c.prepareStatement(
-                     "SELECT id,slug,name,description,default_accent_color,cover_image,visibility,owner_id,created_at " +
+                     "SELECT id,slug,name,description,default_accent_color,cover_image,visibility,owner_id,created_at,show_platform_header " +
                      "FROM blogs WHERE visibility='public' ORDER BY created_at DESC")) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) list.add(mapBlog(rs));
@@ -71,7 +71,7 @@ public class BlogService {
         try (Connection c = DB.get();
              PreparedStatement ps = c.prepareStatement(
                      "SELECT b.id,b.slug,b.name,b.description,b.default_accent_color,b.cover_image," +
-                     "b.visibility,b.owner_id,b.created_at,bm.role " +
+                     "b.visibility,b.owner_id,b.created_at,b.show_platform_header,bm.role " +
                      "FROM blogs b JOIN blog_members bm ON b.id=bm.blog_id " +
                      "WHERE bm.user_id=? ORDER BY b.name")) {
             ps.setInt(1, userId);
@@ -108,15 +108,17 @@ public class BlogService {
     }
 
     public void update(int blogId, String name, String description,
-                       String accentColor, String visibility) throws SQLException {
+                       String accentColor, String visibility,
+                       boolean showPlatformHeader) throws SQLException {
         try (Connection c = DB.get();
              PreparedStatement ps = c.prepareStatement(
-                     "UPDATE blogs SET name=?,description=?,default_accent_color=?,visibility=? WHERE id=?")) {
+                     "UPDATE blogs SET name=?,description=?,default_accent_color=?,visibility=?,show_platform_header=? WHERE id=?")) {
             ps.setString(1, name);
             ps.setString(2, description);
             ps.setString(3, accentColor);
             ps.setString(4, visibility);
-            ps.setInt(5, blogId);
+            ps.setBoolean(5, showPlatformHeader);
+            ps.setInt(6, blogId);
             ps.executeUpdate();
         }
     }
@@ -138,8 +140,9 @@ public class BlogService {
         b.defaultAccentColor = rs.getString("default_accent_color");
         b.coverImage         = rs.getString("cover_image");
         b.visibility         = rs.getString("visibility");
-        b.ownerId            = rs.getInt("owner_id");
-        Timestamp ts         = rs.getTimestamp("created_at");
+        b.ownerId             = rs.getInt("owner_id");
+        b.showPlatformHeader  = rs.getBoolean("show_platform_header");
+        Timestamp ts          = rs.getTimestamp("created_at");
         if (ts != null) b.createdAt = ts.toLocalDateTime();
         return b;
     }

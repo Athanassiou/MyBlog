@@ -15,9 +15,7 @@
 <style>
   <%@ include file="/WEB-INF/views/fragments/dashboard-common.css" %>
   :root { --accent:<%= accent %>; }
-  .content { max-width:860px; }
-  .page-header { margin-bottom:24px; }
-  .page-header h1 { margin-top:4px; }
+  .content { max-width:1060px; }
   .color-row { display:flex; align-items:center; gap:10px; }
   input[type=color] { width:36px; height:36px; border:1px solid var(--border); border-radius:5px;
     padding:2px; cursor:pointer; background:none; }
@@ -35,13 +33,31 @@
 
 <div class="content">
   <div class="page-header">
-    <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/" style="font-size:13px;color:var(--muted);text-decoration:none">← <%= blogName %></a>
     <h1>Einstellungen</h1>
+    <div style="display:flex;gap:8px">
+      <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/">← Artikelliste</a>
+    </div>
   </div>
 
   <% if (error != null) { %>
   <div class="error-box"><%= error %></div>
   <% } %>
+
+  <%
+    String _scheme = request.getScheme();
+    String _host   = request.getServerName();
+    int    _port   = request.getServerPort();
+    String _portStr = (_scheme.equals("https") && _port == 443) || (_scheme.equals("http") && _port == 80) ? "" : ":" + _port;
+    String _externalUrl = _scheme + "://" + _host + _portStr + request.getContextPath() + "/" + blogSlug + "/";
+  %>
+  <div class="card" style="margin-bottom:20px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+    <div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:4px">Öffentliche Blog-URL</div>
+      <a href="<%= _externalUrl %>" target="_blank"
+         style="font-size:14px;font-weight:600;color:var(--accent);text-decoration:none;font-family:monospace"><%= _externalUrl %></a>
+    </div>
+    <a href="<%= _externalUrl %>" target="_blank" class="btn btn-ghost" style="flex-shrink:0">↗ Öffnen</a>
+  </div>
 
   <div class="card">
     <form method="post" action="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/settings">
@@ -81,8 +97,18 @@
         </select>
       </div>
 
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;cursor:pointer">
+          <input type="checkbox" name="showPlatformHeader"
+                 <%= blog == null || blog.showPlatformHeader ? "checked" : "" %>>
+          Plattform-Header anzeigen (athanassiou.me Logo, Uhr, Login)
+        </label>
+        <p style="font-size:12px;color:var(--muted);margin-top:4px;margin-left:22px">
+          Deaktivieren für Blogs die extern eingebettet oder unabhängig referenziert werden.
+        </p>
+      </div>
+
       <div style="display:flex;gap:10px;margin-top:8px">
-        <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/" class="btn btn-ghost">Abbrechen</a>
         <button type="submit" class="btn btn-primary">Speichern</button>
       </div>
     </form>

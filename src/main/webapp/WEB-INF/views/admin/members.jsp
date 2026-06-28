@@ -15,7 +15,6 @@
 <title>Mitglieder · <%= blog != null ? blog.name : "" %> · MyBlog</title>
 <style>
 <%@ include file="admin-common.css" %>
-<%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
   .content { max-width:1060px; }
 </style>
 </head>
@@ -91,5 +90,6 @@
   </div>
   <% } %>
 </div>
+<%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
 <%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
 </body></html>

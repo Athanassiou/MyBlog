@@ -14,6 +14,8 @@
   Article prevA = (Article) request.getAttribute("prevArticle");
   Article nextA = (Article) request.getAttribute("nextArticle");
   boolean previewMode = Boolean.TRUE.equals(request.getAttribute("previewMode"));
+  boolean showHeader  = artBlog  != null && artBlog.showPlatformHeader;
+  boolean showSidebar = article  != null && article.showSidebar;
 %>
 <title><%= article != null ? article.title : "Artikel" %> · MyBlog</title>
 <style>
@@ -23,6 +25,9 @@
     --sidebar-bg: #252525; --sidebar-border: #3e3e3e;
     --body-bg: #1c1c1c; --content-bg: #1c1c1c;
     --text: #e0e0e0; --muted: #888; --border: #3e3e3e;
+    --header-bg:#111111; --header-border:#3e3e3e;
+    --header-text:#e0e0e0; --header-sep:#555; --header-ctx:#aaa;
+    --header-muted:#888; --header-greeting:#888; --header-clock:#e0e0e0;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:var(--body-bg); color:var(--text); font-size:15px; line-height:1.78; }
@@ -30,28 +35,42 @@
   nav {
     width:210px; flex-shrink:0; background:var(--sidebar-bg);
     border-right:1px solid var(--sidebar-border);
-    position:sticky; top:0; height:100vh; overflow-y:auto;
+    position:sticky; top:<%= showHeader ? "54px" : "0" %>; height:<%= showHeader ? "calc(100vh - 54px)" : "100vh" %>; overflow-y:auto;
     display:flex; flex-direction:column; transition:width .2s;
   }
-  nav.collapsed { width:44px; }
-  .nav-top { padding:20px 16px 8px; }
+  .layout.no-sidebar main { max-width:860px; margin:0 auto; }
+  .nav-top { padding:20px 16px 8px; display:flex; align-items:center; gap:10px; }
   .nav-blog-title { font-size:13px; font-weight:800; color:var(--text); letter-spacing:-.2px; }
   .nav-section { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.8px;
                  color:var(--muted); padding:16px 16px 6px; }
   nav a.toc-link { display:block; padding:5px 16px; font-size:13px; color:var(--muted);
                    text-decoration:none; transition:color .15s; border-left:2px solid transparent; }
   nav a.toc-link:hover, nav a.toc-link.active { color:var(--accent); border-left-color:var(--accent); }
-  .nav-footer { margin-top:auto; padding:12px; display:flex; flex-direction:column; gap:6px; }
+  .nav-logo-icon { display:none; width:30px; height:30px; background:var(--accent); border-radius:50%;
+    align-items:center; justify-content:center; color:#111; font-weight:700; font-size:11px; flex-shrink:0; letter-spacing:.3px; }
+  .nav-footer { margin-top:auto; padding:8px 0; border-top:1px solid var(--sidebar-border); display:flex; flex-direction:column; }
   .footer-btn {
-    display:flex; align-items:center; gap:8px; background:none;
-    border:1px solid var(--sidebar-border); border-radius:5px;
-    color:var(--muted); font-size:12px; padding:7px 10px; cursor:pointer;
-    width:100%; font-family:inherit; transition:color .15s,border-color .15s,background .15s;
+    display:flex; align-items:center; gap:12px; background:none; border:none;
+    border-left:3px solid transparent;
+    color:var(--muted); font-size:13px; padding:10px 16px; cursor:pointer;
+    width:100%; font-family:inherit; text-align:left;
+    transition:color .15s, background .15s;
   }
-  .footer-btn:hover, .footer-btn.active { color:var(--accent); border-color:var(--accent); background:var(--accent-dim); }
-  .btn-icon { font-size:14px; }
-  nav.collapsed .btn-label, nav.collapsed .nav-section,
-  nav.collapsed .nav-blog-title, nav.collapsed a.toc-link span { display:none; }
+  .footer-btn:hover { color:var(--text); background:rgba(255,255,255,.05); }
+  .footer-btn.active { color:var(--accent); border-left-color:var(--accent); }
+  body.grey-mode .footer-btn:hover { background:rgba(0,0,0,.06); }
+  .btn-icon { width:18px; text-align:center; font-size:14px; flex-shrink:0; }
+  #sidebar-icon { font-size:20px; line-height:1; }
+  /* ── Kollabierter Sidebar: nur Logo-Icon bleibt ── */
+  nav.collapsed { width:44px; overflow:hidden; }
+  nav.collapsed .nav-top { padding:14px 0; justify-content:center; }
+  nav.collapsed .nav-blog-title { display:none; }
+  nav.collapsed .nav-logo-icon { display:flex; }
+  nav.collapsed .nav-section { display:none; }
+  nav.collapsed a.toc-link { display:none; }
+  nav.collapsed .footer-btn { padding:10px 0; justify-content:center; gap:0; border-left-color:transparent !important; }
+  nav.collapsed .btn-label { display:none; }
+  nav.collapsed .btn-icon { width:auto; }
 
   main { flex:1; padding:52px 64px 80px; max-width:850px; }
   .article-topline { display:flex; justify-content:space-between; align-items:center;
@@ -132,6 +151,9 @@
     --body-bg: #ffffff; --content-bg: #ffffff;
     --sidebar-bg: #f2f2f2; --sidebar-border: #e0e0e0;
     --text: #1a1a1a; --muted: #777; --border: #e8e8e8;
+    --header-bg:#d7d7d7; --header-border:#ccc;
+    --header-text:#222; --header-sep:#bbb; --header-ctx:#444;
+    --header-muted:#777; --header-greeting:#555; --header-clock:#333;
   }
   body.grey-mode pre { background: #f0f4fa; }
   body.grey-mode tr:nth-child(even) td { background: #fafafa; }
@@ -190,28 +212,34 @@
   .login-prompt a { color:var(--accent); font-weight:600; text-decoration:none; }
 
   @media(max-width:768px) { nav { display:none; } main { padding:28px 20px 60px; } }
+  <%@ include file="/WEB-INF/views/fragments/site-header-styles.jsp" %>
 </style>
 </head>
 <body>
 <script>if(localStorage.getItem('greyMode')==='1')document.body.classList.add('grey-mode');</script>
-<div class="layout">
+<% if (showHeader) { %>
+<%@ include file="/WEB-INF/views/fragments/header-public.jsp" %>
+<% } %>
+<div class="layout<%= showSidebar ? "" : " no-sidebar" %>">
+<% if (showSidebar) { %>
   <nav id="sidebar">
     <div class="nav-top">
-      <div class="nav-blog-title">MyBlog</div>
+      <div class="nav-logo-icon">mB</div>
+      <div class="nav-blog-title"><%= artBlog != null ? artBlog.name : "MyBlog" %></div>
     </div>
     <div class="nav-section">Inhalt</div>
     <!-- TOC wird via JS befüllt -->
     <div class="nav-footer">
       <button class="footer-btn" id="grey-btn" onclick="toggleGreyMode()">
-        <span class="btn-icon">◑</span><span class="btn-label">Grey Mode</span>
+        <span class="btn-icon">&#9681;</span><span class="btn-label">Grey Mode</span>
       </button>
       <button class="footer-btn" id="sidebar-btn" onclick="toggleSidebar()">
-        <span class="btn-icon" id="sidebar-icon">‹</span>
+        <span class="btn-icon" id="sidebar-icon">&laquo;</span>
         <span class="btn-label" id="sidebar-label">Einklappen</span>
       </button>
     </div>
   </nav>
-
+<% } %>
   <main>
     <% if (previewMode) { %>
     <div style="background:#fffbeb;border:1px solid #fbbf24;border-radius:5px;padding:10px 18px;
@@ -552,13 +580,15 @@ function toggleGreyMode() {
     if (label) label.textContent = on ? 'Dark Mode' : 'Grey Mode';
   }
 })();
+<% if (showSidebar) { %>
 function toggleSidebar() {
   const nav = document.getElementById('sidebar');
   nav.classList.toggle('collapsed');
   const c = nav.classList.contains('collapsed');
-  document.getElementById('sidebar-icon').textContent  = c ? '›' : '‹';
+  document.getElementById('sidebar-icon').textContent  = c ? '\u00bb' : '\u00ab';
   document.getElementById('sidebar-label').textContent = c ? 'Ausklappen' : 'Einklappen';
 }
+<% } %>
 
 // ── Reply-Toggle ──
 function toggleReply(id) {
@@ -601,7 +631,9 @@ document.querySelectorAll('#article-content a').forEach(a => {
   a.target = '_blank';
   a.rel    = 'noopener';
 });
-
+</script>
+<%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
+<script>
 // ── Lightbox ──
 document.querySelectorAll('#article-content img').forEach(img => {
   if (img.closest('a')) return;
