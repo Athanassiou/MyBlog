@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MyBlog · Handbuch</title>
+<style>
+  :root {
+    --accent: #e5a00d; --accent-dim: rgba(229,160,13,.12);
+    --sidebar-bg: #252525; --sidebar-border: #3e3e3e;
+    --body-bg: #1c1c1c; --content-bg: #1c1c1c;
+    --text: #e0e0e0; --muted: #888; --border: #3e3e3e;
+    --card-bg: #252525; --input-bg: #2e2e2e;
+    --header-bg:#111111; --header-border:#3e3e3e;
+    --header-text:#e0e0e0; --header-clock:#e0e0e0;
+  }
+  body.grey-mode {
+    --body-bg: #ffffff; --content-bg: #ffffff;
+    --sidebar-bg: #f2f2f2; --sidebar-border: #e0e0e0;
+    --text: #1a1a1a; --muted: #777; --border: #e8e8e8;
+    --card-bg: #ffffff; --input-bg: #f5f5f5;
+    --header-bg:#d7d7d7; --header-border:#ccc;
+    --header-text:#222; --header-clock:#333;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI','Helvetica Neue',Arial,sans-serif; background: var(--body-bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+  /* ── Header ── */
+  .site-header { background: var(--header-bg); border-bottom: 1px solid var(--header-border);
+    padding: 0 40px; height: 54px; display: flex; align-items: center;
+    position: sticky; top: 0; z-index: 20; gap: 16px; }
+  .logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #111; font-weight: 700; font-size: 12px; flex-shrink: 0; }
+  .logo-text { font-size: 16px; font-weight: 700; color: var(--header-text); }
+  .logo-text span { color: var(--accent); }
+  .header-title { font-size: 14px; color: var(--muted); font-weight: 600; }
+
+  /* ── Layout ── */
+  .layout { display: flex; }
+  nav {
+    width: 220px; flex-shrink: 0; background: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    position: sticky; top: 54px; height: calc(100vh - 54px);
+    overflow-y: auto; display: flex; flex-direction: column;
+  }
+  .nav-top { padding: 20px 16px 8px; font-size: 13px; font-weight: 800;
+    color: var(--text); letter-spacing: -.2px; }
+  .nav-section { font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .8px; color: var(--muted); padding: 14px 16px 6px; }
+  nav a { display: block; padding: 6px 16px; font-size: 13px; color: var(--muted);
+    text-decoration: none; border-left: 2px solid transparent; transition: color .15s; }
+  nav a:hover, nav a.active { color: var(--accent); border-left-color: var(--accent); }
+  .nav-footer { margin-top: auto; padding: 8px 0; border-top: 1px solid var(--sidebar-border); }
+  .footer-btn { display: flex; align-items: center; gap: 12px; background: none; border: none;
+    border-left: 3px solid transparent; color: var(--muted); font-size: 13px;
+    padding: 10px 16px; cursor: pointer; width: 100%; font-family: inherit; text-align: left; }
+  .footer-btn:hover { color: var(--text); background: rgba(255,255,255,.05); }
+  .footer-btn.active { color: var(--accent); border-left-color: var(--accent); }
+  body.grey-mode .footer-btn:hover { background: rgba(0,0,0,.06); }
+
+  /* ── Inhalt ── */
+  main { flex: 1; padding: 52px 72px 100px; max-width: 880px; }
+  h1 { font-size: 32px; font-weight: 800; line-height: 1.15; margin-bottom: 10px; }
+  p.lead { font-size: 17px; color: var(--muted); margin-bottom: 40px;
+    padding-bottom: 24px; border-bottom: 2px solid var(--accent); }
+  h3 { display: flex; align-items: center; gap: 12px; font-size: 20px;
+    font-weight: 700; margin: 48px 0 20px; }
+  h3::after { content: ''; flex: 1; height: 2px; background: var(--accent); }
+  h4 { font-size: 15px; font-weight: 700; margin: 24px 0 10px; color: var(--accent); }
+  p  { margin-bottom: 14px; }
+  ul, ol { margin: 0 0 16px 26px; }
+  li { margin-bottom: 6px; }
+
+  /* Schritt-Karten */
+  .steps { display: flex; flex-direction: column; gap: 12px; margin: 16px 0 24px; }
+  .step { display: flex; gap: 16px; align-items: flex-start;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px 20px; }
+  .step-num { width: 32px; height: 32px; background: var(--accent); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #111; font-weight: 800; font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .step-body { flex: 1; }
+  .step-body strong { display: block; font-size: 15px; margin-bottom: 4px; }
+  .step-body p { margin: 0; font-size: 14px; color: var(--muted); }
+
+  /* Info-Boxen */
+  .infobox { display: flex; gap: 14px; border-radius: 6px; padding: 14px 18px;
+    margin: 20px 0; border-left: 3px solid var(--accent); font-size: 14px; line-height: 1.65; }
+  .infobox.tip  { background: var(--input-bg); border-color: var(--accent); }
+  .infobox.note { background: var(--input-bg); border-color: #2272c3; }
+  .infobox-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  body.grey-mode .infobox.tip  { background: #fffbeb; }
+  body.grey-mode .infobox.note { background: #f0f7ff; }
+
+  /* URL-Badge */
+  .url-badge { display: inline-block; background: var(--input-bg); border: 1px solid var(--border);
+    border-radius: 4px; padding: 6px 14px; font-family: monospace; font-size: 13px;
+    color: var(--accent); margin: 6px 0; }
+
+  /* Block-Typen Tabelle */
+  .block-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1px;
+    border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin: 16px 0; }
+  .block-grid > div { background: var(--card-bg); padding: 10px 16px; font-size: 14px; }
+  .block-grid > div:nth-child(4n+1), .block-grid > div:nth-child(4n+2) { background: var(--input-bg); }
+  .block-grid-head { background: var(--accent-dim) !important; font-weight: 700; font-size: 12px;
+    text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+
+  /* Tastenkürzel */
+  kbd { display: inline-block; background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px;
+    color: var(--text); }
+
+  @media(max-width:768px) { nav { display: none; } main { padding: 28px 20px 60px; } }
+
+  /* Footer */
+  .site-footer { text-align: center; padding: 20px; border-top: 1px solid var(--border); }
+  .footer-toggle { background: var(--card-bg); border: 1px solid var(--border); border-radius: 5px;
+    color: var(--muted); font-size: 12px; padding: 6px 14px; cursor: pointer;
+    font-family: inherit; transition: color .15s, border-color .15s; }
+  .footer-toggle:hover, .footer-toggle.active { color: var(--accent); border-color: var(--accent); }
+</style>
+</head>
+<body>
+<script>if(localStorage.getItem('greyMode')==='1')document.body.classList.add('grey-mode');</script>
+
+<header class="site-header">
+  <div class="logo-icon">EA</div>
+  <span class="logo-text"><span>athanassiou</span>.me</span>
+  <span style="color:var(--muted)">/</span>
+  <span class="header-title">MyBlog · Handbuch</span>
+</header>
+
+<div class="layout">
+  <nav id="sidebar">
+    <div class="nav-top">Inhaltsverzeichnis</div>
+
+    <div class="nav-section">Einstieg</div>
+    <a href="#anmelden">Anmelden</a>
+    <a href="#uebersicht">Übersicht: Meine Blogs</a>
+
+    <div class="nav-section">Artikel</div>
+    <a href="#artikel-schreiben">Artikel schreiben</a>
+    <a href="#editor">Der Editor</a>
+    <a href="#bilder">Bilder einfügen</a>
+    <a href="#artikel-einstellungen">Artikel-Einstellungen</a>
+    <a href="#veroeffentlichen">Veröffentlichen</a>
+
+    <div class="nav-section">Blog verwalten</div>
+    <a href="#eigener-blog">Eigenen Blog erstellen</a>
+    <a href="#blog-einstellungen">Blog-Einstellungen</a>
+    <a href="#externe-url">Externe URL</a>
+
+    <div class="nav-section">Hilfe</div>
+    <a href="#faq">Häufige Fragen</a>
+
+    <div class="nav-footer">
+      <button class="footer-btn" id="grey-btn" onclick="toggleGreyMode()">
+        <span style="width:18px;text-align:center;font-size:14px">&#9681;</span>
+        <span id="grey-label">Grey Mode</span>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <h1>MyBlog — Handbuch</h1>
+    <p class="lead">Dieses Handbuch erklärt Schritt für Schritt, wie du auf <strong>MyBlog</strong> einen Artikel schreibst, einen Blog verwaltest oder einen eigenen Blog startest. Keine technischen Vorkenntnisse nötig.</p>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <h3 id="anmelden">Anmelden</h3>
+
+    <p>Rufe die Plattform-Adresse in deinem Browser auf:</p>
+    <div class="url-badge">https://athanassiou.me/MyBlog/</div>
+
+    <p style="margin-top:12px">Klicke oben rechts auf <strong>Anmelden</strong> und gib deinen Benutzernamen und dein Passwort ein.</p>
+
+    <div class="infobox tip">
+      <span class="infobox-icon">💡</span>
+      <div>Nach dem Anmelden bleibst du für 60 Minuten eingeloggt. Wenn du länger nichts gemacht hast, wirst du automatisch abgemeldet — melde dich dann einfach neu an.</div>
+    </div>
+
+    <p>Nach dem Anmelden landest du auf dem <strong>Dashboard</strong>, deiner persönlichen Übersicht.</p>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <h3 id="uebersicht">Übersicht: Meine Blogs</h3>
+
+    <p>Das Dashboard zeigt alle Blogs, an denen du beteiligt bist. Für jeden Blog siehst du:</p>
+    <ul>
+      <li><strong>Name und Farbe</strong> des Blogs</li>
+      <li>Deine <strong>Rolle</strong> (Autor, Admin, Owner)</li>
+      <li>Einen Link zur <strong>Artikelliste</strong></li>
+    </ul>
+
+    <div class="infobox note">
+      <span class="infobox-icon">ℹ</span>
+      <div><strong>Rollen im Überblick:</strong><br>
+        <strong>Autor</strong> — kann Artikel schreiben und speichern<br>
+        <strong>Admin</strong> — kann zusätzlich veröffentlichen und Blog-Einstellungen ändern<br>
+        <strong>Owner</strong> — volle Kontrolle, kann den Blog löschen
+      </div>
+    </div>
+
+    <p>Klicke auf einen Blog-Namen, um seine Artikelliste zu öffnen.</p>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <h3 id="artikel-schreiben">Artikel schreiben</h3>
+
+    <p>So legst du einen neuen Artikel an:</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Blog öffnen</strong>
+          <p>Klicke im Dashboard auf den Namen des Blogs, in dem du schreiben möchtest.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>+ Neuer Artikel</strong>
+          <p>Klicke oben rechts auf den goldenen Button. Es öffnet sich ein kleines Fenster.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Titel und URL eingeben</strong>
+          <p>Gib einen Titel ein — die URL wird automatisch vorgeschlagen. Du kannst sie noch anpassen. Die URL kann später nicht mehr geändert werden, ohne dass bestehende Links brechen.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>Akzentfarbe wählen</strong>
+          <p>Wähle eine Farbe, die zum Thema deines Artikels passt. Die Farbe erscheint als Akzent in Überschriften und Trennlinien.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <strong>Artikel anlegen</strong>
+          <p>Klicke auf <em>Anlegen</em>. Der Editor öffnet sich sofort.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="infobox tip">
+      <span class="infobox-icon">💡</span>
+      <div>Der Artikel ist zunächst ein <strong>Entwurf</strong> — er ist für Leser nicht sichtbar, bis du ihn veröffentlichst. Du kannst ihn jederzeit speichern und später weiterschreiben.</div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <h3 id="editor">Der Editor</h3>
+
+    <p>MyBlog verwendet einen <strong>Block-Editor</strong>: Jeder Absatz, jede Überschrift und jedes Bild ist ein eigener Block. Das macht es einfach, Inhalte umzustrukturieren.</p>
+
+    <h4>Einen neuen Block anlegen</h4>
+    <p>Klicke auf das <strong>+</strong>-Symbol links neben einem leeren Bereich, oder drücke <kbd>Enter</kbd> am Ende eines Absatzes. Es erscheint ein Menü mit allen Block-Typen.</p>
+
+    <h4>Block-Typen im Überblick</h4>
+    <div class="block-grid">
+      <div class="block-grid-head">Block</div>
+      <div class="block-grid-head">Verwendung</div>
+      <div><strong>Text</strong></div>
+      <div>Normaler Absatz — das ist der Standard-Block</div>
+      <div><strong>Überschrift</strong></div>
+      <div>H2 erscheint automatisch im Inhaltsverzeichnis der Sidebar; H3 ist eine Unterüberschrift ohne TOC-Eintrag</div>
+      <div><strong>Liste</strong></div>
+      <div>Aufzählung (•) oder nummerierte Liste — über das Menü wählbar</div>
+      <div><strong>Zitat</strong></div>
+      <div>Hervorgehobenes Zitat mit Akzent-Randlinie</div>
+      <div><strong>Code</strong></div>
+      <div>Codeblock mit Monospace-Schrift</div>
+      <div><strong>Trennlinie</strong></div>
+      <div>Horizontale Linie als Abschnittstrenner</div>
+      <div><strong>Bild</strong></div>
+      <div>Einzelbild — zentriert dargestellt</div>
+      <div><strong>Bildpaar</strong></div>
+      <div>Zwei Bilder nebeneinander</div>
+      <div><strong>PDF-Link</strong></div>
+      <div>Verlinkung zu einer PDF-Datei mit Thumbnail und Beschreibung</div>
+      <div><strong>Timeline</strong></div>
+      <div>Zeitstrahl mit Jahresangaben und Beschreibungen</div>
+      <div><strong>Infobox</strong></div>
+      <div>Farbiger Hinweis-Kasten (Info, Tipp, Warnung)</div>
+    </div>
+
+    <h4>Blöcke verschieben</h4>
+    <p>Fahre mit der Maus über einen Block — links erscheint ein Anfasser (⠿). Klicke und ziehe ihn, um den Block an eine andere Position zu schieben.</p>
+
+    <h4>Speichern</h4>
+    <p>Klicke oben auf <strong>Speichern</strong> (oder den goldenen Speichern-Button). Der Artikel wird gespeichert, bleibt aber Entwurf. Du kannst beliebig oft speichern.</p>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <h3 id="bilder">Bilder einfügen</h3>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Bild-Block anlegen</strong>
+          <p>Klicke auf + und wähle <em>Bild</em> (für ein Bild) oder <em>Bildpaar</em> (für zwei Bilder nebeneinander).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Datei auswählen</strong>
+          <p>Klicke auf die Upload-Fläche im Block und wähle eine Bilddatei von deinem Computer (JPG, PNG, WEBP). Das Bild wird automatisch hochgeladen.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Beschriftung hinzufügen (optional)</strong>
+          <p>Klicke unter dem Bild in das Beschriftungsfeld und gib einen kurzen Text ein.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="infobox tip">
+      <span class="infobox-icon">💡</span>
+      <div>Bilder werden automatisch auf eine sinnvolle Größe skaliert. Du musst sie nicht vorher bearbeiten — lade einfach das Original hoch.</div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <h3 id="artikel-einstellungen">Artikel-Einstellungen</h3>
+
+    <p>Unterhalb des Seitentitels im Editor findest du die <strong>Metadaten</strong> deines Artikels:</p>
+
+    <h4>Titel und Untertitel</h4>
+    <p>Der Titel erscheint groß am Anfang des Artikels. Der Untertitel ist optional — er erscheint kleiner darunter und in der Blog-Übersicht.</p>
+
+    <h4>URL (Slug)</h4>
+    <p>Die URL ist der Teil der Adresse, der deinen Artikel eindeutig identifiziert — zum Beispiel <span class="url-badge">/ea-blog/mein-erster-artikel</span>. Sie wird beim Anlegen automatisch aus dem Titel erzeugt.</p>
+    <div class="infobox note">
+      <span class="infobox-icon">ℹ</span>
+      <div>Ändere die URL möglichst nicht, nachdem der Artikel veröffentlicht wurde — sonst funktionieren bereits geteilte Links nicht mehr.</div>
+    </div>
+
+    <h4>Akzentfarbe</h4>
+    <p>Die Farbe, die du beim Anlegen gewählt hast. Du kannst sie hier noch ändern — klicke auf das Farbfeld oder gib einen Hex-Code ein (z.B. <code>#2272c3</code> für Blau).</p>
+
+    <h4>Tags</h4>
+    <p>Schlagwörter, kommagetrennt eingegeben (z.B. <em>Reisen, Italien, 2024</em>). Tags helfen Lesern, thematisch ähnliche Artikel zu finden.</p>
+
+    <h4>Sidebar anzeigen</h4>
+    <p>Wenn diese Checkbox aktiviert ist, erscheint beim Lesen des Artikels eine Navigations-Leiste links mit dem Inhaltsverzeichnis (alle H2-Überschriften). Für kurze Artikel ohne viele Abschnitte kann man sie deaktivieren.</p>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <h3 id="veroeffentlichen">Veröffentlichen</h3>
+
+    <p>Erst wenn ein Artikel veröffentlicht ist, können Leser ihn sehen.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Vorschau prüfen</strong>
+          <p>Klicke oben auf <em>Vorschau</em>, um zu sehen, wie der Artikel für Leser aussehen wird. Der gelbe Banner oben zeigt an, dass es sich noch um einen Entwurf handelt.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Speichern nicht vergessen</strong>
+          <p>Stelle sicher, dass alle Änderungen gespeichert sind, bevor du veröffentlichst.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Veröffentlichen</strong>
+          <p>Klicke auf den Button <em>Veröffentlichen</em>. Der Artikel erscheint sofort im Blog für alle Leser.</p>
+        </div>
+      </div>
+    </div>
+
+    <p>Einen veröffentlichten Artikel kannst du jederzeit wieder als <strong>Entwurf zurückziehen</strong> — er verschwindet dann aus dem Blog, bleibt aber erhalten und kann erneut veröffentlicht werden.</p>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <h3 id="eigener-blog">Eigenen Blog erstellen</h3>
+
+    <p>Jeder angemeldete Nutzer kann einen eigenen Blog anlegen.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Im Dashboard auf „+ Neuer Blog" klicken</strong>
+          <p>Der Button befindet sich auf der Startseite des Dashboards (<em>Meine Blogs</em>).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Slug wählen</strong>
+          <p>Der Slug ist der URL-Name deines Blogs, z.B. <span class="url-badge">mein-blog</span>. Er darf nur Kleinbuchstaben, Zahlen und Bindestriche enthalten. Er kann später nicht geändert werden.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Name und Akzentfarbe</strong>
+          <p>Der Name erscheint in der Übersicht und im Blog-Header. Die Akzentfarbe ist die Standard-Farbe für alle Artikel des Blogs.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>Blog anlegen</strong>
+          <p>Klicke auf <em>Anlegen</em>. Du bist automatisch Owner des neuen Blogs und kannst sofort loslegen.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <h3 id="blog-einstellungen">Blog-Einstellungen</h3>
+
+    <p>Die Blog-Einstellungen erreichst du über <strong>⚙ Einstellungen</strong> in der Artikelliste deines Blogs.</p>
+
+    <h4>Name und Beschreibung</h4>
+    <p>Der Name erscheint im Blog-Header und in der Plattform-Übersicht. Die Beschreibung (HTML erlaubt) erscheint unter dem Namen auf der Blog-Startseite.</p>
+
+    <h4>Akzentfarbe</h4>
+    <p>Die Standard-Farbe für neue Artikel. Einzelne Artikel können eine abweichende Farbe haben.</p>
+
+    <h4>Sichtbarkeit</h4>
+    <ul>
+      <li><strong>Öffentlich</strong> — jeder kann den Blog lesen, auch ohne Anmeldung</li>
+      <li><strong>Privat</strong> — nur angemeldete Mitglieder des Blogs können lesen</li>
+      <li><strong>Nur Eingeladene</strong> — wie Privat, aber noch restriktiver</li>
+    </ul>
+
+    <h4>Plattform-Header anzeigen</h4>
+    <p>Wenn aktiviert, erscheint der <em>athanassiou.me</em>-Header mit Logo, Uhr und Anmelden-Button auf allen Artikel-Seiten dieses Blogs. Das ist die Standard-Einstellung.</p>
+    <p>Deaktiviere diese Option, wenn der Blog <strong>extern eingebettet</strong> oder unabhängig verlinkt wird und der Plattform-Header dort störend wirken würde.</p>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <h3 id="externe-url">Externe URL</h3>
+
+    <p>Ganz oben in den Blog-Einstellungen findest du die <strong>öffentliche URL</strong> deines Blogs — also die Adresse, die Besucher in den Browser eingeben können, um direkt zum Blog zu gelangen:</p>
+
+    <div class="url-badge">https://athanassiou.me/MyBlog/{blog-slug}/</div>
+
+    <p style="margin-top:12px">Diese URL kannst du kopieren und z.B. in einer E-Mail, auf einer Webseite oder in sozialen Netzwerken teilen. Sie führt direkt zur Schaufenster-Ansicht des Blogs — ohne dass man sich anmelden muss (bei öffentlichen Blogs).</p>
+
+    <div class="infobox tip">
+      <span class="infobox-icon">💡</span>
+      <div>Die URL eines einzelnen Artikels findest du, indem du den Artikel öffnest und die Adresse aus der Browser-Adressleiste kopierst. Sie hat die Form <span class="url-badge">/MyBlog/{blog-slug}/{artikel-slug}</span>.</div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <h3 id="faq">Häufige Fragen</h3>
+
+    <h4>Ich habe meinen Artikel gespeichert, aber er erscheint nicht im Blog. Warum?</h4>
+    <p>Ein gespeicherter Artikel ist zunächst ein <strong>Entwurf</strong>. Er wird erst für Leser sichtbar, wenn du ihn über den Button <em>Veröffentlichen</em> freigibst.</p>
+
+    <h4>Kann ich einen veröffentlichten Artikel nachträglich bearbeiten?</h4>
+    <p>Ja. Öffne den Artikel im Editor, mache deine Änderungen und klicke auf <em>Speichern</em>. Die Änderungen sind sofort für Leser sichtbar — ohne erneutes Veröffentlichen.</p>
+
+    <h4>Wie ändere ich mein Passwort?</h4>
+    <p>Aktuell ist das nur über den Administrator möglich. Wende dich an <strong>akis@athanassiou.de</strong>.</p>
+
+    <h4>Kann ich Artikel aus einem Blog in einen anderen verschieben?</h4>
+    <p>Das ist aktuell nicht direkt möglich. Du kannst den Inhalt jedoch kopieren und in einem neuen Artikel einfügen.</p>
+
+    <h4>Warum sehe ich den ⚙ Einstellungen-Button nicht?</h4>
+    <p>Der Einstellungen-Button ist nur für <strong>Owner</strong> und <strong>Admins</strong> des Blogs sichtbar. Als Autor hast du keinen Zugriff auf die Blog-Einstellungen.</p>
+
+    <h4>Wie füge ich jemanden zu meinem Blog hinzu?</h4>
+    <p>Klicke in der Artikelliste auf <em>Mitglieder</em>. Dort kannst du neue Mitglieder hinzufügen und ihnen eine Rolle zuweisen. Du benötigst dafür Admin- oder Owner-Rechte.</p>
+
+    <h4>Dark Mode und Grey Mode — was ist der Unterschied?</h4>
+    <p>MyBlog startet im <strong>Dark Mode</strong> (dunkler Hintergrund). Über den <em>Grey Mode</em>-Button unten links kannst du zur hellen Ansicht wechseln. Die Einstellung wird gespeichert und gilt auf allen Seiten.</p>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <button class="footer-toggle" id="footer-grey-btn" onclick="toggleGreyMode()">&#9681; Grey Mode</button>
+</footer>
+
+<script>
+function toggleGreyMode() {
+  var on = document.body.classList.toggle('grey-mode');
+  var btns = [document.getElementById('grey-btn'), document.getElementById('footer-grey-btn')];
+  btns.forEach(function(b) { if (b) b.classList.toggle('active', on); });
+  document.getElementById('grey-label').textContent = on ? 'Dark Mode' : 'Grey Mode';
+  localStorage.setItem('greyMode', on ? '1' : '0');
+}
+(function() {
+  var on = document.body.classList.contains('grey-mode');
+  var btn = document.getElementById('grey-btn');
+  var fb  = document.getElementById('footer-grey-btn');
+  if (btn) { btn.classList.toggle('active', on); }
+  if (fb)  { fb.classList.toggle('active', on); }
+  document.getElementById('grey-label').textContent = on ? 'Dark Mode' : 'Grey Mode';
+})();
+
+// TOC Scroll-Spy
+(function() {
+  var heads = document.querySelectorAll('h3[id]');
+  var links = document.querySelectorAll('nav a');
+  if (!heads.length || !links.length) return;
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        links.forEach(function(l) { l.classList.remove('active'); });
+        var a = document.querySelector('nav a[href="#' + e.target.id + '"]');
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-10% 0px -75% 0px' });
+  heads.forEach(function(h) { obs.observe(h); });
+})();
+</script>
+</body>
+</html>

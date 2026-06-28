@@ -43,6 +43,22 @@
   <div class="error-box"><%= error %></div>
   <% } %>
 
+  <%
+    String _scheme = request.getScheme();
+    String _host   = request.getServerName();
+    int    _port   = request.getServerPort();
+    String _portStr = (_scheme.equals("https") && _port == 443) || (_scheme.equals("http") && _port == 80) ? "" : ":" + _port;
+    String _externalUrl = _scheme + "://" + _host + _portStr + request.getContextPath() + "/" + blogSlug + "/";
+  %>
+  <div class="card" style="margin-bottom:20px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+    <div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:4px">Öffentliche Blog-URL</div>
+      <a href="<%= _externalUrl %>" target="_blank"
+         style="font-size:14px;font-weight:600;color:var(--accent);text-decoration:none;font-family:monospace"><%= _externalUrl %></a>
+    </div>
+    <a href="<%= _externalUrl %>" target="_blank" class="btn btn-ghost" style="flex-shrink:0">↗ Öffnen</a>
+  </div>
+
   <div class="card">
     <form method="post" action="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/settings">
 

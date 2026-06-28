@@ -34,6 +34,12 @@
   </div>
   <div class="site-header-right">
     <span id="site-clock"></span>
+    <a href="<%= request.getContextPath() %>/help.html" target="_blank"
+       title="Handbuch" style="color:var(--muted);font-size:13px;font-weight:700;text-decoration:none;
+       width:28px;height:28px;border:1px solid var(--border,#ccc);border-radius:50%;
+       display:inline-flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s"
+       onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'"
+       onmouseout="this.style.color='';this.style.borderColor=''">?</a>
     <form method="post" action="<%= request.getContextPath() %>/logout" style="display:inline">
       <button type="submit" class="header-logout">Abmelden</button>
     </form>
