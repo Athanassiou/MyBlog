@@ -15,9 +15,7 @@
 <style>
   <%@ include file="/WEB-INF/views/fragments/dashboard-common.css" %>
   :root { --accent:<%= accent %>; }
-  .content { max-width:860px; }
-  .page-header { margin-bottom:24px; }
-  .page-header h1 { margin-top:4px; }
+  .content { max-width:1060px; }
   .color-row { display:flex; align-items:center; gap:10px; }
   input[type=color] { width:36px; height:36px; border:1px solid var(--border); border-radius:5px;
     padding:2px; cursor:pointer; background:none; }
@@ -35,8 +33,10 @@
 
 <div class="content">
   <div class="page-header">
-    <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/" style="font-size:13px;color:var(--muted);text-decoration:none">← <%= blogName %></a>
     <h1>Einstellungen</h1>
+    <div style="display:flex;gap:8px">
+      <a class="btn btn-ghost" href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/">← Artikelliste</a>
+    </div>
   </div>
 
   <% if (error != null) { %>
@@ -93,7 +93,6 @@
       </div>
 
       <div style="display:flex;gap:10px;margin-top:8px">
-        <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/" class="btn btn-ghost">Abbrechen</a>
         <button type="submit" class="btn btn-primary">Speichern</button>
       </div>
     </form>
