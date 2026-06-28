@@ -14,6 +14,8 @@
   Article prevA = (Article) request.getAttribute("prevArticle");
   Article nextA = (Article) request.getAttribute("nextArticle");
   boolean previewMode = Boolean.TRUE.equals(request.getAttribute("previewMode"));
+  boolean showHeader  = artBlog  != null && artBlog.showPlatformHeader;
+  boolean showSidebar = article  != null && article.showSidebar;
 %>
 <title><%= article != null ? article.title : "Artikel" %> · MyBlog</title>
 <style>
@@ -33,9 +35,10 @@
   nav {
     width:210px; flex-shrink:0; background:var(--sidebar-bg);
     border-right:1px solid var(--sidebar-border);
-    position:sticky; top:54px; height:calc(100vh - 54px); overflow-y:auto;
+    position:sticky; top:<%= showHeader ? "54px" : "0" %>; height:<%= showHeader ? "calc(100vh - 54px)" : "100vh" %>; overflow-y:auto;
     display:flex; flex-direction:column; transition:width .2s;
   }
+  .layout.no-sidebar main { max-width:860px; margin:0 auto; }
   .nav-top { padding:20px 16px 8px; display:flex; align-items:center; gap:10px; }
   .nav-blog-title { font-size:13px; font-weight:800; color:var(--text); letter-spacing:-.2px; }
   .nav-section { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.8px;
@@ -214,8 +217,11 @@
 </head>
 <body>
 <script>if(localStorage.getItem('greyMode')==='1')document.body.classList.add('grey-mode');</script>
+<% if (showHeader) { %>
 <%@ include file="/WEB-INF/views/fragments/header-public.jsp" %>
-<div class="layout">
+<% } %>
+<div class="layout<%= showSidebar ? "" : " no-sidebar" %>">
+<% if (showSidebar) { %>
   <nav id="sidebar">
     <div class="nav-top">
       <div class="nav-logo-icon">mB</div>
@@ -233,7 +239,7 @@
       </button>
     </div>
   </nav>
-
+<% } %>
   <main>
     <% if (previewMode) { %>
     <div style="background:#fffbeb;border:1px solid #fbbf24;border-radius:5px;padding:10px 18px;
@@ -574,6 +580,7 @@ function toggleGreyMode() {
     if (label) label.textContent = on ? 'Dark Mode' : 'Grey Mode';
   }
 })();
+<% if (showSidebar) { %>
 function toggleSidebar() {
   const nav = document.getElementById('sidebar');
   nav.classList.toggle('collapsed');
@@ -581,6 +588,7 @@ function toggleSidebar() {
   document.getElementById('sidebar-icon').textContent  = c ? '\u00bb' : '\u00ab';
   document.getElementById('sidebar-label').textContent = c ? 'Ausklappen' : 'Einklappen';
 }
+<% } %>
 
 // ── Reply-Toggle ──
 function toggleReply(id) {

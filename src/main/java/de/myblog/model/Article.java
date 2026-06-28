@@ -16,6 +16,8 @@ public class Article {
     public LocalDateTime createdAt;
     public LocalDateTime publishedAt;
 
+    public boolean showSidebar = true;
+
     public List<Block> blocks;
     public int         commentCount;
     public List<Tag>   tags;   // optional, nur wenn geladen

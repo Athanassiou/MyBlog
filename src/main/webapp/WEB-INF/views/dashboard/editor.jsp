@@ -148,6 +148,13 @@
           <% } %>
         </div>
       </div>
+      <div class="meta-row" style="padding-top:4px">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;cursor:pointer">
+          <input type="checkbox" name="showSidebar" id="showSidebar"
+                 <%= article.showSidebar ? "checked" : "" %>>
+          Sidebar (Inhaltsverzeichnis) anzeigen
+        </label>
+      </div>
     </div>
   </form>
 

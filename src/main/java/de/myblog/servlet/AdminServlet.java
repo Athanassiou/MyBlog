@@ -121,7 +121,8 @@ public class AdminServlet extends HttpServlet {
                         req.getParameter("name"),
                         req.getParameter("description"),
                         req.getParameter("accentColor"),
-                        req.getParameter("visibility"));
+                        req.getParameter("visibility"),
+                        "on".equals(req.getParameter("showPlatformHeader")));
                 resp.sendRedirect(req.getContextPath() + "/admin/blogs/");
 
             } else if (sub.matches("members/\\d+/add")) {

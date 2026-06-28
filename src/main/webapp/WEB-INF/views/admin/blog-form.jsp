@@ -88,6 +88,13 @@
           <option value="invite"  <%= "invite".equals(blog.visibility)  ? "selected" : "" %>>Nur Eingeladene</option>
         </select>
       </div>
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;cursor:pointer">
+          <input type="checkbox" name="showPlatformHeader"
+                 <%= blog.showPlatformHeader ? "checked" : "" %>>
+          Plattform-Header anzeigen (athanassiou.me Logo, Uhr, Login)
+        </label>
+      </div>
       <% } %>
 
       <div style="display:flex;gap:10px;margin-top:20px">

@@ -19,7 +19,7 @@ public class ArticleService {
         try (Connection c = DB.get();
              PreparedStatement ps = c.prepareStatement(
                      "SELECT DISTINCT a.id,a.blog_id,a.author_id,a.slug,a.title,a.subtitle," +
-                     "a.accent_color,a.status,a.created_at,a.published_at,0 AS comment_count " +
+                     "a.accent_color,a.status,a.created_at,a.published_at,a.show_sidebar,0 AS comment_count " +
                      "FROM articles a " +
                      "LEFT JOIN article_tags at ON at.article_id=a.id " +
                      "LEFT JOIN tags t ON t.id=at.tag_id " +
@@ -67,7 +67,7 @@ public class ArticleService {
         try (Connection c = DB.get();
              PreparedStatement ps = c.prepareStatement(
                      "SELECT a.id,a.blog_id,a.author_id,a.slug,a.title,a.subtitle," +
-                     "a.accent_color,a.status,a.created_at,a.published_at," +
+                     "a.accent_color,a.status,a.created_at,a.published_at,a.show_sidebar," +
                      "COUNT(cm.id) AS comment_count " +
                      "FROM articles a LEFT JOIN comments cm ON cm.article_id=a.id " +
                      "WHERE a.blog_id=? GROUP BY a.id ORDER BY a.created_at DESC")) {
@@ -86,7 +86,7 @@ public class ArticleService {
     public Article findBySlug(int blogId, String slug) throws SQLException {
         try (Connection c = DB.get();
              PreparedStatement ps = c.prepareStatement(
-                     "SELECT id,blog_id,author_id,slug,title,subtitle,accent_color,status,created_at,published_at " +
+                     "SELECT id,blog_id,author_id,slug,title,subtitle,accent_color,status,created_at,published_at,show_sidebar " +
                      "FROM articles WHERE blog_id=? AND slug=?")) {
             ps.setInt(1, blogId);
             ps.setString(2, slug);
@@ -102,7 +102,7 @@ public class ArticleService {
     public Article findById(int id) throws SQLException {
         try (Connection c = DB.get();
              PreparedStatement ps = c.prepareStatement(
-                     "SELECT id,blog_id,author_id,slug,title,subtitle,accent_color,status,created_at,published_at " +
+                     "SELECT id,blog_id,author_id,slug,title,subtitle,accent_color,status,created_at,published_at,show_sidebar " +
                      "FROM articles WHERE id=?")) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -123,12 +123,12 @@ public class ArticleService {
         Article[] result = new Article[2];
         if (publishedAt == null) return result;
         String prevSql =
-            "SELECT id,blog_id,author_id,slug,title,subtitle,accent_color,status,created_at,published_at " +
+            "SELECT id,blog_id,author_id,slug,title,subtitle,accent_color,status,created_at,published_at,show_sidebar " +
             "FROM articles WHERE blog_id=? AND status='published' " +
             "AND (published_at < ? OR (published_at = ? AND id < ?)) " +
             "ORDER BY published_at DESC, id DESC LIMIT 1";
         String nextSql =
-            "SELECT id,blog_id,author_id,slug,title,subtitle,accent_color,status,created_at,published_at " +
+            "SELECT id,blog_id,author_id,slug,title,subtitle,accent_color,status,created_at,published_at,show_sidebar " +
             "FROM articles WHERE blog_id=? AND status='published' " +
             "AND (published_at > ? OR (published_at = ? AND id > ?)) " +
             "ORDER BY published_at ASC, id ASC LIMIT 1";
@@ -197,15 +197,17 @@ public class ArticleService {
         }
     }
 
-    public void updateMeta(int articleId, String title, String subtitle, String slug, String accentColor) throws SQLException {
+    public void updateMeta(int articleId, String title, String subtitle, String slug,
+                           String accentColor, boolean showSidebar) throws SQLException {
         try (Connection c = DB.get();
              PreparedStatement ps = c.prepareStatement(
-                     "UPDATE articles SET title=?,subtitle=?,slug=?,accent_color=? WHERE id=?")) {
+                     "UPDATE articles SET title=?,subtitle=?,slug=?,accent_color=?,show_sidebar=? WHERE id=?")) {
             ps.setString(1, title);
             ps.setString(2, subtitle);
             ps.setString(3, slug);
             ps.setString(4, accentColor);
-            ps.setInt(5, articleId);
+            ps.setBoolean(5, showSidebar);
+            ps.setInt(6, articleId);
             ps.executeUpdate();
         }
     }
@@ -267,6 +269,7 @@ public class ArticleService {
         a.title       = rs.getString("title");
         a.subtitle    = rs.getString("subtitle");
         a.accentColor = rs.getString("accent_color");
+        a.showSidebar = rs.getBoolean("show_sidebar");
         a.status      = rs.getString("status");
         Timestamp ca  = rs.getTimestamp("created_at");
         Timestamp pa  = rs.getTimestamp("published_at");

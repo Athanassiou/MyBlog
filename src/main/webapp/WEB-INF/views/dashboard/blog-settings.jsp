@@ -81,6 +81,17 @@
         </select>
       </div>
 
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;cursor:pointer">
+          <input type="checkbox" name="showPlatformHeader"
+                 <%= blog == null || blog.showPlatformHeader ? "checked" : "" %>>
+          Plattform-Header anzeigen (athanassiou.me Logo, Uhr, Login)
+        </label>
+        <p style="font-size:12px;color:var(--muted);margin-top:4px;margin-left:22px">
+          Deaktivieren für Blogs die extern eingebettet oder unabhängig referenziert werden.
+        </p>
+      </div>
+
       <div style="display:flex;gap:10px;margin-top:8px">
         <a href="<%= request.getContextPath() %>/dashboard/<%= blogSlug %>/" class="btn btn-ghost">Abbrechen</a>
         <button type="submit" class="btn btn-primary">Speichern</button>
