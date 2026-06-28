@@ -113,6 +113,18 @@
 
   @media(max-width:768px) { nav { display: none; } main { padding: 28px 20px 60px; } }
 
+  /* ── Screenshots ── */
+  .screenshot { margin: 20px 0 8px; border-radius: 8px; overflow: hidden;
+    border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,.3); }
+  .screenshot img { width: 100%; display: block; }
+  .screenshot-placeholder { width: 100%; padding: 40px 20px; background: var(--input-bg);
+    border: 2px dashed var(--border); border-radius: 8px; text-align: center;
+    font-size: 13px; color: var(--muted); margin: 20px 0 8px; }
+  .screenshot-placeholder code { display: block; margin-top: 6px; font-family: monospace;
+    font-size: 12px; color: var(--accent); }
+  .screenshot-caption { font-size: 12px; color: var(--muted); text-align: center;
+    margin-bottom: 20px; font-style: italic; }
+
   /* Footer */
   .site-footer { text-align: center; padding: 20px; border-top: 1px solid var(--border); }
   .footer-toggle { background: var(--card-bg); border: 1px solid var(--border); border-radius: 5px;
@@ -181,6 +193,11 @@
 
     <p>Nach dem Anmelden landest du auf dem <strong>Dashboard</strong>, deiner persönlichen Übersicht.</p>
 
+    <div class="screenshot-placeholder">
+      📷 Screenshot: Anmeldeseite
+      <code>img/help/help-01-login.png</code>
+    </div>
+
     <!-- ══════════════════════════════════════════════ -->
     <h3 id="uebersicht">Übersicht: Meine Blogs</h3>
 
@@ -201,6 +218,11 @@
     </div>
 
     <p>Klicke auf einen Blog-Namen, um seine Artikelliste zu öffnen.</p>
+
+    <div class="screenshot-placeholder">
+      📷 Screenshot: Dashboard — Meine Blogs
+      <code>img/help/help-02-dashboard.png</code>
+    </div>
 
     <!-- ══════════════════════════════════════════════ -->
     <h3 id="artikel-schreiben">Artikel schreiben</h3>
@@ -245,6 +267,11 @@
       </div>
     </div>
 
+    <div class="screenshot-placeholder">
+      📷 Screenshot: „+ Neuer Artikel" Dialog
+      <code>img/help/help-03-neuer-artikel.png</code>
+    </div>
+
     <div class="infobox tip">
       <span class="infobox-icon">💡</span>
       <div>Der Artikel ist zunächst ein <strong>Entwurf</strong> — er ist für Leser nicht sichtbar, bis du ihn veröffentlichst. Du kannst ihn jederzeit speichern und später weiterschreiben.</div>
@@ -255,8 +282,18 @@
 
     <p>MyBlog verwendet einen <strong>Block-Editor</strong>: Jeder Absatz, jede Überschrift und jedes Bild ist ein eigener Block. Das macht es einfach, Inhalte umzustrukturieren.</p>
 
+    <div class="screenshot-placeholder">
+      📷 Screenshot: Editor — Gesamtansicht mit Artikel
+      <code>img/help/help-04-editor.png</code>
+    </div>
+
     <h4>Einen neuen Block anlegen</h4>
     <p>Klicke auf das <strong>+</strong>-Symbol links neben einem leeren Bereich, oder drücke <kbd>Enter</kbd> am Ende eines Absatzes. Es erscheint ein Menü mit allen Block-Typen.</p>
+
+    <div class="screenshot-placeholder">
+      📷 Screenshot: Block-Menü (+ Schaltfläche geöffnet)
+      <code>img/help/help-05-block-menu.png</code>
+    </div>
 
     <h4>Block-Typen im Überblick</h4>
     <div class="block-grid">
@@ -348,6 +385,11 @@
     <h4>Sidebar anzeigen</h4>
     <p>Wenn diese Checkbox aktiviert ist, erscheint beim Lesen des Artikels eine Navigations-Leiste links mit dem Inhaltsverzeichnis (alle H2-Überschriften). Für kurze Artikel ohne viele Abschnitte kann man sie deaktivieren.</p>
 
+    <div class="screenshot-placeholder">
+      📷 Screenshot: Meta-Karte (Artikel-Einstellungen unter dem Titel)
+      <code>img/help/help-06-meta-card.png</code>
+    </div>
+
     <!-- ══════════════════════════════════════════════ -->
     <h3 id="veroeffentlichen">Veröffentlichen</h3>
 
@@ -378,6 +420,11 @@
     </div>
 
     <p>Einen veröffentlichten Artikel kannst du jederzeit wieder als <strong>Entwurf zurückziehen</strong> — er verschwindet dann aus dem Blog, bleibt aber erhalten und kann erneut veröffentlicht werden.</p>
+
+    <div class="screenshot-placeholder">
+      📷 Screenshot: Veröffentlichen-Button und Status im Editor
+      <code>img/help/help-07-veroeffentlichen.png</code>
+    </div>
 
     <!-- ══════════════════════════════════════════════ -->
     <h3 id="eigener-blog">Eigenen Blog erstellen</h3>
@@ -436,6 +483,11 @@
     <h4>Plattform-Header anzeigen</h4>
     <p>Wenn aktiviert, erscheint der <em>athanassiou.me</em>-Header mit Logo, Uhr und Anmelden-Button auf allen Artikel-Seiten dieses Blogs. Das ist die Standard-Einstellung.</p>
     <p>Deaktiviere diese Option, wenn der Blog <strong>extern eingebettet</strong> oder unabhängig verlinkt wird und der Plattform-Header dort störend wirken würde.</p>
+
+    <div class="screenshot-placeholder">
+      📷 Screenshot: Blog-Einstellungen mit öffentlicher URL
+      <code>img/help/help-08-blog-einstellungen.png</code>
+    </div>
 
     <!-- ══════════════════════════════════════════════ -->
     <h3 id="externe-url">Externe URL</h3>
