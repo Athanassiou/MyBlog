@@ -39,6 +39,8 @@
     --header-text:#222; --header-sep:#bbb; --header-ctx:#444;
     --header-muted:#777; --header-greeting:#555; --header-clock:#333;
   }
+  .grey-mode .shelf-arrow { background:rgba(180,180,180,.92); border-color:#bbb; color:#333; }
+  .grey-mode .shelf-arrow:hover { background:var(--accent); border-color:var(--accent); color:#111; }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; background:var(--bg); color:var(--text); }
 
@@ -73,10 +75,38 @@
   }
   .section-title::after { content:''; flex:1; height:2px; background:var(--accent); }
 
+  /* ── Shelf wrapper mit Pfeil-Buttons ── */
+  .shelf-wrapper {
+    position: relative;
+    margin-bottom: 8px;
+  }
+  .shelf-arrow {
+    position: absolute;
+    top: calc(50% - 9px);
+    transform: translateY(-50%);
+    z-index: 2;
+    background: rgba(20,20,20,.88);
+    border: 1px solid #444;
+    -webkit-appearance: none; appearance: none;
+    color: #e0e0e0;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 20px; line-height: 1;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s, background .15s, border-color .15s;
+  }
+  .shelf-arrow.visible { opacity: 1; pointer-events: auto; }
+  .shelf-arrow:hover { background: var(--accent); color: #111; border-color: var(--accent); }
+  .shelf-arrow.left  { left:  -17px; }
+  .shelf-arrow.right { right: -17px; }
+
   /* ── Shelf (horizontal scroll) ── */
   .shelf {
     display:flex; overflow-x:auto; gap:24px;
-    padding:4px 2px 18px; scroll-snap-type:x mandatory;
+    padding:4px 2px 18px;
     -webkit-overflow-scrolling:touch;
   }
   .shelf::-webkit-scrollbar { height:5px; }
@@ -89,7 +119,7 @@
     background:var(--card-bg); border-radius:8px; overflow:hidden;
     box-shadow:0 3px 10px rgba(0,0,0,.25);
     text-decoration:none; color:inherit; display:flex; flex-direction:column;
-    scroll-snap-align:start; transition:box-shadow .2s, transform .2s;
+    transition:box-shadow .2s, transform .2s;
   }
   .card-lg:hover { box-shadow:0 8px 24px rgba(0,0,0,.40); transform:translateY(-3px); }
   .card-lg-img { width:100%; flex:1; object-fit:cover; display:block; opacity:.8; min-height:0; }
@@ -112,11 +142,11 @@
 
   /* ── Kleine Karten (ältere Beiträge) ── */
   .card-sm {
-    flex:0 0 calc((100% - 80px) / 6); min-width:160px;
+    flex:0 0 calc((100% - 96px) / 5); min-width:160px;
     background:var(--card-bg); border-radius:6px; overflow:hidden;
     box-shadow:0 2px 6px rgba(0,0,0,.20);
     text-decoration:none; color:inherit; display:block;
-    scroll-snap-align:start; transition:box-shadow .2s, transform .2s;
+    transition:box-shadow .2s, transform .2s;
   }
   .card-sm:hover { box-shadow:0 5px 16px rgba(0,0,0,.35); transform:translateY(-2px); }
   .card-sm-img { width:100%; height:110px; object-fit:cover; display:block; opacity:.8; }
@@ -178,6 +208,9 @@
 <%-- ── Neuere Beiträge (große Karten) ── --%>
 <% if (!recent.isEmpty()) { %>
 <div class="section-title">Neuere Beiträge</div>
+<div class="shelf-wrapper">
+<button class="shelf-arrow left">‹</button>
+<button class="shelf-arrow right">›</button>
 <div class="shelf">
   <% for (Article a : recent) {
        String imgUrl  = images.get(a.id);
@@ -215,11 +248,15 @@
   </a>
   <% } %>
 </div>
+</div><!-- /.shelf-wrapper Neuere -->
 <% } %>
 
 <%-- ── Ältere Beiträge (kleine Karten) ── --%>
 <% if (!older.isEmpty()) { %>
 <div class="section-title">Ältere Beiträge</div>
+<div class="shelf-wrapper">
+<button class="shelf-arrow left">‹</button>
+<button class="shelf-arrow right">›</button>
 <div class="shelf">
   <% for (Article a : older) {
        String imgUrl  = images.get(a.id);
@@ -242,11 +279,35 @@
   </a>
   <% } %>
 </div>
+</div><!-- /.shelf-wrapper Ältere -->
 <% } %>
 
 </div><!-- /content -->
 
 <%@ include file="/WEB-INF/views/fragments/site-footer.jsp" %>
 <%@ include file="/WEB-INF/views/fragments/site-header-clock.jsp" %>
+<script>
+(function() {
+    function initArrows() {
+        document.querySelectorAll('.shelf-wrapper').forEach(function(wrapper) {
+            var track = wrapper.querySelector('.shelf');
+            var btnL  = wrapper.querySelector('.shelf-arrow.left');
+            var btnR  = wrapper.querySelector('.shelf-arrow.right');
+            function update() {
+                btnL.classList.toggle('visible', track.scrollLeft > 0);
+                btnR.classList.toggle('visible', track.scrollLeft + track.clientWidth < track.scrollWidth - 1);
+            }
+            track.scrollLeft = 0;
+            track.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('resize', update);
+            btnL.addEventListener('click', function() { track.scrollBy({ left: -track.clientWidth * 0.85, behavior: 'smooth' }); });
+            btnR.addEventListener('click', function() { track.scrollBy({ left:  track.clientWidth * 0.85, behavior: 'smooth' }); });
+            update();
+        });
+    }
+    if (document.readyState === 'complete') { initArrows(); }
+    else { window.addEventListener('load', initArrows); }
+})();
+</script>
 </body>
 </html>
